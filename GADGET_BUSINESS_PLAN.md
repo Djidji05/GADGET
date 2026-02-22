@@ -1,6 +1,6 @@
 # Plan de Transformation : Gadget Business (Marketplace)
 
-Ce document décrit la feuille de route pour transformer **GadgetZone** d'une boutique simple en une **Marketplace Multi-vendeurs** appelée "Gadget Business".
+Ce document décrit la feuille de route pour transformer **htfasil** d'une boutique simple en une **Marketplace Multi-vendeurs** appelée "Gadget Business".
 
 ## 🎯 Objectif
 Permettre aux utilisateurs de s'inscrire en tant que vendeurs ("Gadget Business"), de créer leur propre boutique et de vendre n'importe quel type de produit sur la plateforme.
@@ -43,12 +43,12 @@ Lorsqu'on récupère un produit (`GET /products/:id`), le backend doit détermin
 #### [NEW] Routes Vendeurs
 - `POST /products/:id/offers` : Un vendeur ajoute SON offre sur un produit existant ("Vendre le vôtre").
 
-### 3. Frontend : GadgetZone Website
+### 3. Frontend : htfasil Website
 
 #### [MODIFY] Page Produit (`/products/:id`)
 - **Zone Principale (Buy Box)** : Affiche le prix et le bouton "Ajouter au panier" de l'offre gagnante.
-- **Mention** : "Vendu par [Gagnant] et expédié par GadgetZone".
-- **Liste Secondaire** : "Autres vendeurs sur GadgetZone" (liste les autres offres pour ce produit, classées par prix).
+- **Mention** : "Vendu par [Gagnant] et expédié par htfasil".
+- **Liste Secondaire** : "Autres vendeurs sur htfasil" (liste les autres offres pour ce produit, classées par prix).
 
 #### [MODIFY] Page d'accueil / Liste
 - Affiche le prix "à partir de" (prix de la Buy Box).
@@ -70,7 +70,7 @@ Lorsqu'on récupère un produit (`GET /products/:id`), le backend doit détermin
 #### [MODIFY] Système de Catégories
 - Rendre le menu dynamique pour supporter "N'importe quel produit" (pas juste électronique).
 
-### 4. Frontend : GadgetZone Admin (Super Admin)
+### 4. Frontend : htfasil Admin (Super Admin)
 
 - Ajouter une section **Gestion des Vendeurs**.
 - Pouvoir valider/bloquer des boutiques.

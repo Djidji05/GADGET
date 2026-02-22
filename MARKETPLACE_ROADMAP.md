@@ -1,6 +1,6 @@
-# 🛒 Projet Gadget : Extension Marketplace (Multi-Vendeurs)
+# 🛒 Projet htfasil : Extension Marketplace (Multi-Vendeurs)
 
-Ce document définit la stratégie technique et fonctionnelle pour transformer l'application Gadget en une plateforme marketplace où des tiers peuvent vendre leurs produits.
+Ce document définit la stratégie technique et fonctionnelle pour transformer l'application htfasil en une plateforme marketplace où des tiers peuvent vendre leurs produits.
 
 ## 🏗️ Architecture du Système
 
@@ -32,23 +32,23 @@ Nous devons passer d'une relation directe Admin -> Produit à une relation Vende
 
 ### 2. Sécurité & API
 
-Toutes les routes de `gadgetzone_admin` doivent être protégées.
+Toutes les routes de `htfasil_admin` doivent être protégées.
 
 *   **Middleware `isSeller`** : Vérifie si l'utilisateur possède une boutique active.
 *   **Scopes Sequelize** : Utiliser des "scopes" pour que `Product.findAll()` ne retourne que les produits du vendeur connecté par défaut.
 
 ## 🚀 Flux Utilisateur : "Devenir Vendeur"
 
-1.  **Candidature** : Un client remplit un formulaire sur `gadgetzone_website` (Nom de boutique, documents légaux).
+1.  **Candidature** : Un client remplit un formulaire sur `htfasil_website` (Nom de boutique, documents légaux).
 2.  **Validation** : Le Super Admin reçoit une notification dans son dashboard et valide le compte.
 3.  **Activation** : Le role de l'utilisateur devient `SELLER`.
-4.  **Accès** : L'utilisateur se connecte à `gadgetzone_admin`. Son menu est filtré : il ne voit pas les réglages globaux du site, uniquement ses ventes.
+4.  **Accès** : L'utilisateur se connecte à `htfasil_admin`. Son menu est filtré : il ne voit pas les réglages globaux du site, uniquement ses ventes.
 
 ## 📝 Conventions de Développement
 
 *   **Isolation** : Ne jamais modifier une donnée qui n'appartient pas au `storeId` de la session.
 *   **Routes API** : Préfixer les routes vendeurs par `/api/v1/vendor/...` pour les distinguer des routes admin globales.
-*   **Composants Vue** : Réutiliser les composants de `gadgetzone_admin` (tableaux, formulaires) en leur passant des filtres dynamiques.
+*   **Composants Vue** : Réutiliser les composants de `htfasil_admin` (tableaux, formulaires) en leur passant des filtres dynamiques.
 
 ## 🛠️ Prochaines étapes immédiates
 
