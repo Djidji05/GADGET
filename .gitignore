@@ -53,3 +53,7 @@ public/uploads/
 # Temporary files
 *.tmp
 *.temp
+
+# Binaries and local services
+Meilisearch/
+Redis/
