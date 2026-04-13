@@ -1,0 +1,99 @@
+services:
+  # Base de données PostgreSQL pour HTFasil
+  db:
+      image: postgres:15-alpine
+      restart: always
+      environment:
+          POSTGRES_USER: ${DB_USER:-postgres}
+          POSTGRES_PASSWORD: ${DB_PASSWORD:-htfasil_secret_pwd}
+          POSTGRES_DB: ${DB_NAME:-htfasil}
+      volumes:
+          - postgres_data:/var/lib/postgresql/data
+      networks:
+          - gadget_network
+
+  # Cache haute performance
+  redis:
+      image: redis:7-alpine
+      restart: always
+      networks:
+          - gadget_network
+      volumes:
+          - redis_data:/data
+
+  # Moteur de recherche intelligent
+  meilisearch:
+      image: getmeili/meilisearch:v1.3
+      restart: always
+      environment:
+          MEILI_MASTER_KEY: ${MEILISEARCH_KEY:-masterKey_HTFasil_2024}
+          MEILI_NO_ANALYTICS: "true"
+          MEILI_ENV: production
+      volumes:
+          - meili_data:/meili_data
+      networks:
+          - gadget_network
+
+  # Backend API + Admin UI (manage.htfasil.com)
+  backend:
+      build:
+          context: ./gadgetzone_admin
+          dockerfile: Dockerfile
+      restart: always
+      environment:
+          DB_HOST: db
+          REDIS_HOST: redis
+          MEILISEARCH_HOST: http://meilisearch:7700
+          MEILISEARCH_KEY: ${MEILISEARCH_KEY:-masterKey_HTFasil_2024}
+          DB_PORT: 5432
+          DB_USER: ${DB_USER:-postgres}
+          DB_PASSWORD: ${DB_PASSWORD:-htfasil_secret_pwd}
+          DB_NAME: ${DB_NAME:-htfasil}
+          NODE_ENV: production
+          BACKEND_PORT: 3001
+          JWT_SECRET: ${JWT_SECRET:-your_super_secret_jwt_key_here}
+      depends_on:
+          - db
+          - redis
+          - meilisearch
+      volumes:
+          - ./uploads:/app/public/uploads
+      networks:
+          - gadget_network
+      ports:
+          - "3001:3001"
+
+  # Frontend Client Website (htfasil.com)
+  frontend:
+      build:
+          context: ./gadgetzone_website
+          dockerfile: Dockerfile
+      restart: always
+      depends_on:
+          - backend
+      networks:
+          - gadget_network
+      ports:
+          - "80:80"
+
+  # Nginx Proxy Manager pour gérer les domaines et SSL gratuitement
+  npm:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: always
+    ports:
+      - '81:81'
+      - '443:443'
+    volumes:
+      - ./npm_data:/data
+      - ./npm_letsencrypt:/etc/letsencrypt
+    networks:
+      - gadget_network
+
+networks:
+  gadget_network:
+      driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  meili_data:

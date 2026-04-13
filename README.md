@@ -1,15 +1,15 @@
-# 🛒 Projet GadgetZone - Marketplace Complète
+# 🛒 Projet HTFasil - Marketplace Complète
 
-Bienvenue dans l'écosystème **GadgetZone**. Ce projet est une solution e-commerce robuste comprenant une plateforme client, un tableau de bord d'administration et un backend API haute performance.
+Bienvenue dans l'écosystème **HTFasil**. Ce projet est une solution e-commerce robuste comprenant une plateforme client, un tableau de bord d'administration et un backend API haute performance.
 
 ## 📂 Architecture du Système
 
 Le projet est divisé en deux piliers principaux :
 
-1.  **`gadgetzone_website`** : Interface client (Frontend).
+1.  **`htfasil_website`** : Interface client (Frontend).
     *   **Tech** : Vue.js 3, Vite, Tailwind CSS, Pinia.
     *   **URL** : `http://localhost:5173`
-2.  **`gadgetzone_admin`** : Dashboard Admin + **Serveur Backend**.
+2.  **`htfasil_admin`** : Dashboard Admin + **Serveur Backend**.
     *   **Tech** : Express.js, Sequelize, PostgreSQL, Redis, BullMQ.
     *   **API URL** : `http://localhost:3003/api`
     *   **Admin Dashboard URL** : `http://localhost:5173` (ou port suivant si lancé avec le site).
@@ -20,20 +20,20 @@ Le projet est divisé en deux piliers principaux :
 
 ### 1. Prérequis
 *   **Node.js** (v20+)
-*   **PostgreSQL** (Base de données `gadgetzone`)
+*   **PostgreSQL** (Base de données `htfasil`)
 *   **Redis** (Optionnel, pour les files d'attente d'emails)
 
 ### 2. Installation des dépendances
 ```bash
-# Dans gadgetzone_website
+# Dans htfasil_website
 npm install
 
-# Dans gadgetzone_admin
+# Dans htfasil_admin
 npm install
 ```
 
 ### 3. Configuration de la Base de Données
-Dans `gadgetzone_admin`, configurez votre `.env.backend` et lancez :
+Dans `htfasil_admin`, configurez votre `.env.backend` et lancez :
 ```bash
 npm run init:database
 npm run seed:database
@@ -57,7 +57,7 @@ Comme MonCash doit envoyer des notifications à votre machine locale, vous devez
 3.  Mettez à jour `notify_url` dans `src/backend/services/moncash.service.js`.
 
 ### Identifiants API
-Assurez-vous d'avoir les bonnes clés dans `gadgetzone_admin/.env.backend` :
+Assurez-vous d'avoir les bonnes clés dans `htfasil_admin/.env.backend` :
 ```env
 MONCASH_CLIENT_ID=votre_client_id
 MONCASH_CLIENT_SECRET=votre_secret_key
@@ -68,11 +68,11 @@ MONCASH_CLIENT_SECRET=votre_secret_key
 ## 🛠️ Commandes de Développement
 
 ### Lancer tout le système
-Dans `gadgetzone_admin` :
+Dans `htfasil_admin` :
 ```bash
 npm run dev:full
 ```
-Dans `gadgetzone_website` :
+Dans `htfasil_website` :
 ```bash
 npm run dev
 ```

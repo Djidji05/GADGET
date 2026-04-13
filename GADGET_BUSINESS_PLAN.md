@@ -30,7 +30,7 @@ Pour supporter la **Buy Box** (plusieurs vendeurs sur un même produit), il faut
 - `condition`: 'new', 'used', etc.
 - `shipping_days`: Délai de livraison estimé (facteur Buy Box).
 
-### 2. Backend API (`gadgetzone_admin`)
+### 2. Backend API (`htfasil_admin`)
 
 #### [NEW] Algorithme Buy Box (Service)
 Lorsqu'on récupère un produit (`GET /products/:id`), le backend doit déterminer "L'offre gagnante" (Buy Box Winner) parmi toutes les `Offers`.
