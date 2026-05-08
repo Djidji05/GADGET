@@ -41,7 +41,7 @@
             <div class="relative group">
               <div class="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-slate-900 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
               <img
-                src="file:///C:/Users/ndjiv/.gemini/antigravity/brain/483dca1a-b9a7-40c0-b5b4-a35ef715a408/about_marketplace_intro_1775689137475.png"
+                src="https://images.unsplash.com/photo-1557821552-17105176677c?auto=format&fit=crop&q=80&w=1000"
                 alt="L'univers HTFasil"
                 class="relative rounded-2xl shadow-2xl w-full object-cover aspect-[4/3]"
               />
@@ -129,7 +129,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div class="relative">
             <img
-               src="file:///C:/Users/ndjiv/.gemini/antigravity/brain/483dca1a-b9a7-40c0-b5b4-a35ef715a408/htfasil_experience_premium_1775689313401.png"
+               src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=1000"
                alt="L'expérience client"
                class="rounded-3xl shadow-2xl w-full object-cover"
             />
