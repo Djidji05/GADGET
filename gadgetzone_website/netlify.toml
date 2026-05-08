@@ -1,0 +1,7 @@
+[build]
+  command = "npm run build-only"
+  publish = "dist"
+  base = "gadgetzone_website"
+
+[build.environment]
+  NODE_VERSION = "20"
