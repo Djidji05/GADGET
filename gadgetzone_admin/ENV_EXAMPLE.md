@@ -1,0 +1,62 @@
+# Configuration complète - HTFasil Admin
+
+## Variables d'environnement requises
+
+### Backend & Serveur
+BACKEND_PORT=3001
+NODE_ENV=development
+FRONTEND_URL=http://localhost:5174
+
+### Base de Données PostgreSQL
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=htfasil
+DB_USER=postgres
+DB_PASSWORD=your_secure_password_here
+
+### Authentification JWT
+JWT_SECRET=your_super_secret_jwt_key_minimum_32_characters_long
+JWT_EXPIRES_IN=24h
+
+### Email (Optionnel)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASSWORD=your-app-password
+EMAIL_FROM=noreply@htfasil.com
+
+### OAuth (Optionnel)
+GOOGLE_CLIENT_ID=votre_google_client_id
+GOOGLE_CLIENT_SECRET=votre_google_client_secret
+
+# Configuration Intelligence Artificielle (Gemini)
+# Obtenez une clé gratuite sur https://aistudio.google.com/
+GEMINI_API_KEY=votre_cle_api_gemini_ici
+FACEBOOK_APP_ID=your_facebook_app_id
+FACEBOOK_APP_SECRET=your_facebook_app_secret
+
+### Paiement Stripe (Optionnel)
+STRIPE_PUBLIC_KEY=pk_test_...
+STRIPE_SECRET_KEY=sk_test_...
+
+# MonCash API (Sandbox)
+MONCASH_CLIENT_ID=votre_client_id
+MONCASH_CLIENT_SECRET=votre_client_secret
+MONCASH_API_URL=https://sandbox.moncashbutton.digicelhaiti.com/Api
+
+### Paiement PayPal (Optionnel)
+PAYPAL_CLIENT_ID=your_paypal_client_id
+PAYPAL_CLIENT_SECRET=your_paypal_client_secret
+PAYPAL_MODE=sandbox
+
+### Upload & Monitoring (Optionnel)
+MAX_FILE_SIZE=10
+UPLOAD_DIR=./public/uploads
+
+# Cloudinary Storage
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+
+SENTRY_DSN=your_sentry_dsn
+LOG_LEVEL=info

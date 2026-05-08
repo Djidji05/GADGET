@@ -41,6 +41,7 @@ Thumbs.db
 # Database
 *.sqlite
 *.db
+dump.rdb
 
 # Uploads
 uploads/
@@ -53,6 +54,7 @@ public/uploads/
 # Temporary files
 *.tmp
 *.temp
+scratch/
 
 # Binaries and local services
 Meilisearch/
