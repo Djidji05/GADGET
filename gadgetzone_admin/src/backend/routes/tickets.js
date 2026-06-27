@@ -1,11 +1,11 @@
 import express from 'express';
 import { sequelize } from '../models/index.js';
-import { authenticateToken } from '../middleware/auth.js';
+import { authenticateToken, requireAdmin } from '../middleware/auth.js';
 
 const router = express.Router();
 
 // GET /api/tickets/stats - Statistiques des tickets
-router.get('/stats', authenticateToken, async (req, res) => {
+router.get('/stats', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const [results] = await sequelize.query(`
       SELECT
@@ -34,7 +34,7 @@ router.get('/stats', authenticateToken, async (req, res) => {
 });
 
 // GET /api/tickets - Liste des tickets avec pagination
-router.get('/', authenticateToken, async (req, res) => {
+router.get('/', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { status, page = 1, limit = 20 } = req.query;
         const offset = (parseInt(page) - 1) * parseInt(limit);
@@ -85,7 +85,7 @@ router.get('/', authenticateToken, async (req, res) => {
 });
 
 // PATCH /api/tickets/:id/status - Mettre à jour le statut d'un ticket
-router.patch('/:id/status', authenticateToken, async (req, res) => {
+router.patch('/:id/status', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const { id } = req.params;
         const { status } = req.body;

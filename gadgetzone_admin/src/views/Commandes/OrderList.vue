@@ -81,11 +81,13 @@
               >
                 <option value="">Tous les statuts</option>
                 <option value="pending">En attente</option>
+                <option value="partially_paid">Paiement Incomplet</option>
                 <option value="confirmed">Confirmée</option>
                 <option value="processing">En traitement</option>
                 <option value="shipped">Expédiée</option>
                 <option value="delivered">Livrée</option>
                 <option value="cancelled">Annulée</option>
+                <option value="cancelled_refund_pending">Remboursement (Annulé)</option>
               </select>
             </div>
           </div>
@@ -381,11 +383,13 @@ const formatDate = (dateString: any) => {
 const getStatusClass = (status: any) => {
   const colors: Record<string, string> = {
     pending: 'bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium',
+    partially_paid: 'bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs font-medium',
     confirmed: 'bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium',
     processing: 'bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full text-xs font-medium',
     shipped: 'bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-medium',
     delivered: 'bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium',
     cancelled: 'bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium',
+    cancelled_refund_pending: 'bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium',
     refunded: 'bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium'
   }
   return colors[status] || 'bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium'
@@ -394,11 +398,13 @@ const getStatusClass = (status: any) => {
 const getStatusText = (status: any) => {
   const texts: Record<string, string> = {
     pending: 'En attente',
+    partially_paid: 'Paiement Incomplet',
     confirmed: 'Confirmée',
     processing: 'En traitement',
     shipped: 'Expédiée',
     delivered: 'Livrée',
     cancelled: 'Annulée',
+    cancelled_refund_pending: 'Remboursement',
     refunded: 'Remboursée'
   }
   return texts[status] || status
@@ -433,7 +439,7 @@ const exportPDF = (period: string = 'all') => {
   showExportMenu.value = false;
   
   const doc = new jsPDF();
-  const themeColor = [37, 99, 235]; // Blue-600
+  const themeColor: [number, number, number] = [37, 99, 235]; // Blue-600
   
   // Filtrage par période
   const now = new Date();
@@ -489,23 +495,27 @@ const exportPDF = (period: string = 'all') => {
     },
     didParseCell: (data) => {
       if (data.section === 'body' && data.column.index === 3) {
-        const status = data.cell.raw;
+        const status = String(data.cell.raw);
         const colors: Record<string, [number, number, number]> = {
           'En attente': [254, 249, 195], // Yellow-100
+          'Paiement Incomplet': [255, 237, 213], // Orange-100
           'Confirmée': [219, 234, 254], // Blue-100
           'En traitement': [224, 231, 255], // Indigo-100
           'Expédiée': [243, 232, 255], // Purple-100
           'Livrée': [220, 252, 231], // Green-100
           'Annulée': [254, 226, 226], // Red-100
+          'Remboursement': [254, 226, 226], // Red-100
           'Remboursée': [243, 244, 246] // Gray-100
         };
         const textColor: Record<string, [number, number, number]> = {
           'En attente': [133, 77, 14], // Yellow-800
+          'Paiement Incomplet': [154, 52, 18], // Orange-800
           'Confirmée': [30, 64, 175], // Blue-800
           'En traitement': [55, 48, 163], // Indigo-800
           'Expédiée': [107, 33, 168], // Purple-800
           'Livrée': [22, 101, 52], // Green-800
           'Annulée': [153, 27, 27], // Red-800
+          'Remboursement': [153, 27, 27], // Red-800
           'Remboursée': [31, 41, 55] // Gray-800
         };
         if (colors[status]) {

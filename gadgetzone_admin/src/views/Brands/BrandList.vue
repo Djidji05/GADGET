@@ -87,7 +87,7 @@
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Logo</label>
             <div class="mt-1 flex items-center gap-4">
               <div class="w-20 h-20 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-gray-900">
-                <img v-if="logoPreview" :src="logoPreview" class="max-h-full max-w-full object-contain" />
+                <img alt="" v-if="logoPreview" :src="logoPreview" class="max-h-full max-w-full object-contain" />
                 <i v-else class="fas fa-image text-gray-300 text-2xl"></i>
               </div>
               <input 

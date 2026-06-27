@@ -149,7 +149,7 @@ const deleteProduct = async (id: string | number) => {
       await fetchProducts()
     } catch (error) {
       console.error('Erreur lors de la suppression:', error)
-      alert("Erreur: " + (error.response?.data?.message || "Impossible de supprimer le produit"));
+      alert("Erreur: " + ((error as any).response?.data?.message || "Impossible de supprimer le produit"));
     }
   }
 }

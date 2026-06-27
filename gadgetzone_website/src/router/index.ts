@@ -27,7 +27,7 @@ const router = createRouter({
       path: '/cart',
       name: 'cart',
       component: () => import('../views/CartView.vue'),
-      meta: { title: 'Panier - HTFasil' },
+      meta: { title: 'Panier - HTFasil', hideNavSearch: true },
     },
     {
       path: '/checkout',
@@ -97,12 +97,24 @@ const router = createRouter({
       },
     },
     {
+      path: '/pay-qr',
+      name: 'pay-qr',
+      component: () => import('../views/PayQR.vue'),
+      meta: {
+        title: 'Paiement en Magasin - HTFasil',
+        requiresAuth: true,
+        hideBottomNav: true,
+      },
+    },
+    {
       path: '/orders/:id',
       name: 'order-detail',
       component: () => import('../views/OrderDetailView.vue'),
       meta: {
         title: 'Détail Commande - HTFasil',
         requiresAuth: true,
+        hideNavSearch: true,
+        hideMobileNav: true,
       },
     },
     {
@@ -111,6 +123,16 @@ const router = createRouter({
       component: () => import('../views/WishlistView.vue'),
       meta: {
         title: "Liste d'envies - HTFasil",
+        requiresAuth: true,
+      },
+    },
+
+    {
+      path: '/account/loyalty',
+      name: 'loyalty',
+      component: () => import('../views/Account/LoyaltyView.vue'),
+      meta: {
+        title: 'Mes Points HTF - HTFasil',
         requiresAuth: true,
       },
     },
@@ -204,13 +226,19 @@ const router = createRouter({
       path: '/payment/success',
       name: 'payment-success',
       component: () => import('../views/payment/PaymentSuccessView.vue'),
-      meta: { title: 'Paiement Réussi - HTFasil' },
+      meta: { title: 'Paiement Réussi - HTFasil', hideBottomNav: true },
     },
     {
       path: '/payment/cancelled',
       name: 'payment-cancelled',
       component: () => import('../views/payment/PaymentCancelledView.vue'),
-      meta: { title: 'Paiement Annulé - HTFasil' },
+      meta: { title: 'Paiement Annulé - HTFasil', hideBottomNav: true },
+    },
+    {
+      path: '/payment/callback',
+      name: 'payment-callback',
+      component: () => import('../views/payment/MonCashCallbackView.vue'),
+      meta: { title: 'Vérification du Paiement - HTFasil', hideBottomNav: true },
     },
     {
       path: '/become-seller',
@@ -222,221 +250,237 @@ const router = createRouter({
       },
     },
     {
-      path: '/seller/dashboard',
-      name: 'seller-dashboard',
-      component: () => import('../views/Seller/Dashboard.vue'),
-      meta: {
-        title: 'Tableau de Bord Vendeur - HTFasil',
-        requiresAuth: true
-      },
-    },
-    {
-      path: '/seller/products',
-      name: 'seller-products',
-      component: () => import('../views/Seller/Products.vue'),
-      meta: {
-        title: 'Mes Produits - HTFasil',
-        requiresAuth: true
-      },
-    },
-    {
-      path: '/seller/products/new',
-      name: 'seller-add-product',
-      component: () => import('../views/Seller/AddProduct.vue'),
-      meta: {
-        title: 'Ajouter un Produit - HTFasil',
-        requiresAuth: true,
-        hideBottomNav: true
-      },
-    },
-    {
-      path: '/seller/products/edit/:id',
-      name: 'seller-edit-product',
-      component: () => import('../views/Seller/AddProduct.vue'),
-      meta: {
-        title: 'Modifier un Produit - HTFasil',
-        requiresAuth: true,
-        hideBottomNav: true
-      },
-    },
-    {
-      path: '/seller/orders',
-      name: 'seller-orders',
-      component: () => import('../views/Seller/Orders.vue'),
-      meta: {
-        title: 'Commandes Vendeur - HTFasil',
-        requiresAuth: true
-      }
-    },
-    {
-      path: '/seller/orders/:id',
-      name: 'seller-order-detail',
-      component: () => import('../views/Seller/OrderDetail.vue'),
-      meta: {
-        title: 'Détail Commande - HTFasil',
-        requiresAuth: true,
-        hideBottomNav: true
-      }
-    },
-    {
-      path: '/seller/reports',
-      name: 'seller-reports',
-      component: () => import('../views/Seller/Reports.vue'),
-      meta: {
-        title: 'Rapports Vendeur - HTFasil',
-        requiresAuth: true,
-        hideBottomNav: true
-      }
-    },
-    {
-      path: '/seller/transactions',
-      name: 'seller-transactions',
-      component: () => import('../views/Seller/Transactions.vue'),
-      meta: {
-        title: 'Transactions Vendeur - HTFasil',
-        requiresAuth: true,
-        hideBottomNav: true
-      }
-    },
-    {
-      path: '/seller/payments',
-      name: 'seller-payments',
-      component: () => import('../views/Seller/Payments.vue'),
-      meta: {
-        title: 'Paiements Vendeur - HTFasil',
-        requiresAuth: true,
-        hideBottomNav: true
-      }
-    },
-    {
-      path: '/seller/deposits',
-      name: 'seller-deposits',
-      component: () => import('../views/Seller/Deposits.vue'),
-      meta: {
-        title: 'Dépôts Vendeur - HTFasil',
-        requiresAuth: true,
-        hideBottomNav: true
-      }
-    },
-    {
-      path: '/seller/settings',
-      name: 'seller-settings',
-      component: () => import('../views/Seller/Settings.vue'),
-      meta: {
-        title: 'Paramètres Vendeur - HTFasil',
-        requiresAuth: true,
-        hideBottomNav: true
-      }
-    },
-    {
-      path: '/seller/notifications',
-      name: 'seller-notifications',
-      component: () => import('../views/Seller/Notifications.vue'),
-      meta: {
-        title: 'Notifications Vendeur - HTFasil',
-        requiresAuth: true,
-        hideBottomNav: true
-      }
-    },
-    {
-      path: '/seller/messages',
-      name: 'seller-messages',
-      component: () => import('../views/Seller/Messages.vue'),
-      meta: {
-        title: 'Messages Vendeur - HTFasil',
-        requiresAuth: true,
-        hideBottomNav: true
-      }
-    },
-    {
-      path: '/seller/my-qr',
-      name: 'seller-my-qr',
-      component: () => import('../views/Seller/MyQR.vue'),
-      meta: {
-        title: 'Mon QR Code - HTFasil',
-        requiresAuth: true,
-        hideBottomNav: true
-      }
-    },
-    {
-      path: '/seller/academy',
-      name: 'seller-academy',
-      component: () => import('../views/Seller/SellerAcademy.vue'),
-      meta: {
-        title: 'Académie Vendeur - HTFasil',
-        requiresAuth: true,
-        hideBottomNav: true
-      }
-    },
-    {
-      path: '/seller/ambassador',
-      name: 'seller-ambassador',
-      component: () => import('../views/Ambassador/Dashboard.vue'),
-      meta: {
-        title: 'Ambassadeur Vendeur - HTFasil',
-        requiresAuth: true,
-        hideBottomNav: true
-      }
-    },
-    {
-      path: '/seller/help',
-      name: 'seller-help',
-      component: () => import('../views/Seller/SellerHelp.vue'),
-      meta: {
-        title: "Centre d'Aide - HTFasil",
-        requiresAuth: true,
-        hideBottomNav: true
-      }
-    },
-    {
-      path: '/seller/boost',
-      name: 'seller-boost',
-      component: () => import('../views/Seller/SellerBoost.vue'),
-      meta: {
-        title: 'Booster Visibilité - HTFasil',
-        requiresAuth: true,
-        hideBottomNav: true
-      }
-    },
-    {
-      path: '/seller/community',
-      name: 'seller-community',
-      component: () => import('../views/Seller/SellerCommunity.vue'),
-      meta: {
-        title: 'Communauté Vendeur - HTFasil',
-        requiresAuth: true,
-        hideBottomNav: true
-      }
-    },
-    {
-      path: '/seller/trust',
-      name: 'seller-trust',
-      component: () => import('../views/Seller/SellerTrust.vue'),
-      meta: {
-        title: 'Confiance & Sécurité - HTFasil',
-        requiresAuth: true,
-        hideBottomNav: true
-      }
-    },
-    {
-      path: '/seller/services',
-      name: 'seller-services',
-      component: () => import('../views/Seller/SellerServices.vue'),
-      meta: {
-        title: 'Nos Services Vendeur - HTFasil',
-        requiresAuth: true,
-        hideBottomNav: true
-      }
-    },
-    {
-      path: '/seller/promotions',
-      name: 'seller-promotions',
-      component: () => import('../views/Seller/Promotions.vue'),
-      meta: {
-        title: 'Mes Promotions - HTFasil',
-        requiresAuth: true,
-        hideBottomNav: true
-      }
+      path: '/seller',
+      component: () => import('../layouts/SellerLayout.vue'),
+      children: [
+        {
+          path: 'dashboard',
+          name: 'seller-dashboard',
+          component: () => import('../views/Seller/Dashboard.vue'),
+          meta: {
+            title: 'Tableau de Bord Vendeur - HTFasil',
+            requiresAuth: true
+          },
+        },
+        {
+          path: 'products',
+          name: 'seller-products',
+          component: () => import('../views/Seller/Products.vue'),
+          meta: {
+            title: 'Mes Produits - HTFasil',
+            requiresAuth: true
+          },
+        },
+        {
+          path: 'products/new',
+          name: 'seller-add-product',
+          component: () => import('../views/Seller/AddProduct.vue'),
+          meta: {
+            title: 'Ajouter un Produit - HTFasil',
+            requiresAuth: true,
+            hideBottomNav: true
+          },
+        },
+        {
+          path: 'products/edit/:id',
+          name: 'seller-edit-product',
+          component: () => import('../views/Seller/AddProduct.vue'),
+          meta: {
+            title: 'Modifier un Produit - HTFasil',
+            requiresAuth: true,
+            hideBottomNav: true
+          },
+        },
+        {
+          path: 'orders',
+          name: 'seller-orders',
+          component: () => import('../views/Seller/Orders.vue'),
+          meta: {
+            title: 'Commandes Vendeur - HTFasil',
+            requiresAuth: true
+          }
+        },
+        {
+          path: 'orders/:id',
+          name: 'seller-order-detail',
+          component: () => import('../views/Seller/OrderDetail.vue'),
+          meta: {
+            title: 'Détail Commande - HTFasil',
+            requiresAuth: true,
+            hideBottomNav: true
+          }
+        },
+        {
+          path: 'reports',
+          name: 'seller-reports',
+          component: () => import('../views/Seller/Reports.vue'),
+          meta: {
+            title: 'Rapports Vendeur - HTFasil',
+            requiresAuth: true,
+            hideBottomNav: true
+          }
+        },
+        {
+          path: 'transactions',
+          name: 'seller-transactions',
+          component: () => import('../views/Seller/Transactions.vue'),
+          meta: {
+            title: 'Transactions Vendeur - HTFasil',
+            requiresAuth: true,
+            hideBottomNav: true
+          }
+        },
+        {
+          path: 'payments',
+          name: 'seller-payments',
+          component: () => import('../views/Seller/Payments.vue'),
+          meta: {
+            title: 'Paiements Vendeur - HTFasil',
+            requiresAuth: true,
+            hideBottomNav: true
+          }
+        },
+        {
+          path: 'deposits',
+          name: 'seller-deposits',
+          component: () => import('../views/Seller/Deposits.vue'),
+          meta: {
+            title: 'Dépôts Vendeur - HTFasil',
+            requiresAuth: true,
+            hideBottomNav: true
+          }
+        },
+        {
+          path: 'settings',
+          name: 'seller-settings',
+          component: () => import('../views/Seller/Settings.vue'),
+          meta: {
+            title: 'Paramètres Vendeur - HTFasil',
+            requiresAuth: true,
+            hideBottomNav: true
+          }
+        },
+        {
+          path: 'shipping',
+          name: 'seller-shipping',
+          component: () => import('../views/Seller/ShippingRates.vue'),
+          meta: {
+            title: 'Tarifs et Zones de Livraison - HTFasil',
+            requiresAuth: true,
+            hideBottomNav: true
+          }
+        },
+        {
+          path: 'notifications',
+          name: 'seller-notifications',
+          component: () => import('../views/Seller/Notifications.vue'),
+          meta: {
+            title: 'Notifications Vendeur - HTFasil',
+            requiresAuth: true,
+            hideBottomNav: true
+          }
+        },
+        {
+          path: 'messages',
+          name: 'seller-messages',
+          component: () => import('../views/Seller/Messages.vue'),
+          meta: {
+            title: 'Messages Vendeur - HTFasil',
+            requiresAuth: true,
+            hideBottomNav: true
+          }
+        },
+        {
+          path: 'my-qr',
+          name: 'seller-my-qr',
+          component: () => import('../views/Seller/MyQR.vue'),
+          meta: {
+            title: 'Mon QR Code - HTFasil',
+            requiresAuth: true,
+            hideBottomNav: true
+          }
+        },
+        {
+          path: 'academy',
+          name: 'seller-academy',
+          component: () => import('../views/Seller/SellerAcademy.vue'),
+          meta: {
+            title: 'Académie Vendeur - HTFasil',
+            requiresAuth: true,
+            hideBottomNav: true
+          }
+        },
+        {
+          path: 'ambassador',
+          name: 'seller-ambassador',
+          component: () => import('../views/Ambassador/Dashboard.vue'),
+          meta: {
+            title: 'Ambassadeur Vendeur - HTFasil',
+            requiresAuth: true,
+            hideBottomNav: true
+          }
+        },
+        {
+          path: 'help',
+          name: 'seller-help',
+          component: () => import('../views/Seller/SellerHelp.vue'),
+          meta: {
+            title: "Centre d'Aide - HTFasil",
+            requiresAuth: true,
+            hideBottomNav: true
+          }
+        },
+        {
+          path: 'boost',
+          name: 'seller-boost',
+          component: () => import('../views/Seller/SellerBoost.vue'),
+          meta: {
+            title: 'Booster Visibilité - HTFasil',
+            requiresAuth: true,
+            hideBottomNav: true
+          }
+        },
+        {
+          path: 'community',
+          name: 'seller-community',
+          component: () => import('../views/Seller/SellerCommunity.vue'),
+          meta: {
+            title: 'Communauté Vendeur - HTFasil',
+            requiresAuth: true,
+            hideBottomNav: true
+          }
+        },
+        {
+          path: 'trust',
+          name: 'seller-trust',
+          component: () => import('../views/Seller/SellerTrust.vue'),
+          meta: {
+            title: 'Confiance & Sécurité - HTFasil',
+            requiresAuth: true,
+            hideBottomNav: true
+          }
+        },
+        {
+          path: 'services',
+          name: 'seller-services',
+          component: () => import('../views/Seller/SellerServices.vue'),
+          meta: {
+            title: 'Nos Services Vendeur - HTFasil',
+            requiresAuth: true,
+            hideBottomNav: true
+          }
+        },
+        {
+          path: 'promotions',
+          name: 'seller-promotions',
+          component: () => import('../views/Seller/Promotions.vue'),
+          meta: {
+            title: 'Mes Promotions - HTFasil',
+            requiresAuth: true,
+            hideBottomNav: true
+          }
+        }
+      ]
     },
     {
       path: '/store/:id',
@@ -483,7 +527,7 @@ router.beforeEach(async (to, from, next) => {
   // Check Maintenance Mode (Only visible to non-admins and if route is not login/admin pages)
   const isMaintenanceActive = settingsStore.general.maintenance_mode === 'true'
   const isAccessibleInMaintenance = to.name === 'maintenance' || to.name === 'login' || to.name === 'auth-callback'
-  const isAdmin = authStore.user?.role === 'admin' || authStore.user?.role === 'gestionnaire'
+  const isAdmin = authStore.customer?.role === 'admin' || authStore.customer?.role === 'gestionnaire'
 
   if (isMaintenanceActive && !isAccessibleInMaintenance && !isAdmin) {
     // If we're not an admin, force maintenance page

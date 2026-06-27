@@ -27,6 +27,10 @@ export const useUiStore = defineStore('ui', () => {
     const isSellerNavVisible = ref(true)
     const isCartAnimating = ref(false)
     const previousRouteName = ref<string | null>(null)
+    const isMobileMenuOpen = ref(false)
+    const isMobileSearchOpen = ref(false)
+    const globalSearchQuery = ref('')
+    const isLightboxOpen = ref(false)
 
 
     const triggerCartAnimation = () => {
@@ -63,7 +67,11 @@ export const useUiStore = defineStore('ui', () => {
         isSellerNavVisible,
         isCartAnimating,
         triggerCartAnimation,
-        previousRouteName
+        previousRouteName,
+        isMobileMenuOpen,
+        isMobileSearchOpen,
+        globalSearchQuery,
+        isLightboxOpen
     }
 
 })

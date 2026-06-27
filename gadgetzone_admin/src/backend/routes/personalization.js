@@ -110,7 +110,7 @@ router.get('/sections/:section', async (req, res) => {
                     where: {
                         [Op.or]: [
                             { original_price: { [Op.gt]: sequelize.col('price') } },
-                            { id: { [Op.in]: promoProductIds } }
+                            { id: { [Op.in]: promoProductIds.length > 0 ? promoProductIds : [-1] } }
                         ],
                         status: 'active'
                     },
@@ -174,7 +174,7 @@ router.get('/sections/:section', async (req, res) => {
                         image: p.image_url,
                         link: `/products/${p.id}`,
                         linkText: 'Profiter de l\'offre',
-                        promoText: `${formatPrice(displayPrice)}`,
+                        promoText: `${formatPrice(displayPrice || 0)}`,
                         promoTextColor: '#ffffff',
                         promoStyle: 'image'
                     });
@@ -197,20 +197,20 @@ router.get('/sections/:section', async (req, res) => {
                                 id: `auto-deal-${autoCards.length}`,
                                 type: 'grid',
                                 title: sectionTitle,
-                                cols: 4,
+                                cols: 2,
                                 items: currentItems
                             });
                             currentItems = [];
                         }
                     });
 
-                    // Remaining items (e.g. if we have 2, they will be in a grid of 4 with 2 spaces empty)
+                    // Remaining items (e.g. if we have 2, they will be in a grid of 2 spaces empty)
                     if (currentItems.length > 0) {
                         autoCards.push({
                             id: `auto-deal-${autoCards.length}`,
                             type: 'grid',
                             title: sectionTitle,
-                            cols: 4,
+                            cols: 2,
                             items: currentItems
                         });
                     }
@@ -293,7 +293,11 @@ router.get('/sections/:section', async (req, res) => {
 
     } catch (error) {
         console.error(`Error fetching section ${req.params.section}:`, error);
-        res.status(500).json({ error: 'Erreur lors de la récupération de la configuration' });
+        res.status(500).json({ 
+            error: 'Erreur lors de la récupération de la configuration',
+            details: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 });
 

@@ -66,7 +66,7 @@
           Aucune notification
         </li>
         <li v-else v-for="notification in notifications" :key="notification.id" @click="handleItemClick(notification)">
-          <a
+          <a href="#"
             class="flex gap-3 rounded-lg border-b border-gray-100 p-3 px-4 py-3 hover:bg-gray-100 dark:border-gray-800 dark:hover:bg-white/5 cursor-pointer"
             :class="{ 'bg-blue-50 dark:bg-blue-900/10': notification.status === 'unread' }"
           >

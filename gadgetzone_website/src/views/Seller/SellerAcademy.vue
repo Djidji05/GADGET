@@ -12,7 +12,7 @@
               </div>
           </div>
           
-          <div class="hidden md:flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100">
+          <div class="hidden lg:flex items-center gap-2 bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100">
               <div class="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600">
                   <i class="fas fa-trophy text-sm"></i>
               </div>
@@ -46,14 +46,14 @@
 
       <!-- Featured Course (Only show if 'Toutes' is selected and course exists) -->
       <div v-if="activeCategory === 'Toutes' && featuredCourse" class="bg-gradient-to-br from-blue-600 via-indigo-700 to-blue-900 rounded-[32px] p-8 text-white mb-10 shadow-xl shadow-blue-900/20 relative overflow-hidden group">
-          <div class="relative z-10 md:w-2/3">
+          <div class="relative z-10 lg:w-2/3">
               <div class="flex items-center gap-2 mb-4">
                   <span class="bg-white/20 backdrop-blur-md text-white border border-white/30 text-[10px] uppercase tracking-widest font-black px-3 py-1 rounded-full">En Vedette</span>
                   <span class="bg-red-500 text-white text-[10px] uppercase tracking-widest font-black px-3 py-1 rounded-full flex items-center gap-1">
                       <i class="fas fa-play text-[8px]"></i> Vidéo
                   </span>
               </div>
-              <h2 class="text-3xl md:text-4xl font-black mb-3 leading-tight">{{ featuredCourse.title }}</h2>
+              <h2 class="text-3xl lg:text-4xl font-black mb-3 leading-tight">{{ featuredCourse.title }}</h2>
               <p class="text-blue-100/90 mb-8 max-w-lg text-sm leading-relaxed">{{ featuredCourse.description || "Apprenez à configurer un studio maison, gérer l'éclairage et retoucher vos photos pour doubler vos ventes et attirer plus de clients sur HTFasil." }}</p>
               
               <div class="flex items-center gap-4">
@@ -66,16 +66,16 @@
                   </span>
               </div>
           </div>
-          <div class="absolute right-0 top-0 bottom-0 w-1/3 bg-black/10 hidden md:block">
-              <img :src="featuredCourse.thumbnail" class="w-full h-full object-cover opacity-60 mix-blend-overlay group-hover:scale-105 transition-transform duration-700" />
+          <div class="absolute right-0 top-0 bottom-0 w-1/3 bg-black/10 hidden lg:block">
+              <img alt="" :src="featuredCourse.thumbnail" class="w-full h-full object-cover opacity-60 mix-blend-overlay group-hover:scale-105 transition-transform duration-700" />
               <div class="absolute inset-0 bg-gradient-to-r from-indigo-700/80 to-transparent"></div>
           </div>
-          <i class="fas fa-camera absolute -right-4 -bottom-8 text-[200px] text-white/5 rotate-12 pointer-events-none md:hidden"></i>
+          <i class="fas fa-camera absolute -right-4 -bottom-8 text-[200px] text-white/5 rotate-12 pointer-events-none lg:hidden"></i>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <!-- Main Content Area: Videos and Articles -->
-          <div class="md:col-span-2 space-y-10">
+          <div class="lg:col-span-2 space-y-10">
               
               <!-- Video Courses List -->
               <div>
@@ -89,7 +89,7 @@
                            @click="openVideo(course)"
                            class="bg-white rounded-[24px] shadow-sm border border-gray-100 overflow-hidden cursor-pointer group active:scale-[0.98] transition-all hover:shadow-md">
                           <div class="relative h-48 bg-gray-200 overflow-hidden">
-                              <img :src="course.thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                              <img alt="" :src="course.thumbnail" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                               <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
                               <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                   <div class="w-14 h-14 bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white border-2 border-white shadow-lg">
@@ -211,21 +211,21 @@
       </div>
 
       <!-- VIDEO OVERLAY MODAL -->
-      <div v-if="selectedVideo" class="fixed inset-0 z-[1100] flex items-center justify-center p-4 md:p-10 animate-in fade-in duration-300">
+      <div v-if="selectedVideo" class="fixed inset-0 z-[1100] flex items-center justify-center p-4 lg:p-10 animate-in fade-in duration-300">
           <div class="absolute inset-0 bg-black/90 backdrop-blur-md" @click="closeVideo"></div>
           
           <div ref="videoContainerRef" class="relative w-full max-w-5xl bg-black rounded-[32px] overflow-hidden shadow-2xl shadow-black/50 z-10 border border-white/10 flex flex-col animate-in zoom-in-95 duration-300">
               <!-- Toolbar -->
-              <div class="absolute top-0 left-0 right-0 p-4 md:p-6 bg-gradient-to-b from-black/80 to-transparent flex justify-between items-start z-20 pointer-events-none">
+              <div class="absolute top-0 left-0 right-0 p-4 lg:p-6 bg-gradient-to-b from-black/80 to-transparent flex justify-between items-start z-20 pointer-events-none">
                   <div class="pointer-events-auto">
                       <span class="bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full inline-block mb-2">{{ selectedVideo.category }}</span>
-                      <h2 class="text-white font-bold text-lg md:text-2xl drop-shadow-md">{{ selectedVideo.title }}</h2>
+                      <h2 class="text-white font-bold text-lg lg:text-2xl drop-shadow-md">{{ selectedVideo.title }}</h2>
                   </div>
                   <div class="flex items-center gap-2 pointer-events-auto">
-                      <button @click="toggleFullscreen" class="w-10 h-10 md:w-12 md:h-12 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white flex items-center justify-center transition-colors" title="Plein écran">
+                      <button @click="toggleFullscreen" class="w-10 h-10 lg:w-12 lg:h-12 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white flex items-center justify-center transition-colors" title="Plein écran">
                           <i class="fas fa-expand text-sm"></i>
                       </button>
-                      <button @click="closeVideo" class="w-10 h-10 md:w-12 md:h-12 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white flex items-center justify-center transition-colors">
+                      <button @click="closeVideo" class="w-10 h-10 lg:w-12 lg:h-12 bg-white/10 hover:bg-white/20 backdrop-blur-md rounded-full text-white flex items-center justify-center transition-colors">
                           <i class="fas fa-times text-lg"></i>
                       </button>
                   </div>
@@ -235,7 +235,7 @@
               <div class="w-full relative bg-gray-900" style="padding-top: 56.25%;">
                   <!-- Since we don't have real videos, we use a placeholder image with a play button state -->
                   <div class="absolute inset-0 flex items-center justify-center overflow-hidden">
-                      <img :src="selectedVideo.thumbnail" class="absolute inset-0 w-full h-full object-cover opacity-40 blur-sm" />
+                      <img alt="" :src="selectedVideo.thumbnail" class="absolute inset-0 w-full h-full object-cover opacity-40 blur-sm" />
                        <iframe 
                             v-if="selectedVideo.url"
                             class="absolute inset-0 w-full h-full" 
@@ -255,7 +255,7 @@
               </div>
               
               <!-- Video Details (Bottom Bar) -->
-              <div class="bg-gray-900 p-6 flex flex-col md:flex-row gap-4 justify-between items-center text-white text-sm">
+              <div class="bg-gray-900 p-6 flex flex-col lg:flex-row gap-4 justify-between items-center text-white text-sm">
                   <p class="text-gray-400 flex-1">{{ selectedVideo.description }}</p>
                   <button class="bg-white/10 hover:bg-white/20 font-bold px-6 py-2.5 rounded-xl transition-colors whitespace-nowrap flex items-center gap-2">
                        <i class="fas fa-check-circle"></i> Marquer comme terminé
@@ -270,28 +270,28 @@
           <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="closeArticle"></div>
           
           <!-- Article Panel -->
-          <div class="relative w-full h-full md:h-auto md:max-h-[90vh] md:max-w-3xl md:m-auto bg-white md:rounded-[40px] shadow-2xl flex flex-col overflow-hidden z-10">
+          <div class="relative w-full h-full lg:h-auto lg:max-h-[90vh] lg:max-w-3xl lg:m-auto bg-white lg:rounded-[40px] shadow-2xl flex flex-col overflow-hidden z-10">
               
               <!-- Header Image -->
-              <div class="relative h-64 md:h-80 shrink-0">
-                  <img :src="selectedArticle.thumbnail" class="w-full h-full object-cover" />
+              <div class="relative h-64 lg:h-80 shrink-0">
+                  <img alt="" :src="selectedArticle.thumbnail" class="w-full h-full object-cover" />
                   <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
                   
-                  <button @click="closeArticle" class="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 bg-black/20 hover:bg-black/40 backdrop-blur-md border border-white/20 rounded-full text-white flex items-center justify-center transition-colors">
+                  <button @click="closeArticle" class="absolute top-4 right-4 lg:top-6 lg:right-6 w-10 h-10 bg-black/20 hover:bg-black/40 backdrop-blur-md border border-white/20 rounded-full text-white flex items-center justify-center transition-colors">
                       <i class="fas fa-times text-sm"></i>
                   </button>
                   
-                  <div class="absolute bottom-0 left-0 p-6 md:p-10 w-full text-white">
+                  <div class="absolute bottom-0 left-0 p-6 lg:p-10 w-full text-white">
                        <div class="flex items-center gap-3 mb-3">
                            <span class="bg-purple-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full">{{ selectedArticle.category }}</span>
                            <span class="text-xs font-bold text-gray-300 flex items-center gap-1"><i class="far fa-clock"></i> {{ selectedArticle.readTime }} min</span>
                        </div>
-                       <h2 class="text-3xl md:text-4xl font-black drop-shadow-md leading-tight">{{ selectedArticle.title }}</h2>
+                       <h2 class="text-3xl lg:text-4xl font-black drop-shadow-md leading-tight">{{ selectedArticle.title }}</h2>
                   </div>
               </div>
               
               <!-- Article Content -->
-              <div class="p-6 md:p-10 overflow-y-auto flex-1 bg-white scrollbar-hide">
+              <div class="p-6 lg:p-10 overflow-y-auto flex-1 bg-white scrollbar-hide">
                   <p class="text-xl text-gray-500 font-medium leading-relaxed mb-8 italic" v-html="selectedArticle.description || selectedArticle.excerpt">
                   </p>
                   

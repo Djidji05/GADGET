@@ -218,14 +218,14 @@ const triggerBannerUpload = () => bannerInput.value?.click()
 const handleUpload = async (file: File, type: 'logo' | 'banner') => {
   try {
     saving.value = true
-    const formData = new FormData()
-    formData.append('images', file)
+    const uploadData = new FormData()
+    uploadData.append('images', file)
     
     // We reuse the update logic or a specific upload endpoint if available.
     // Based on the current vendorService, we might need to upload first.
     // Let's check how Settings.vue does it. It uses api.post('/upload')
     
-    const uploadRes = await vendorService.uploadImages(formData)
+    const uploadRes = await vendorService.uploadImages(uploadData)
     const newUrl = uploadRes.urls[0]
     
     const updateData: any = {

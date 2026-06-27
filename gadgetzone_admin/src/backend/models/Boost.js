@@ -37,6 +37,38 @@ const Boost = sequelize.define('Boost', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
+    budget: {
+        type: DataTypes.DECIMAL(10, 2),
+        allowNull: true
+    },
+    spent: {
+        type: DataTypes.DECIMAL(10, 2),
+        defaultValue: 0.00
+    },
+    clicks: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
+    },
+    impressions: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0
+    },
+    cost_model: {
+        type: DataTypes.ENUM('cpc', 'cpm', 'flat'),
+        defaultValue: 'flat'
+    },
+    cost_per_click: {
+        type: DataTypes.DECIMAL(10, 2),
+        defaultValue: 5.00
+    },
+    cost_per_thousand_impressions: {
+        type: DataTypes.DECIMAL(10, 2),
+        defaultValue: 20.00
+    },
+    target_categories: {
+        type: DataTypes.JSON,
+        allowNull: true
+    },
     status: {
         type: DataTypes.ENUM('pending', 'active', 'expired', 'cancelled'),
         defaultValue: 'pending'

@@ -165,7 +165,7 @@
 
               <div v-else class="space-y-4">
                   <div v-for="comment in selectedPost.comments" :key="comment.id" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-50 flex gap-3">
-                      <img :src="comment.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(comment.author || 'V')}&background=random`" class="w-8 h-8 rounded-full bg-gray-100 object-cover shrink-0" />
+                      <img alt="" :src="comment.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(comment.author || 'V')}&background=random`" class="w-8 h-8 rounded-full bg-gray-100 object-cover shrink-0" />
                       <div class="flex-1">
                           <div class="flex items-center justify-between mb-1">
                               <span class="text-xs font-bold text-gray-900">{{ comment.author }}</span>

@@ -90,6 +90,12 @@ const isActive = (path: string) => {
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
 }
 
+:global(.dark) .bottom-nav {
+  background: #030712;
+  border-top-color: #1f2937;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+}
+
 .nav-item {
   display: flex;
   flex-direction: column;
@@ -103,11 +109,19 @@ const isActive = (path: string) => {
   -webkit-tap-highlight-color: transparent;
 }
 
+:global(.dark) .nav-item {
+  color: #9ca3af;
+}
+
 .nav-item:active {
   transform: scale(0.95);
 }
 
 .nav-item.active {
+  color: #3b82f6;
+}
+
+:global(.dark) .nav-item.active {
   color: #3b82f6;
 }
 
@@ -123,7 +137,7 @@ span {
 }
 
 /* Cacher sur desktop */
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .bottom-nav {
     display: none;
   }
@@ -139,5 +153,21 @@ span {
 
 .cart-animate {
   animation: cart-shake 0.6s ease-in-out;
+}
+</style>
+
+<style>
+.dark .bottom-nav {
+  background: #030712 !important;
+  border-top-color: #1f2937 !important;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark .nav-item {
+  color: #9ca3af !important;
+}
+
+.dark .nav-item.active {
+  color: #3b82f6 !important;
 }
 </style>

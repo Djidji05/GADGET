@@ -149,7 +149,7 @@
                     </div>
                     
                     <div v-else-if="banner.image" class="relative group">
-                        <img :src="banner.image" class="max-h-60 mx-auto rounded-lg shadow-sm">
+                        <img alt="" :src="banner.image" class="max-h-60 mx-auto rounded-lg shadow-sm">
                         <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
                             <span class="text-white text-sm font-medium bg-black/50 px-3 py-1 rounded-full pointer-events-none">Changer l'image</span>
                         </div>

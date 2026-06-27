@@ -18,7 +18,7 @@ async function login() {
   try {
     const response = await axios.post(`${BASE_URL}/auth/login`, {
       email: 'admin@gadgetzone.com',
-      password: 'admin123'
+      password: 'password123'
     });
     return response.data.token;
   } catch (error) {

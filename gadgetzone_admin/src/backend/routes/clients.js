@@ -2,8 +2,12 @@ import express from 'express';
 import { Op } from 'sequelize';
 import { User, Order } from '../models/index.js';
 import bcrypt from 'bcrypt';
+import { authenticateToken, requireAdmin } from '../middleware/auth.js';
 
 const router = express.Router();
+
+// Restreindre toutes les routes de gestion des clients aux administrateurs
+router.use(authenticateToken, requireAdmin);
 
 /**
  * GET /api/clients

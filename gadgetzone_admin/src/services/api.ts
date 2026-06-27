@@ -2,9 +2,15 @@ import axios from 'axios'
 import { inactivityTracker, INACTIVITY_TIMEOUT } from './inactivity'
 // Re-trigger vite resolution
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3003/api'
+const getApiBaseUrl = () => {
+  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return `http://${window.location.hostname}:3003/api`;
+  }
+  return 'http://localhost:3003/api';
+};
 
-
+const API_BASE_URL = getApiBaseUrl();
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -361,6 +367,12 @@ export const userService = {
     }
   },
 
+  search: async (query: string, role?: string): Promise<any> => {
+    const response = await api.get('/users/search', { params: { q: query, role } })
+    return response.data
+  },
+
+
   create: async (user: Omit<User, 'id' | 'created_at' | 'updated_at'> & { password: string }): Promise<number> => {
     try {
       const response = await api.post('/users', user)
@@ -387,10 +399,6 @@ export const userService = {
     }
   },
 
-  search: async (query: string, role?: string): Promise<User[]> => {
-    const response = await api.get('/users', { params: { search: query, role } })
-    return response.data
-  }
 }
 
 // Services pour les commandes
@@ -848,6 +856,7 @@ export const reviewService = {
   }
 }
 
+
 // Service Finance
 export const financeService = {
   getOverview: async (period?: string) => {
@@ -1211,6 +1220,4 @@ export const searchService = {
     return response.data
   }
 }
-
-
 export default api

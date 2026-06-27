@@ -143,7 +143,7 @@
                 </p>
               </td>
               <td class="px-4 py-5">
-                  {{ formatDate(notification.createdAt || notification.created_at) }}
+                  {{ formatDate(notification.created_at) }}
               </td>
               <td class="px-4 py-5">
                 <span
@@ -292,9 +292,7 @@ const deleteAllNotifications = async () => {
     notifications.value = []
   } catch (error) {
     console.error('Erreur suppression toutes les notifications:', error)
-    if (uiStore.showToast) {
-       uiStore.showToast('Erreur lors de la suppression des notifications', 'error')
-    }
+    uiStore.addToast('Erreur lors de la suppression des notifications', 'error')
   }
 }
 

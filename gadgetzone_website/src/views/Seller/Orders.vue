@@ -1,14 +1,14 @@
 <template>
-  <div class="w-full md:pt-4 pb-12">
-    <div class="flex flex-col md:flex-row gap-6 md:items-start">
+  <div class="w-full lg:pt-4 pb-12">
+    <div class="flex flex-col lg:flex-row gap-6 lg:items-start">
       <!-- Sidebar (Desktop Only) -->
       <SellerSidebar />
 
       <!-- Main Content Area -->
-      <div class="flex-1 min-h-screen bg-gray-50 rounded-3xl overflow-hidden shadow-sm md:shadow-md md:mx-0">
+      <div class="flex-1 min-h-screen bg-gray-50 rounded-3xl overflow-hidden shadow-sm lg:shadow-md lg:mx-0">
 
     <!-- MOBILE HEADER (Clean & Minimalist) -->
-    <div class="md:hidden bg-white font-sans relative border-b border-gray-100">
+    <div class="lg:hidden bg-white font-sans relative border-b border-gray-100">
         <div class="px-5 pt-8 pb-6 relative">
             <div class="flex justify-between items-center mb-4 relative z-10">
                 <button @click="router.back()" class="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-50 text-gray-600 border border-gray-100">
@@ -42,10 +42,10 @@
     </div>
 
     <!-- MAIN CONTENT CONTAINER -->
-    <div class="relative z-20 px-4 pb-24 md:pb-0 md:mt-0 md:px-0">
+    <div class="relative z-20 px-4 pb-24 lg:pb-0 lg:mt-0 lg:px-0">
     
     <!-- Desktop Header -->
-    <div class="hidden md:block bg-white sticky top-0 z-30 px-4 pt-2 pb-2 shadow-sm mb-4 rounded-xl">
+    <div class="hidden lg:block bg-white sticky top-0 z-30 px-4 pt-2 pb-2 shadow-sm mb-4 rounded-xl">
         <div class="flex items-center gap-3">
             <h1 class="text-xl font-bold text-gray-900">Commandes</h1>
             <div class="flex-1"></div>
@@ -68,11 +68,11 @@
             </button>
 
             <button 
-                v-for="status in ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled']"
+                v-for="status in ['pending', 'partially_paid', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled']"
                 :key="status"
                 @click="activeStatusFilter = status"
                 :class="activeStatusFilter === status ? 
-                    (status === 'pending' ? 'bg-orange-500 text-white' : 
+                    (status === 'pending' || status === 'partially_paid' ? 'bg-orange-500 text-white' : 
                      status === 'confirmed' ? 'bg-blue-600 text-white' :
                      status === 'processing' ? 'bg-indigo-600 text-white' :
                      status === 'shipped' ? 'bg-purple-600 text-white' :
@@ -83,6 +83,7 @@
             >
                 {{ 
                     status === 'pending' ? 'En attente' : 
+                    status === 'partially_paid' ? 'Paiement Incomplet' : 
                     status === 'confirmed' ? 'Confirmé' : 
                     status === 'processing' ? 'En préparation' : 
                     status === 'shipped' ? 'Expédié' : 
@@ -98,6 +99,7 @@
         <div>
             <h2 class="font-bold text-gray-800 text-lg capitalize">{{ activeStatusFilter === 'all' ? 'Toutes les commandes' : (
                 activeStatusFilter === 'pending' ? 'En attente' : 
+                activeStatusFilter === 'partially_paid' ? 'Paiement Incomplet' : 
                 activeStatusFilter === 'confirmed' ? 'Confirmé' : 
                 activeStatusFilter === 'processing' ? 'En préparation' : 
                 activeStatusFilter
@@ -122,7 +124,7 @@
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold shadow-sm"
                         :class="{
-                            'bg-orange-100 text-orange-600': order.status === 'pending',
+                            'bg-orange-100 text-orange-600': order.status === 'pending' || order.status === 'partially_paid',
                             'bg-blue-100 text-blue-600': order.status === 'confirmed',
                             'bg-indigo-100 text-indigo-600': order.status === 'processing',
                             'bg-purple-100 text-purple-600': order.status === 'shipped',
@@ -130,7 +132,7 @@
                             'bg-red-100 text-red-600': order.status === 'cancelled'
                         }">
                         <i class="fas" :class="{
-                            'fa-clock': order.status === 'pending',
+                            'fa-clock': order.status === 'pending' || order.status === 'partially_paid',
                             'fa-check': order.status === 'confirmed',
                             'fa-boxes': order.status === 'processing',
                             'fa-truck': order.status === 'shipped',
@@ -141,10 +143,11 @@
                     <div>
                         <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">#{{ formatOrderId(order.id) }}</p>
                         <h3 class="text-sm font-bold text-gray-900 truncate max-w-[120px]">{{ order.user?.name || 'Client Invité' }}</h3>
+                        <span v-if="order.status === 'partially_paid'" class="text-[9px] bg-red-100 text-red-600 px-1 py-0.5 rounded font-black uppercase">PAIEMENT PARTIEL - NE PAS EXPÉDIER</span>
                     </div>
                 </div>
                 <div class="text-right">
-                    <p class="text-xs text-gray-500 font-medium bg-white px-2 py-1 rounded-lg border border-gray-100 shadow-sm">{{ formatDate(order.created_at).split(' à ')[0] }}</p>
+                    <p class="text-[11px] text-gray-500 font-medium bg-white px-2 py-1 rounded-lg border border-gray-100 shadow-sm">{{ formatDate(order.created_at) }}</p>
                 </div>
             </div>
 
@@ -152,7 +155,7 @@
             <div class="p-4">
                  <div class="flex -space-x-2 mb-4 overflow-hidden py-1 pl-1">
                      <template v-for="(item, idx) in order.items.slice(0, 4)" :key="item.id">
-                         <img :src="item.product?.image_url" class="w-8 h-8 rounded-full border-2 border-white object-cover bg-gray-100 shadow-sm" />
+                         <img alt="" :src="item.product?.image_url" class="w-8 h-8 rounded-full border-2 border-white object-cover bg-gray-100 shadow-sm" />
                      </template>
                      <div v-if="order.items.length > 4" class="w-8 h-8 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-500 shadow-sm">
                          +{{ order.items.length - 4 }}
@@ -239,6 +242,9 @@ interface OrderItem {
     product: {
         name: string;
         image_url: string;
+        category?: {
+            commission_rate?: number;
+        };
     };
 }
 
@@ -270,6 +276,12 @@ const pagination = ref({
 watch(activeStatusFilter, () => {
     pagination.value.page = 1;
     fetchOrders(1);
+});
+
+// React to global navbar search on desktop PC
+watch(() => uiStore.globalSearchQuery, (newVal) => {
+    searchQuery.value = newVal;
+    handleSearch();
 });
 
 // Helper to count orders by status (kept for the UI badges but might be inaccurate with pagination)
@@ -363,12 +375,13 @@ const formatPrice = (price: number) => {
 };
 
 const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString('fr-FR', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
+    if (!date) return ''
+    return new Date(date).toLocaleString('fr-HT', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 };
 </script>

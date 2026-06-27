@@ -4,6 +4,7 @@ import { RouterView, useRoute } from 'vue-router'
 import AppNavbar from '@/components/layout/AppNavbar.vue'
 import AppFooter from '@/components/layout/AppFooter.vue'
 import AIAssistant from '@/components/ui/AIAssistant.vue'
+import MobileSearchOverlay from '@/components/layout/MobileSearchOverlay.vue'
 import BottomNav from '@/components/layout/BottomNav.vue'
 import SellerBottomNav from '@/components/layout/SellerBottomNav.vue'
 import AnnouncementBar from '@/components/layout/AnnouncementBar.vue'
@@ -14,12 +15,21 @@ import { useDevice } from '@/composables/useDevice'
 import { useUiStore } from '@/stores/ui'
 import GlobalToastContainer from '@/components/ui/GlobalToastContainer.vue'
 import GlobalModal from '@/components/ui/GlobalModal.vue'
+import CookieConsent from '@/components/ui/CookieConsent.vue'
+import { useSSEStore } from '@/stores/sse'
+import { useLoyaltyStore } from '@/stores/loyalty'
+import { useNotificationsStore } from '@/stores/notifications'
+import { useThemeStore } from '@/stores/theme'
 
 const authStore = useAuthStore()
 const personalizationStore = usePersonalizationStore()
 const historyStore = useHistoryStore()
 const route = useRoute()
 const uiStore = useUiStore()
+const sseStore = useSSEStore()
+const loyaltyStore = useLoyaltyStore()
+const notificationsStore = useNotificationsStore()
+const themeStore = useThemeStore()
 const isScrolled = ref(false)
 
 // Device detection
@@ -35,9 +45,31 @@ const isSellerPage = computed(() => {
   return route.path.startsWith('/seller')
 })
 
+// Gérer le mode sombre pour la partie vendeur
+watch(
+  [() => route.path, () => themeStore.isDark],
+  ([newPath, isDark]) => {
+    if (newPath.startsWith('/seller')) {
+      document.documentElement.classList.remove('dark')
+    } else {
+      if (isDark) {
+        document.documentElement.classList.add('dark')
+      } else {
+        document.documentElement.classList.remove('dark')
+      }
+    }
+  },
+  { immediate: true }
+)
+
 // Check if current route is the checkout page
 const isCheckoutPage = computed(() => {
   return route.path === '/checkout'
+})
+
+// Check if current route is the payment success page
+const isPaymentSuccessPage = computed(() => {
+  return route.name === 'payment-success'
 })
 
 // Check if current route is the order detail page
@@ -52,8 +84,8 @@ const isMaintenancePage = computed(() => {
 
 // Check if footer should be shown
 const shouldShowFooter = computed(() => {
-  // Always hide on auth, seller, checkout and maintenance pages
-  if (isAuthPage.value || isSellerPage.value || isCheckoutPage.value || isMaintenancePage.value) return false
+  // Always hide on auth, seller, checkout, payment success and maintenance pages
+  if (isAuthPage.value || isSellerPage.value || isCheckoutPage.value || isPaymentSuccessPage.value || isMaintenancePage.value) return false
   
   // Hide on mobile for specific pages requested (Orders, Cart, Account)
   if (isMobile.value) {
@@ -127,8 +159,30 @@ onMounted(() => {
   return () => {
     window.removeEventListener('scroll', handleScroll)
     clearInterval(refreshTimer)
+    sseStore.disconnect()
   }
 })
+
+// Connecter SSE quand l'utilisateur se connecte
+watch(() => authStore.isAuthenticated, (isAuth) => {
+  if (isAuth) {
+    sseStore.connect()
+    // Configurer les notifications push PWA
+    notificationsStore.setupPushNotifications()
+    // Écouter les points gagnés
+    setTimeout(() => {
+      sseStore.onEvent('points_earned', (data) => {
+        loyaltyStore.addPendingPoints(data.points)
+        uiStore.showToast(`🌟 +${data.points} points fidélité gagnés !`, 'success')
+      })
+      sseStore.onEvent('new_order', (data) => {
+        uiStore.showToast('📦 Nouvelle commande reçue !', 'success')
+      })
+    }, 1500)
+  } else {
+    sseStore.disconnect()
+  }
+}, { immediate: true })
 
 const setupInactivityTracking = () => {
   const INACTIVITY_LIMIT = 6 * 60 * 60 * 1000 // 6 hours
@@ -183,7 +237,7 @@ const setupInactivityTracking = () => {
 </script>
 
 <template>
-<div class="min-h-screen flex flex-col bg-gray-50">
+<div class="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-300">
     <!-- PWA Install Banner -->
     <div v-if="showInstallPrompt && route.name === 'home' && !isMaintenancePage" class="bg-blue-600 text-white px-4 py-3 flex items-center justify-between shadow-md relative z-50">
       <div class="flex items-center gap-3">
@@ -207,8 +261,8 @@ const setupInactivityTracking = () => {
     </div>
 
     <!-- Show announcement bar only on the home page -->
-    <AnnouncementBar v-if="route.name === 'home' && !isAuthPage && !isSellerPage && !isCheckoutPage && !isMaintenancePage" />
-    <AppNavbar v-if="!isAuthPage && !isSellerPage && !isCheckoutPage && !isMaintenancePage" :transparent="!isScrolled" />
+    <AnnouncementBar v-if="route.name === 'home' && !isAuthPage && !isSellerPage && !isCheckoutPage && !isPaymentSuccessPage && !isMaintenancePage" key="announcement-bar" />
+    <AppNavbar v-if="!isAuthPage && !isSellerPage && !isCheckoutPage && !isPaymentSuccessPage && !isMaintenancePage" key="app-navbar" :transparent="!isScrolled" />
 
     <main class="flex-1">
       <RouterView />
@@ -227,6 +281,12 @@ const setupInactivityTracking = () => {
     
     <!-- AI Assistant -->
     <AIAssistant />
+
+    <!-- Cookie Consent -->
+    <CookieConsent />
+
+    <!-- Mobile Search Overlay (global, plein écran) -->
+    <MobileSearchOverlay />
   </div>
 </template>
 

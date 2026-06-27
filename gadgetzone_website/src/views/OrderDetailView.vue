@@ -39,7 +39,7 @@
  <i :class="getStatusIcon(order.status)"></i>
  {{ getStatusLabel(order.status) }}
  </span>
- <button v-if="order.status === 'pending'" @click="cancelOrder" class="px-4 py-2 bg-white border border-gray-200 text-gray-700 font-medium rounded-lg hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all text-sm">
+ <button v-if="order.status === 'pending' || order.status === 'partially_paid'" @click="cancelOrder" class="px-4 py-2 bg-white border border-gray-200 text-gray-700 font-medium rounded-lg hover:bg-red-50 hover:text-red-600 hover:border-red-200 transition-all text-sm">
  {{ $t('account.cancel_order_title') }}
  </button>
  </div>
@@ -120,7 +120,29 @@
  
  <div class="w-full md:w-1/2 border-t border-gray-200 mt-2 pt-2 flex justify-between items-center">
  <span class="font-bold text-gray-900 text-base uppercase">{{ $t('account.checkout.total') }}</span>
- <span class="font-bold text-blue-600 text-xl">{{ formatPrice(order.items.reduce((acc, item) => acc + (item.unitPrice * item.quantity), 0) + (order.shipping || 0) + getMonCashFee(order)) }}</span>
+ <span class="font-bold text-blue-600 text-xl">{{ formatPrice(orderTotalAmount) }}</span>
+ </div>
+
+ <!-- Partial Payment Section -->
+ <div v-if="(order as any).status === 'partially_paid'" class="w-full md:w-1/2 border-t border-gray-200 mt-4 pt-4">
+   <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+     <div class="flex justify-between text-yellow-800 text-sm mb-1">
+       <span>Montant déjà payé</span>
+       <span class="font-bold">{{ formatPrice((order as any).total_paid || 0) }}</span>
+     </div>
+     <div class="flex justify-between text-red-600 font-bold text-base border-t border-yellow-200 pt-2 mt-1">
+       <span>Reste à Payer</span>
+       <span>{{ formatPrice(orderTotalAmount - ((order as any).total_paid || 0)) }}</span>
+     </div>
+     
+     <div class="mt-4 flex items-center gap-2">
+       <button @click="payRemaining" :disabled="isPlacingOrder" class="flex-1 bg-blue-600 text-white font-bold py-2.5 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+         <span v-if="isPlacingOrder"><i class="las la-spinner animate-spin"></i> Chargement...</span>
+         <span v-else>Payer le reste avec MonCash</span>
+       </button>
+     </div>
+     <p class="text-[10px] text-yellow-700 text-center mt-2 font-medium">Vous avez 24h pour payer le solde restant. Sinon, la commande sera annulée.</p>
+   </div>
  </div>
  </div>
  </div>
@@ -149,7 +171,25 @@
  </div>
  </div>
  </div>
- </div>
+
+  <!-- Live GPS Tracking Map -->
+  <div v-if="shouldShowMap" class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-6 mt-6 overflow-hidden">
+    <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+      <div>
+        <h3 class="font-bold text-lg text-gray-900 dark:text-white flex items-center gap-2">
+          <span class="w-2.5 h-2.5 bg-green-500 rounded-full animate-ping"></span>
+          Suivi de livraison GPS en direct
+        </h3>
+        <p class="text-xs text-gray-400 dark:text-gray-500">Suivez le trajet de votre livreur sur la carte en temps réel.</p>
+      </div>
+      <div v-if="trackingPhone" class="flex items-center gap-2 bg-blue-50 dark:bg-blue-950/20 text-blue-600 dark:text-blue-400 px-3.5 py-1.5 rounded-xl border border-blue-100 dark:border-blue-900/30 text-xs font-bold">
+        <i class="las la-phone text-sm"></i>
+        <span>Livreur: {{ trackingPhone }}</span>
+      </div>
+    </div>
+    <div id="map" class="h-80 w-full rounded-xl overflow-hidden border border-gray-200 dark:border-gray-800" style="z-index: 10;"></div>
+  </div>
+  </div>
 
  <!-- Sidebar Info -->
  <div class="space-y-6">
@@ -319,7 +359,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, onUnmounted } from 'vue'
 import VueQrcode from '@chenfengyuan/vue-qrcode'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
@@ -328,6 +368,8 @@ import type { Order } from '@/services/orders'
 import { productsService } from '@/services/products'
 import { useUiStore } from '@/stores/ui'
 import { formatOrderId } from '@/utils/formatters';
+import { useSSEStore } from '@/stores/sse';
+import api from '@/services/api'
 
 const route = useRoute()
 const router = useRouter()
@@ -343,6 +385,144 @@ const showReviewModal = ref(false)
 const reviewProduct = ref<any>(null)
 const newReview = ref({ rating: 5, comment: '' })
 const isSubmittingReview = ref(false)
+
+// Tracking & Map States
+const sseStore = useSSEStore()
+const trackings = ref<any[]>([])
+const map = ref<any>(null)
+const deliveryMarker = ref<any>(null)
+const driverMarker = ref<any>(null)
+const trackingPhone = ref<string>('')
+let unsubscribeTracking: (() => void) | null = null
+let unsubscribeLocation: (() => void) | null = null
+
+const shouldShowMap = computed(() => {
+  const hasGps = trackings.value.some(t => t.latitude && t.longitude)
+  return hasGps && ['shipped', 'processing', 'confirmed', 'pending', 'partially_paid'].includes(order.value?.status || '')
+})
+
+const orderTotalAmount = computed(() => {
+  if (!order.value) return 0;
+  return order.value.items.reduce((acc, item) => acc + (item.unitPrice * item.quantity), 0) + (order.value.shipping || 0) + getMonCashFee(order.value);
+})
+
+const isPlacingOrder = ref(false)
+
+const payRemaining = async () => {
+  if (!order.value || isPlacingOrder.value) return;
+  
+  try {
+    isPlacingOrder.value = true;
+    const remaining = orderTotalAmount.value - ((order.value as any).total_paid || 0);
+    
+    const response = await api.post('/paiements/init-moncash', {
+      orderId: order.value.id,
+      amount: orderTotalAmount.value,
+      returnUrl: `${window.location.origin}/payment/callback`
+    });
+    
+    if (response.data.redirectUrl) {
+      window.location.href = response.data.redirectUrl;
+    }
+  } catch (err: any) {
+    console.error('MonCash Partial Init Error:', err);
+    uiStore.showToast(`Erreur MonCash: ${err.response?.data?.error || err.message}`, 'error');
+  } finally {
+    isPlacingOrder.value = false;
+  }
+}
+
+const loadLeaflet = (): Promise<any> => {
+  return new Promise((resolve) => {
+    if ((window as any).L) {
+      resolve((window as any).L)
+      return
+    }
+    const link = document.createElement('link')
+    link.rel = 'stylesheet'
+    link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
+    document.head.appendChild(link)
+
+    const script = document.createElement('script')
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
+    script.onload = () => resolve((window as any).L)
+    document.body.appendChild(script)
+  })
+}
+
+const initMap = async () => {
+  const L = await loadLeaflet()
+  if (!L || map.value) return
+
+  // Find courier position
+  const gpsSteps = trackings.value.filter(t => t.latitude && t.longitude)
+  const lastGps = gpsSteps[gpsSteps.length - 1]
+  const centerLat = lastGps?.latitude || 18.5392
+  const centerLng = lastGps?.longitude || -72.3364
+
+  // Create Map
+  map.value = L.map('map').setView([centerLat, centerLng], 14)
+
+  // OpenStreetMap Tiles
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap'
+  }).addTo(map.value)
+
+  // Custom icons
+  const homeIcon = L.divIcon({
+    html: '<div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center border-2 border-white shadow-md"><i class="las la-home text-base font-black flex items-center justify-center"></i></div>',
+    className: 'custom-div-icon',
+    iconSize: [32, 32],
+    iconAnchor: [16, 16]
+  })
+
+  const driverIcon = L.divIcon({
+    html: '<div class="w-9 h-9 rounded-full bg-green-500 text-white flex items-center justify-center border-2 border-white shadow-lg animate-bounce"><i class="las la-motorcycle text-lg font-black flex items-center justify-center"></i></div>',
+    className: 'custom-div-icon',
+    iconSize: [36, 36],
+    iconAnchor: [18, 18]
+  })
+
+  // Delivery Address coordinates
+  let destLat = 18.5442
+  let destLng = -72.3218
+  if ((order.value as any)?.shippingCoordinates) {
+     const coords = (order.value as any).shippingCoordinates
+     if (coords.lat && coords.lng) {
+        destLat = coords.lat
+        destLng = coords.lng
+     }
+  }
+
+  // Draw markers
+  deliveryMarker.value = L.marker([destLat, destLng], { icon: homeIcon }).addTo(map.value)
+    .bindPopup('Votre adresse de livraison').openPopup()
+
+  if (lastGps) {
+    driverMarker.value = L.marker([lastGps.latitude, lastGps.longitude], { icon: driverIcon }).addTo(map.value)
+      .bindPopup('Votre livreur en mouvement')
+    trackingPhone.value = lastGps.carrier_phone || ''
+  }
+
+  // Adjust zoom to show both markers if both exist
+  if (lastGps) {
+    const group = L.featureGroup([deliveryMarker.value, driverMarker.value])
+    map.value.fitBounds(group.getBounds().pad(0.2))
+  }
+}
+
+const loadTrackingHistory = async () => {
+  if (!order.value) return
+  try {
+     const data = await ordersService.getOrderTracking(order.value.id)
+     trackings.value = data.trackings || []
+     if (shouldShowMap.value) {
+        setTimeout(initMap, 500)
+     }
+  } catch (err) {
+     console.error('Error loading tracking history:', err)
+  }
+}
 
 const openReviewModal = (product: any) => {
  reviewProduct.value = product
@@ -377,6 +557,7 @@ const loadOrder = async () => {
  isLoading.value = true
  const orderId = Number(route.params.id)
  order.value = await ordersService.getOrder(orderId)
+ await loadTrackingHistory()
  } catch (error) {
  console.error('Error loading order:', error)
  router.push('/orders')
@@ -410,10 +591,12 @@ const cancelOrder = async () => {
 const formatDate = (dateString: string) => {
  if (!dateString) return ''
  const locale = t('common.loading') === 'Chargement...' ? 'fr-HT' : 'ht-HT'
- return new Date(dateString).toLocaleDateString(locale, {
+ return new Date(dateString).toLocaleString(locale, {
  day: 'numeric',
  month: 'short',
- year: 'numeric'
+ year: 'numeric',
+ hour: '2-digit',
+ minute: '2-digit'
  })
 }
 
@@ -447,18 +630,17 @@ const getMonCashFee = (orderData: Order) => {
  return 1368;
 }
 
-// Stepper Logic
-
-
 // Status Helpers
 const getStatusLabel = (status: string) => {
  const labels: Record<string, string> = {
  pending: t('account.status_waiting'),
+ partially_paid: 'Paiement partiel',
  confirmed: t('account.status_progress'),
  processing: t('account.status_preparation'),
  shipped: t('account.status_expediated'),
  delivered: t('account.status_delivered'),
- cancelled: t('account.status_cancelled')
+ cancelled: t('account.status_cancelled'),
+ cancelled_refund_pending: 'Remboursement en attente'
  }
  return labels[status] || status
 }
@@ -466,11 +648,13 @@ const getStatusLabel = (status: string) => {
 const getStatusBadgeClass = (status: string) => {
  const classes: Record<string, string> = {
  pending: 'bg-yellow-50 text-yellow-700 border-yellow-200',
+ partially_paid: 'bg-orange-50 text-orange-700 border-orange-200',
  confirmed: 'bg-blue-50 text-blue-700 border-blue-200',
  processing: 'bg-purple-50 text-purple-700 border-purple-200',
  shipped: 'bg-indigo-50 text-indigo-700 border-indigo-200',
  delivered: 'bg-green-50 text-green-700 border-green-200',
- cancelled: 'bg-red-50 text-red-700 border-red-200'
+ cancelled: 'bg-red-50 text-red-700 border-red-200',
+ cancelled_refund_pending: 'bg-red-50 text-red-700 border-red-200'
  }
  return classes[status] || 'bg-gray-50 text-gray-700 border-gray-200'
 }
@@ -568,16 +752,67 @@ const shareQR = async () => {
 }
 
 onMounted(() => {
- loadOrder()
+  loadOrder()
+
+  // S'abonner aux événements SSE de suivi
+  unsubscribeTracking = sseStore.onEvent('tracking_event', (data) => {
+     if (Number(data.order_id) === order.value?.id) {
+        loadOrder()
+     }
+  })
+
+  // S'abonner aux mises à jour GPS en direct
+  unsubscribeLocation = sseStore.onEvent('tracking_location', (data) => {
+     if (Number(data.order_id) === order.value?.id) {
+        const latlng = [parseFloat(data.latitude), parseFloat(data.longitude)] as [number, number]
+        if (driverMarker.value) {
+           driverMarker.value.setLatLng(latlng)
+           if (map.value) {
+              const L = (window as any).L
+              if (L) {
+                 const group = L.featureGroup([deliveryMarker.value, driverMarker.value])
+                 map.value.fitBounds(group.getBounds().pad(0.2))
+              }
+           }
+        } else {
+           const L = (window as any).L
+           if (L && map.value) {
+              const driverIcon = L.divIcon({
+                html: '<div class="w-9 h-9 rounded-full bg-green-500 text-white flex items-center justify-center border-2 border-white shadow-lg animate-bounce"><i class="las la-motorcycle text-lg font-black flex items-center justify-center"></i></div>',
+                className: 'custom-div-icon',
+                iconSize: [36, 36],
+                iconAnchor: [18, 18]
+              })
+              driverMarker.value = L.marker(latlng, { icon: driverIcon }).addTo(map.value)
+                .bindPopup('Votre livreur en mouvement')
+           }
+        }
+        if (data.carrier_phone) {
+           trackingPhone.value = data.carrier_phone
+        }
+     }
+  })
+})
+
+onUnmounted(() => {
+  if (unsubscribeTracking) unsubscribeTracking()
+  if (unsubscribeLocation) unsubscribeLocation()
+  if (map.value) {
+     map.value.remove()
+  }
 })
 </script>
 
 <style scoped>
 .no-scrollbar::-webkit-scrollbar {
- display: none;
+  display: none;
 }
 .no-scrollbar {
- -ms-overflow-style: none;
- scrollbar-width: none;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+:deep(.custom-div-icon) {
+  background: transparent !important;
+  border: none !important;
 }
 </style>

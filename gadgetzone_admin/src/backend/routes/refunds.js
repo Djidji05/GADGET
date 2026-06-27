@@ -1,8 +1,12 @@
 import express from 'express';
 import { Op } from 'sequelize';
 import { Order, User, Refund } from '../models/index.js';
+import { authenticateToken, requireAdmin } from '../middleware/auth.js';
 
 const router = express.Router();
+
+// 🔒 SÉCURITÉ : Toutes les routes de remboursement sont réservées aux administrateurs
+router.use(authenticateToken, requireAdmin);
 
 // Taux de frais par méthode de paiement (en %)
 const FEE_RATES = {

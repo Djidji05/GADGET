@@ -1,7 +1,7 @@
 <template>
-  <div class="w-full md:pt-4 pb-12">
+  <div class="w-full lg:pt-4 pb-12">
     <!-- MOBILE HEADER (Blue Gradient Theme) -->
-    <div class="md:hidden bg-gray-50 min-h-screen pb-20 -mt-2 font-sans">
+    <div class="lg:hidden bg-gray-50 min-h-screen pb-20 -mt-2 font-sans">
         <!-- Top Section -->
         <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white px-6 pt-8 pb-10 relative rounded-b-[40px] shadow-lg shadow-blue-900/20">
             <div class="flex justify-between items-center mb-6">
@@ -68,6 +68,13 @@
                 </div>
                 
                 <div class="h-48 relative w-full">
+                     <!-- No data overlay -->
+                     <div v-if="!hasSalesData" class="absolute inset-0 flex flex-col items-center justify-center bg-white/60 backdrop-blur-[1px] z-10 rounded-2xl pointer-events-none">
+                         <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center mb-1.5">
+                             <i class="fas fa-chart-line text-sm"></i>
+                         </div>
+                         <p class="text-[11px] font-bold text-gray-400">Aucune activité de vente</p>
+                     </div>
                      <svg viewBox="0 0 100 50" class="w-full h-full overflow-visible" preserveAspectRatio="none">
                       <defs>
                         <linearGradient id="mobileGradient" x1="0" x2="0" y1="0" y2="1">
@@ -99,7 +106,7 @@
             <div class="space-y-3">
                  <div v-for="sale in filteredRecentSales" :key="sale.id" class="bg-white p-4 rounded-2xl shadow-sm border border-gray-50 flex items-center gap-4 active:scale-[0.99] transition-transform">
                      <div class="w-12 h-12 rounded-xl bg-gray-50 p-1 flex-shrink-0 border border-gray-100">
-                         <img :src="sale.image || '/placeholder.png'" class="w-full h-full object-cover rounded-lg mix-blend-multiply" />
+                         <img alt="" :src="sale.image || '/placeholder.png'" class="w-full h-full object-cover rounded-lg mix-blend-multiply" />
                      </div>
                      <div class="flex-1 min-w-0">
                          <h4 class="font-bold text-gray-900 text-sm truncate">{{ sale.productName }}</h4>
@@ -130,7 +137,7 @@
 
 
     <!-- DESKTOP DASHBOARD (Hidden on Mobile) -->
-    <div class="hidden md:flex flex-col md:flex-row gap-6 md:items-start">
+    <div class="hidden lg:flex flex-col lg:flex-row gap-6 lg:items-start">
       <!-- Sidebar (Desktop Only) -->
       <SellerSidebar />
 
@@ -253,6 +260,13 @@
 
               <!-- SVG Chart Container -->
               <div class="relative h-80 w-full bg-gray-50/50 rounded-2xl border border-gray-100/50 p-4">
+                  <!-- No data overlay -->
+                  <div v-if="!hasSalesData" class="absolute inset-0 flex flex-col items-center justify-center bg-white/40 backdrop-blur-[1px] z-10 rounded-2xl pointer-events-none">
+                      <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center mb-2 text-lg">
+                          <i class="fas fa-chart-line"></i>
+                      </div>
+                      <p class="text-sm font-bold text-gray-400">Aucune activité de vente sur cette période</p>
+                  </div>
                   <svg viewBox="0 0 100 50" class="w-full h-full overflow-visible" preserveAspectRatio="none">
                       <!-- Gradient definition -->
                       <defs>
@@ -322,7 +336,7 @@
                              <td class="px-8 py-4">
                                  <div class="flex items-center gap-4">
                                      <div class="w-12 h-12 rounded-xl bg-gray-100 p-0.5 border border-gray-200 flex-shrink-0">
-                                        <img :src="sale.image || '/placeholder.png'" class="w-full h-full object-cover rounded-lg mix-blend-multiply" />
+                                        <img alt="" :src="sale.image || '/placeholder.png'" class="w-full h-full object-cover rounded-lg mix-blend-multiply" />
                                      </div>
                                      <div>
                                          <p class="text-sm font-bold text-gray-900 group-hover:text-blue-700 transition-colors line-clamp-1">{{ sale.productName }}</p>
@@ -421,6 +435,10 @@ const filteredRecentSales = computed(() => {
     );
 });
 
+const hasSalesData = computed(() => {
+    return stats.value.chartData && stats.value.chartData.some(d => d.amount > 0);
+});
+
 // Improved Chart Logic for smoother curves and scaling
 const points = computed(() => {
     if (!stats.value.chartData || stats.value.chartData.length === 0) return [];
@@ -497,7 +515,7 @@ const fetchData = async () => {
                 }
                 return {
                     date: d.toISOString().split('T')[0] || '',
-                    amount: Math.floor(Math.random() * 5000) + 1000
+                    amount: 0
                 };
             });
         }
@@ -519,7 +537,7 @@ onMounted(() => {
 // Commission Rate
 const authStore = useAuthStore();
 const storeCommissionRate = computed(() => {
-    return (authStore.store?.commission_rate || 5) / 100;
+    return ((authStore as any).store?.commission_rate || 5) / 100;
 });
 
 const commissionAmount = computed(() => {

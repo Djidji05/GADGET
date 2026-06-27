@@ -43,6 +43,14 @@ import contactRoutes from './contact.js';
 import academyRoutes from './academy.js';
 import aiRoutes from './ai.js';
 import deliveryRoutes from './delivery.js';
+import wishlistRoutes from './wishlist.js';
+import flashSaleRoutes from './flash-sales.js';
+import loyaltyRoutes from './loyalty.js';
+import sseRoutes from './sse.js';
+import pushRoutes from './push.js';
+import boostRoutes from './boosts.js';
+import trackingRoutes from './tracking.js';
+import qrPaymentRoutes from './qr-payments.js';
 import { cacheMiddleware } from '../middleware/cacheMiddleware.js';
 import { healthCheck } from '../middleware/logging.js';
 
@@ -110,6 +118,14 @@ router.use('/contact', contactRoutes);
 router.use('/academy', academyRoutes);
 router.use('/ai', aiRoutes);
 router.use('/delivery', deliveryRoutes);
+router.use('/wishlist', wishlistRoutes);
+router.use('/flash-sales', flashSaleRoutes);
+router.use('/loyalty', loyaltyRoutes);
+router.use('/sse', sseRoutes);
+router.use('/push', pushRoutes);
+router.use('/boosts', boostRoutes);
+router.use('/tracking', trackingRoutes);
+router.use('/qr-payments', qrPaymentRoutes);
 
 // Route de test
 router.get('/', (req, res) => {

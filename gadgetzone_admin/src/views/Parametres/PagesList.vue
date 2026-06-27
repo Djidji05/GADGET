@@ -1,75 +1,88 @@
 <template>
-  <div class="mx-auto max-w-screen-xl p-4 md:p-6 2xl:p-10">
+  <div class="mx-auto max-w-screen-xl p-4 md:p-6 2xl:p-10 pb-24">
     <!-- Header -->
-    <div class="mb-7 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <h2 class="text-title-md2 font-bold text-black dark:text-white">
-        Pages Statiques
-      </h2>
+    <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+          <i class="las la-file-contract text-blue-600 text-3xl"></i>
+          Pages du site (CGU, etc.)
+        </h2>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Gérez le contenu des pages légales, de confidentialité et informatives du site public.</p>
+      </div>
       
       <button 
         @click="createNewPage"
-        class="inline-flex items-center justify-center gap-2.5 rounded-md bg-primary py-3 px-6 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
+        class="inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-bold text-white hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all shadow-sm shrink-0"
       >
+        <i class="las la-plus text-lg"></i>
         Nouvelle Page
       </button>
     </div>
 
-    <!-- Table -->
-    <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-      <div class="py-6 px-4 md:px-6 xl:px-7.5">
-        <h4 class="text-xl font-bold text-black dark:text-white">Liste des Pages</h4>
-        <p class="text-sm text-gray-500 mt-1">Gérez le contenu des pages légales et informatives du site public.</p>
+    <!-- Table Container -->
+    <div class="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-2xl shadow-sm overflow-hidden">
+      <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/50">
+        <h4 class="text-lg font-bold text-gray-900 dark:text-white">Pages publiées</h4>
+        <span class="text-xs font-bold bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-450 px-3 py-1.5 rounded-xl border border-blue-100 dark:border-blue-900/30">{{ pages.length }} page(s)</span>
       </div>
 
-      <div class="grid grid-cols-4 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-6 md:px-6 2xl:px-7.5">
-        <div class="col-span-2 flex items-center">
-          <p class="font-medium">Titre</p>
-        </div>
-        <div class="col-span-2 flex items-center">
-          <p class="font-medium">Slug (URL)</p>
-        </div>
-        <div class="col-span-1 hidden items-center sm:flex">
-          <p class="font-medium">Dernière modification</p>
-        </div>
-        <div class="col-span-1 flex items-center justify-end">
-          <p class="font-medium">Actions</p>
-        </div>
-      </div>
-
-      <div
-        v-for="page in pages"
-        :key="page.slug"
-        class="grid grid-cols-4 border-t border-stroke py-4.5 px-4 dark:border-strokedark sm:grid-cols-6 md:px-6 2xl:px-7.5"
-      >
-        <div class="col-span-2 flex items-center">
-          <p class="text-sm font-medium text-black dark:text-white">{{ page.title }}</p>
-        </div>
-        <div class="col-span-2 flex items-center">
-          <code class="text-xs bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">/{{ page.slug }}</code>
-        </div>
-        <div class="col-span-1 hidden items-center sm:flex">
-          <p class="text-xs text-black dark:text-white">{{ formatDate(page.updated_at) }}</p>
-        </div>
-        <div class="col-span-1 flex items-center justify-end space-x-3.5">
-          <button class="hover:text-primary" @click="editPage(page.slug)">
-            <svg class="fill-current" width="18" height="18" fill="none" viewBox="0 0 18 18">
-               <path d="M15.5 2.5a2.121 2.121 0 0 1 3 3L6 18l-4 1 1-4 12.5-12.5z" />
-            </svg>
-          </button>
-          <button 
-            v-if="!['terms', 'privacy'].includes(page.slug)"
-            class="hover:text-danger" 
-            @click="deletePage(page.slug)"
-          >
-            <svg class="fill-current" width="18" height="18" fill="none" viewBox="0 0 18 18">
-               <path d="M1 4h16M7 7v7M11 7v7M3 4l1 12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-12M6 4V2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2" />
-            </svg>
-          </button>
-        </div>
-      </div>
-      
-      <div v-if="pages.length === 0" class="py-10 text-center text-gray-500">
+      <div class="p-6">
+        <div v-if="pages.length === 0" class="py-16 text-center text-gray-500">
+          <i class="las la-file-excel text-5xl text-gray-300 dark:text-gray-650 mb-3 block"></i>
           Chargement ou aucune page trouvée...
+        </div>
+
+        <div v-else class="overflow-x-auto rounded-xl border border-gray-150 dark:border-gray-800">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="bg-gray-50/80 dark:bg-gray-900/80 border-b border-gray-150 dark:border-gray-800 text-left text-gray-500 font-black uppercase text-[10px] tracking-wider">
+                <th class="py-3.5 px-6">Titre de la page</th>
+                <th class="py-3.5 px-6">Lien / Slug</th>
+                <th class="py-3.5 px-6">Dernière modification</th>
+                <th class="py-3.5 px-6 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+              <tr 
+                v-for="page in pages" 
+                :key="page.slug"
+                class="hover:bg-gray-50/50 dark:hover:bg-gray-850/50 transition-colors font-medium text-gray-700 dark:text-gray-300"
+              >
+                <td class="py-4 px-6 font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                  <i class="las la-file-alt text-lg text-blue-600"></i>
+                  {{ page.title }}
+                </td>
+                <td class="py-4 px-6">
+                  <code class="text-xs bg-blue-50/50 text-blue-600 dark:bg-blue-950/20 dark:text-blue-400 px-2 py-1 rounded-lg border border-blue-100/30 font-bold font-mono">/{{ page.slug }}</code>
+                </td>
+                <td class="py-4 px-6 text-xs text-gray-400">
+                  {{ formatDate(page.updated_at) }}
+                </td>
+                <td class="py-4 px-6 text-right">
+                  <div class="flex items-center justify-end gap-2">
+                    <button 
+                      @click="editPage(page.slug)"
+                      class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors border border-blue-100 text-xs font-bold dark:bg-blue-950/20 dark:text-blue-450 dark:border-blue-900/30"
+                      title="Modifier la page"
+                    >
+                      <i class="las la-edit text-sm"></i>
+                      Modifier
+                    </button>
+                    <button 
+                      v-if="!['terms', 'privacy'].includes(page.slug)"
+                      @click="deletePage(page.slug)"
+                      class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition-colors border border-red-100 text-xs font-bold dark:bg-red-950/20 dark:text-red-450 dark:border-red-900/30"
+                      title="Supprimer la page"
+                    >
+                      <i class="las la-trash text-sm"></i>
+                      Supprimer
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
@@ -81,12 +94,12 @@ import { useRouter } from 'vue-router'
 import { pagesService } from '@/services/api'
 
 const router = useRouter()
-const pages = ref([])
+const pages = ref<any[]>([])
 
 const fetchPages = async () => {
   try {
     const data = await pagesService.getAll()
-    pages.value = data
+    pages.value = data.pages || []
   } catch (error) {
     console.error('Erreur lors de la récupération des pages:', error)
   }

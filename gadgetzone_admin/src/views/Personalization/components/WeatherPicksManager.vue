@@ -101,7 +101,7 @@
                 <div class="grid grid-cols-2 gap-3 mb-4">
                   <div v-for="i in 4" :key="i" class="flex flex-col gap-1">
                     <div class="aspect-square bg-gray-50 rounded-xl overflow-hidden flex items-center justify-center border border-gray-100">
-                      <img 
+                      <img alt="" 
                         v-if="card.items[i-1]?.image" 
                         :src="card.items[i-1].image" 
                         class="w-full h-full object-cover"
@@ -120,7 +120,7 @@
                   :style="card.promoStyle === 'color' ? { backgroundColor: card.backgroundColor || '#2563eb' } : { backgroundColor: '#f3f4f6' }"
                 >
                    <!-- Background Image -->
-                   <img v-if="card.promoStyle !== 'color' && card.image" :src="card.image" class="absolute inset-0 w-full h-full object-cover z-0">
+                   <img alt="" v-if="card.promoStyle !== 'color' && card.image" :src="card.image" class="absolute inset-0 w-full h-full object-cover z-0">
                    
                    <!-- Overlay content -->
                    <div class="relative z-10 flex flex-col items-center justify-center h-full w-full">
@@ -270,7 +270,7 @@
                     class="border border-gray-200 rounded-lg p-3 flex flex-col gap-2 relative group"
                   >
                     <div class="aspect-square bg-gray-100 rounded-md overflow-hidden flex items-center justify-center relative">
-                      <img v-if="itemForm.items[i-1]?.image" :src="itemForm.items[i-1].image" class="w-full h-full object-cover">
+                      <img alt="" v-if="itemForm.items[i-1]?.image" :src="itemForm.items[i-1].image" class="w-full h-full object-cover">
                       <span v-else class="text-gray-400 text-xs">Vide</span>
                       
                       <!-- Add/Change Button -->
@@ -323,7 +323,7 @@
                    </div>
                    
                    <div v-else-if="itemForm.image" class="h-32 mx-auto rounded overflow-hidden mb-2 relative group">
-                      <img :src="itemForm.image" class="h-full w-full object-cover">
+                      <img alt="" :src="itemForm.image" class="h-full w-full object-cover">
                       <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <span class="text-white text-xs">Changer</span>
                       </div>
@@ -421,7 +421,7 @@
               <div v-if="!isSearching && searchResults.length === 0" class="text-center text-gray-500">Aucun résultat</div>
               <div class="space-y-2">
                  <div v-for="p in searchResults" :key="p.id" @click="selectProductForSlot(p)" class="flex gap-3 p-2 hover:bg-blue-50 rounded cursor-pointer border border-transparent hover:border-blue-100 items-center">
-                    <img :src="p.image_url" class="h-10 w-10 rounded object-cover bg-gray-100">
+                    <img alt="" :src="p.image_url" class="h-10 w-10 rounded object-cover bg-gray-100">
                     <div class="truncate flex-1">
                       <p class="font-medium text-sm truncate">{{ p.name }}</p>
                       <p class="text-xs text-gray-500">{{ p.category?.name }}</p>

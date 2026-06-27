@@ -9,7 +9,7 @@ describe('Auth API Tests', () => {
                 firstName: 'Test',
                 lastName: 'User',
                 email: `test${Date.now()}@example.com`,
-                password: 'password123'
+                password: 'Password123'
             };
 
             const response = await request(app)
@@ -27,7 +27,7 @@ describe('Auth API Tests', () => {
                 firstName: 'Test',
                 lastName: 'User',
                 email: 'invalid-email',
-                password: 'password123'
+                password: 'Password123'
             };
 
             const response = await request(app)
@@ -62,7 +62,7 @@ describe('Auth API Tests', () => {
             // Create a test user
             testUser = {
                 email: `testlogin${Date.now()}@example.com`,
-                password: 'password123'
+                password: 'Password123'
             };
 
             await request(app)
@@ -101,7 +101,7 @@ describe('Auth API Tests', () => {
                 .post('/api/auth/login')
                 .send({
                     email: 'nonexistent@example.com',
-                    password: 'password123'
+                    password: 'Password123'
                 })
                 .expect(401);
 

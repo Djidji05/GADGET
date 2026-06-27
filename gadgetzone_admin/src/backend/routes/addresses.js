@@ -30,7 +30,7 @@ router.get('/', async (req, res) => {
  */
 router.post('/', async (req, res) => {
     try {
-        const { street, city, quartier, country, whatsapp, note, is_default } = req.body;
+        const { street, city, quartier, country, whatsapp, note, is_default, coordinates, reference_point } = req.body;
 
         if (!street || !city || !quartier) {
             return res.status(400).json({ error: 'Rue, Ville et Quartier sont requis' });
@@ -52,6 +52,8 @@ router.post('/', async (req, res) => {
             country: countryValue,
             whatsapp, // Added field
             note,     // Added field
+            coordinates,
+            reference_point,
             is_default: !!is_default
         });
 
@@ -69,7 +71,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { street, city, quartier, country, whatsapp, note, is_default } = req.body;
+        const { street, city, quartier, country, whatsapp, note, is_default, coordinates, reference_point } = req.body;
 
         const address = await Address.findOne({ where: { id, user_id: req.user.id } });
         if (!address) {
@@ -88,6 +90,8 @@ router.put('/:id', async (req, res) => {
             country: country || address.country,
             whatsapp: whatsapp !== undefined ? whatsapp : address.whatsapp,
             note: note !== undefined ? note : address.note,
+            coordinates: coordinates !== undefined ? coordinates : address.coordinates,
+            reference_point: reference_point !== undefined ? reference_point : address.reference_point,
             is_default: is_default !== undefined ? is_default : address.is_default
         });
 

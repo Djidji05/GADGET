@@ -6,6 +6,7 @@ import searchService from './SearchService.js';
 import OfferRepository from '../repositories/OfferRepository.js';
 import { Product, Offer } from '../models/index.js';
 import LocalFileService from './LocalFileService.js';
+import { slugify } from '../utils/slugify.js';
 
 
 export default class ProductService extends BaseService {
@@ -23,7 +24,11 @@ export default class ProductService extends BaseService {
             if (cached) return cached;
         }
 
-        const product = await this.repository.findWithDetails(id);
+        const isNumeric = /^\d+$/.test(id);
+        const product = isNumeric
+            ? await this.repository.findWithDetails(id)
+            : await this.repository.findBySlug(id);
+
         if (!product) return null;
 
         // If not admin and product/store is not active, return null
@@ -38,7 +43,7 @@ export default class ProductService extends BaseService {
         const processed = await applyPromotionsToProduct(product);
 
         // FETCH OFFERS & BUY BOX WINNER
-        const offers = await this.offerRepository.findByProduct(id);
+        const offers = await this.offerRepository.findByProduct(product.id);
         const availableOffers = offers.filter(o => o.stock > 0 && o.is_active);
 
         const buyBoxWinner = availableOffers.length > 0 ? availableOffers[0] : null;
@@ -162,6 +167,17 @@ export default class ProductService extends BaseService {
             data.images = await Promise.all(
                 data.images.map((img, i) => LocalFileService.saveBase64Image(img, 'products', `prod_gal_${i}`))
             );
+        }
+
+        if (!data.slug && data.name) {
+            let slug = slugify(data.name);
+            let uniqueSlug = slug;
+            let counter = 1;
+            while (await Product.findOne({ where: { slug: uniqueSlug } })) {
+                uniqueSlug = `${slug}-${counter}`;
+                counter++;
+            }
+            data.slug = uniqueSlug;
         }
 
         const product = await super.create(data, options);

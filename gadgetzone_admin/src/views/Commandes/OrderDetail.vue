@@ -57,6 +57,21 @@
                 <p class="font-medium">{{ order.user?.email || '-' }}</p>
               </div>
               <div>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Téléphone</p>
+                <div class="flex items-center gap-2">
+                  <p class="font-medium">{{ order.user?.phone || '-' }}</p>
+                  <a v-if="order.user?.phone"
+                     :href="'https://wa.me/' + order.user.phone.replace(/[^0-9]/g, '')"
+                     target="_blank"
+                     class="inline-flex items-center gap-1 text-xs font-bold text-green-600 bg-green-50 hover:bg-green-100 dark:bg-green-950/20 dark:text-green-400 border border-green-200/50 px-2 py-0.5 rounded-lg transition-colors"
+                     title="Contacter sur WhatsApp"
+                  >
+                    <i class="lab la-whatsapp text-sm"></i>
+                    WhatsApp
+                  </a>
+                </div>
+              </div>
+              <div>
                 <p class="text-sm text-gray-600 dark:text-gray-400">Statut Actuel</p>
                 <span :class="getStatusClass(order.status)">
                   {{ getStatusText(order.status) }}
@@ -69,6 +84,19 @@
               <div class="md:col-span-2">
                 <p class="text-sm text-gray-600 dark:text-gray-400">Adresse de Livraison</p>
                 <p class="font-medium">{{ formattedAddress }}</p>
+              </div>
+              <div class="md:col-span-2" v-if="order.reference_point">
+                <p class="text-sm text-gray-600 dark:text-gray-400">Repère / Instructions</p>
+                <p class="font-medium italic text-gray-800 dark:text-gray-200">{{ order.reference_point }}</p>
+              </div>
+              <div class="md:col-span-2" v-if="order.shipping_coordinates && order.shipping_coordinates.lat">
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Localisation GPS</p>
+                <a :href="'https://www.google.com/maps?q=' + order.shipping_coordinates.lat + ',' + order.shipping_coordinates.lng"
+                   target="_blank"
+                   class="inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 text-green-700 border border-green-200 dark:border-green-800 dark:bg-green-900/30 dark:text-green-400 rounded-md font-semibold text-sm hover:bg-green-100 dark:hover:bg-green-900/50 transition-colors">
+                  <i class="fas fa-map-marker-alt"></i>
+                  Ouvrir dans Google Maps
+                </a>
               </div>
             </div>
           </div>
@@ -90,7 +118,7 @@
                   <tr v-for="item in order.items" :key="item.id" class="border-b dark:border-gray-700">
                     <td class="p-2">
                       <div class="flex items-center gap-3">
-                        <img v-if="item.product?.image_url" :src="item.product.image_url" class="w-10 h-10 object-cover rounded" />
+                        <img alt="" v-if="item.product?.image_url" :src="item.product.image_url" class="w-10 h-10 object-cover rounded" />
                         <div class="flex flex-col">
                           <div class="font-medium text-gray-900 dark:text-white">{{ item.product?.name || '-' }}</div>
                           <div class="text-sm text-gray-500 dark:text-gray-400">{{ formatProductId(item.product_id) }}</div>
@@ -122,30 +150,37 @@
           <div v-if="authStore.isAdmin" class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h2 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Mettre à jour le statut</h2>
             
-            <div v-if="['delivered', 'cancelled'].includes(order.status)" class="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 p-4 rounded-md text-sm mb-4">
+            <div v-if="['delivered', 'cancelled', 'cancelled_refund_pending'].includes(order.status)" class="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 p-4 rounded-md text-sm mb-4">
               <i class="fas fa-info-circle mr-2"></i>
               Cette commande est déjà {{ getStatusText(order.status).toLowerCase() }}. Le statut ne peut plus être modifié.
+            </div>
+
+            <div v-else-if="order.status === 'partially_paid'" class="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 p-4 rounded-md text-sm mb-4 font-bold border border-red-100">
+              <i class="fas fa-exclamation-triangle mr-2"></i>
+              PAIEMENT INCOMPLET. En attente du paiement du solde par le client. NE PAS EXPÉDIER.
             </div>
 
             <div class="space-y-4">
               <select
                 v-model="newStatus"
-                :disabled="isUpdating || ['delivered', 'cancelled'].includes(order.status)"
+                :disabled="isUpdating || ['delivered', 'cancelled', 'partially_paid', 'cancelled_refund_pending'].includes(order.status)"
                 class="w-full px-4 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 disabled:bg-gray-50 disabled:text-gray-500"
               >
                 <option value="">Sélectionner un statut</option>
                 <option value="pending">En attente</option>
+                <option value="partially_paid">Paiement Incomplet</option>
                 <option value="confirmed">Confirmée</option>
                 <option value="shipped">Expédiée</option>
                 <option value="delivered">Livrée</option>
                 <option value="cancelled">Annulée</option>
+                <option value="cancelled_refund_pending">Remboursement</option>
               </select>
 
 
 
               <button
                 @click="updateStatus"
-                :disabled="!newStatus || isUpdating || newStatus === order.status || ['delivered', 'cancelled'].includes(order.status)"
+                :disabled="!newStatus || isUpdating || newStatus === order.status || ['delivered', 'cancelled', 'partially_paid', 'cancelled_refund_pending'].includes(order.status)"
                 class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 transition-colors flex justify-center items-center gap-2"
               >
                 <svg v-if="isUpdating" class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -264,10 +299,12 @@ const formatDate = (dateString: string) => {
 const getStatusClass = (status: string) => {
   const classes: Record<string, string> = {
     pending: 'bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium',
+    partially_paid: 'bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs font-medium',
     confirmed: 'bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium',
     shipped: 'bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-medium',
     delivered: 'bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium',
-    cancelled: 'bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium'
+    cancelled: 'bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium',
+    cancelled_refund_pending: 'bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium'
   }
   return classes[status] || 'bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs font-medium'
 }
@@ -275,10 +312,12 @@ const getStatusClass = (status: string) => {
 const getStatusText = (status: string) => {
   const texts: Record<string, string> = {
     pending: 'En attente',
+    partially_paid: 'Paiement Incomplet',
     confirmed: 'Confirmée',
     shipped: 'Expédiée',
     delivered: 'Livrée',
-    cancelled: 'Annulée'
+    cancelled: 'Annulée',
+    cancelled_refund_pending: 'Remboursement'
   }
   return texts[status] || status
 }
@@ -286,10 +325,12 @@ const getStatusText = (status: string) => {
 const getLogColor = (status: string) => {
     switch(status) {
         case 'pending': return 'bg-yellow-500';
+        case 'partially_paid': return 'bg-orange-500';
         case 'confirmed': return 'bg-blue-500';
         case 'shipped': return 'bg-purple-500';
         case 'delivered': return 'bg-green-500';
         case 'cancelled': return 'bg-red-500';
+        case 'cancelled_refund_pending': return 'bg-red-500';
         default: return 'bg-gray-500';
     }
 }
@@ -329,7 +370,7 @@ const exportToPDF = () => {
   if (!order.value) return;
 
   const doc = new jsPDF();
-  const themeColor = [37, 99, 235]; // Blue-600
+  const themeColor: [number, number, number] = [37, 99, 235]; // Blue-600
 
   // Header Title
   doc.setFontSize(22);
@@ -370,7 +411,7 @@ const exportToPDF = () => {
   doc.text(splitAddress, 14, 82);
 
   // Table of Items
-  const tableData = order.value.items.map(item => [
+  const tableData = (order.value.items || []).map(item => [
     item.product?.name || '-',
     item.product?.store?.name || 'Inconnue',
     item.quantity.toString(),
@@ -405,11 +446,13 @@ const exportToPDF = () => {
   // Pour colorer le statut en haut du document (car c'est là qu'il se trouve dans OrderDetail)
   const statusColors: Record<string, [number, number, number]> = {
     pending: [133, 77, 14], // Yellow-800
+    partially_paid: [154, 52, 18], // Orange-800
     confirmed: [30, 64, 175], // Blue-800
     processing: [55, 48, 163], // Indigo-800
     shipped: [107, 33, 168], // Purple-800
     delivered: [22, 101, 52], // Green-800
-    cancelled: [153, 27, 27] // Red-800
+    cancelled: [153, 27, 27], // Red-800
+    cancelled_refund_pending: [153, 27, 27] // Red-800
   };
   
   if (statusColors[order.value.status]) {

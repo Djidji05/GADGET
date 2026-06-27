@@ -21,6 +21,8 @@ import './src/backend/workers/emailWorker.js';
 import './src/backend/workers/notificationWorker.js';
 import './src/backend/workers/paymentReconciliationWorker.js';
 import startAbandonedCartCron from './src/backend/scripts/abandoned_cart_cron.js';
+import startMonCashExpirationCron from './src/backend/scripts/moncash_expiration_cron.js';
+import { startPaymentTimeoutCron } from './src/backend/workers/paymentTimeoutCron.js';
 
 // Configuration
 const __filename = fileURLToPath(import.meta.url);
@@ -42,7 +44,34 @@ process.on('uncaughtException', (error) => {
 });
 
 const app = express();
-const PORT = process.env.BACKEND_PORT || 3001;
+
+// --- CONFIGURATION CORS (DOIT ÊTRE EN PREMIER) ---
+app.use(cors({
+  origin: function (origin, callback) {
+    // Autorise Netlify, localhost et ngrok
+    if (!origin || 
+        origin.includes('netlify.app') || 
+        origin.includes('localhost') || 
+        origin.includes('127.0.0.1') ||
+        origin.includes('10.') ||
+        origin.includes('192.168.') ||
+        origin.includes('ngrok-free.dev')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'ngrok-skip-browser-warning']
+}));
+
+// Middleware pour bypass l'avertissement ngrok
+app.use((req, res, next) => {
+  res.setHeader('ngrok-skip-browser-warning', 'true');
+  next();
+});
+// ------------------------------------------------
 
 // Passport Config
 import passport from 'passport';
@@ -50,7 +79,7 @@ import configurePassport from './src/backend/config/passport.js';
 configurePassport();
 app.use(passport.initialize());
 
-// Initialize Sentry (must be first)
+// Initialize Sentry
 initSentry(app);
 app.use(sentryRequestHandler());
 app.use(sentryTracingHandler());
@@ -65,21 +94,16 @@ app.use(morgan('dev', {
   skip: (req) => req.method === 'GET' && req.url.includes('/api/notifications')
 }));
 app.use(advancedLogger);
-app.use(cors({
-  origin: [
-    'http://localhost:5173', 
-    'http://localhost:5174', 
-    'http://192.168.88.80:5173',
-    'http://192.168.88.80:5174',
-    'https://yuri-unexcogitated-sarai.ngrok-free.dev',
-    'https://htfasil.com', 
-    'https://manage.htfasil.com'
-  ], 
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+
+const PORT = process.env.BACKEND_PORT || 3001;
+app.use(express.json({ 
+  limit: '10mb',
+  verify: (req, res, buf) => {
+    if (req.originalUrl && req.originalUrl.includes('/webhooks/stripe')) {
+      req.rawBody = buf;
+    }
+  }
 }));
-app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Apply rate limiting to all API routes
@@ -100,7 +124,9 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // Routes API
+app.use('/api/v1', apiRoutes);
 app.use('/api', apiRoutes);
+app.use('/', apiRoutes); // Alias pour les appels qui oublient le /api
 
 // Middleware de gestion des erreurs
 app.use(asyncErrorLogger);
@@ -168,6 +194,8 @@ const startServer = async () => {
       
       // Lancer les CRON
       startAbandonedCartCron();
+      startMonCashExpirationCron();
+      startPaymentTimeoutCron();
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error);
@@ -179,4 +207,6 @@ if (process.env.NODE_ENV !== 'test') {
   startServer();
 }
 
+// Force nodemon restart to load Stripe keys
 export default app;
+

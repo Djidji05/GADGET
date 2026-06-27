@@ -97,7 +97,6 @@ const Order = sequelize.define('Order', {
   delivery_token: {
     type: DataTypes.STRING,
     allowNull: true,
-    unique: true,
     comment: 'Code secret unique pour validation de livraison par scan (OTP/QR)'
   },
   carrier_name: {
@@ -127,7 +126,7 @@ const Order = sequelize.define('Order', {
     { fields: ['store_id'] },
     { fields: ['status'] },
     { fields: ['created_at'] },
-    { fields: ['delivery_token'] }
+    { fields: ['delivery_token'], unique: true }
   ]
 });
 

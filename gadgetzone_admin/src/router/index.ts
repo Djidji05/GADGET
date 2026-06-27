@@ -493,6 +493,15 @@ const router = createRouter({
         requiresAdmin: true
       },
     },
+    {
+      path: '/marketing/flash-sales',
+      name: 'VentesFlash',
+      component: () => import('../views/Marketing/VentesFlash.vue'),
+      meta: {
+        title: 'Ventes Flash',
+        requiresAdmin: true
+      },
+    },
     // Blog
     {
       path: '/marketing/blog',

@@ -1,5 +1,5 @@
 import BaseRepository from './BaseRepository.js';
-import { Product, Category, Brand, Review, Store, Offer } from '../models/index.js';
+import { Product, Category, Brand, Review, Store, Offer, FlashSale, Boost } from '../models/index.js';
 import { Op, Sequelize } from 'sequelize';
 
 export default class ProductRepository extends BaseRepository {
@@ -13,7 +13,43 @@ export default class ProductRepository extends BaseRepository {
                 { model: Category, as: 'category' },
                 { model: Brand, as: 'brand' },
                 { model: Store, as: 'store' },
-                { model: Review, as: 'reviews' }
+                { model: Review, as: 'reviews' },
+                {
+                    model: FlashSale,
+                    as: 'flashSales',
+                    where: { status: 'active', end_at: { [Op.gt]: new Date() } },
+                    required: false
+                },
+                {
+                    model: Boost,
+                    as: 'boosts',
+                    where: { status: 'active' },
+                    required: false
+                }
+            ]
+        });
+    }
+
+    async findBySlug(slug) {
+        return await this.model.findOne({
+            where: { slug },
+            include: [
+                { model: Category, as: 'category' },
+                { model: Brand, as: 'brand' },
+                { model: Store, as: 'store' },
+                { model: Review, as: 'reviews' },
+                {
+                    model: FlashSale,
+                    as: 'flashSales',
+                    where: { status: 'active', end_at: { [Op.gt]: new Date() } },
+                    required: false
+                },
+                {
+                    model: Boost,
+                    as: 'boosts',
+                    where: { status: 'active' },
+                    required: false
+                }
             ]
         });
     }
@@ -133,7 +169,12 @@ export default class ProductRepository extends BaseRepository {
                 model: Store,
                 as: 'store',
                 attributes: [],
-                where: { name: storeNameCondition },
+                where: {
+                    [Op.or]: [
+                        { slug: storeNameCondition },
+                        { name: storeNameCondition }
+                    ]
+                },
                 required: true
             }] : [],
             distinct: true
@@ -166,7 +207,12 @@ export default class ProductRepository extends BaseRepository {
                     model: Store,
                     as: 'store',
                     attributes: [],
-                    where: storeNameCondition ? { name: storeNameCondition } : {},
+                    where: storeNameCondition ? {
+                        [Op.or]: [
+                            { slug: storeNameCondition },
+                            { name: storeNameCondition }
+                        ]
+                    } : {},
                     required: storeNameCondition ? true : false
                 }] : [])
             ],
@@ -198,6 +244,18 @@ export default class ProductRepository extends BaseRepository {
                     required: false,
                     limit: 1,
                     order: [['sales_count', 'DESC'], ['price', 'ASC']]
+                },
+                {
+                    model: FlashSale,
+                    as: 'flashSales',
+                    where: { status: 'active', end_at: { [Op.gt]: new Date() } },
+                    required: false
+                },
+                {
+                    model: Boost,
+                    as: 'boosts',
+                    where: { status: 'active' },
+                    required: false
                 }
             ],
             attributes: {

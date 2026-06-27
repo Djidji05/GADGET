@@ -139,6 +139,10 @@ class ProductController {
             const product = await this.productService.getById(req.params.id);
             if (!product) return res.status(404).json({ error: 'Product not found' });
 
+            // 🛡️ Par défaut : admin et gestionnaire peuvent tout modifier
+            // La variable est déclarée ici pour être accessible dans tout le bloc try
+            let updateData = req.body;
+
             // Check ownership if seller
             if (req.user.role === 'seller') {
                 if (!req.store || product.storeId !== req.store.id) {

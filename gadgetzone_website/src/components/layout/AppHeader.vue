@@ -41,14 +41,15 @@
             <!-- Search Bar (Grow) -->
             <div class="relative flex-grow">
               <input
-                v-model="searchQuery"
-                @keyup.enter="handleSearch"
                 type="text"
+                readonly
+                @click="openMobileSearch"
+                @focus="openMobileSearch"
                 :placeholder="$t('products.search')"
-                class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm bg-gray-50"
+                class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm bg-gray-50 cursor-pointer"
               />
               <button
-                @click="handleSearch"
+                @click="openMobileSearch"
                 class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
               >
                 <i class="fas fa-search"></i>
@@ -293,14 +294,15 @@
       <div class="md:hidden pb-3">
         <div class="relative">
           <input
-            v-model="searchQuery"
-            @keyup.enter="handleSearch"
             type="text"
+            readonly
+            @click="openMobileSearch"
+            @focus="openMobileSearch"
             placeholder="Rechercher des produits..."
-            class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+            class="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer"
           />
           <button
-            @click="handleSearch"
+            @click="openMobileSearch"
             class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
           >
             <i class="fas fa-search"></i>
@@ -317,11 +319,17 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useCartStore } from '@/stores/cart'
 import { useSettingsStore } from '@/stores/settings'
+import { useUiStore } from '@/stores/ui'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const settingsStore = useSettingsStore()
+const uiStore = useUiStore()
+
+const openMobileSearch = () => {
+  uiStore.isMobileSearchOpen = true
+}
 
 onMounted(() => {
   settingsStore.fetchGeneralSettings()

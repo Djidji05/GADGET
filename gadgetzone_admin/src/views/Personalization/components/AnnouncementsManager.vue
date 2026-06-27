@@ -130,7 +130,7 @@
         <!-- Preview -->
         <div v-if="config.content.banner.image" class="mt-8">
            <p class="text-xs text-gray-500 mb-2 uppercase font-semibold">Aperçu :</p>
-           <img :src="config.content.banner.image" class="w-full max-h-60 object-cover rounded-lg shadow-md">
+           <img alt="" :src="config.content.banner.image" class="w-full max-h-60 object-cover rounded-lg shadow-md">
         </div>
       </div>
 

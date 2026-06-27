@@ -21,7 +21,7 @@
         <div class="p-7">
           <div class="flex flex-col md:flex-row gap-8 items-start mb-8 pb-8 border-b border-stroke dark:border-strokedark">
             <div class="w-20 h-20 rounded-xl border-2 border-dashed border-stroke dark:border-strokedark flex items-center justify-center overflow-hidden bg-gray-50 dark:bg-white/5 shrink-0">
-              <img v-if="settings.site_logo" :src="getImageUrl(settings.site_logo)" class="w-full h-full object-contain" />
+              <img alt="" v-if="settings.site_logo" :src="getImageUrl(settings.site_logo)" class="w-full h-full object-contain" />
               <div v-else class="text-gray-400 flex flex-col items-center gap-1">
                 <Image class="w-8 h-8" />
                 <span class="text-[10px]">Logo</span>
@@ -263,7 +263,8 @@ const settings = ref({
   timezone: 'America/Port-au-Prince',
   currency: 'HTG',
   language: 'fr',
-  maintenance_mode: 'false'
+  maintenance_mode: 'false',
+  whatsapp_vip_link: ''
 });
 
 const loadSettings = async () => {
@@ -279,7 +280,8 @@ const loadSettings = async () => {
       timezone: data.timezone || 'America/Port-au-Prince',
       currency: data.currency || 'HTG',
       language: data.language || 'fr',
-      maintenance_mode: String(data.maintenance_mode || 'false')
+      maintenance_mode: String(data.maintenance_mode || 'false'),
+      whatsapp_vip_link: data.whatsapp_vip_link || ''
     };
   } catch (error) {
     console.error('Error loading general settings:', error);

@@ -95,7 +95,7 @@
             
             <!-- Banner Preview Container -->
             <div class="relative w-full aspect-[21/9] bg-gray-200 rounded-lg overflow-hidden shadow-lg group">
-              <img 
+              <img alt="" 
                 v-if="form.image" 
                 :src="form.image" 
                 class="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
@@ -422,15 +422,15 @@ const isUploading = ref(false);
 
 // ... (keep existing form ref) ...
 const form = ref({
-  id: null,
+  id: null as number | null,
   title: '',
   subtitle: '',
   image: '',
-  link: '',
+  link: '' as string | null,
   order: 0,
   isActive: true,
-  startDate: '',
-  endDate: '',
+  startDate: '' as string | null,
+  endDate: '' as string | null,
   titleSize: 'text-4xl',
   titleWeight: 'font-bold',
   titleColor: '#ffffff',
@@ -510,7 +510,7 @@ const saveBanner = async () => {
     if (!payload.endDate) payload.endDate = null;
     if (!payload.link) payload.link = null;
 
-    if (isEditing.value) {
+    if (isEditing.value && payload.id) {
       await PersonalizationService.updateBanner(payload.id, payload);
     } else {
       await PersonalizationService.createBanner(payload);
@@ -518,7 +518,7 @@ const saveBanner = async () => {
     await loadBanners();
     closeModal();
     uiStore.addToast(isEditing.value ? 'Bannière mise à jour' : 'Bannière créée', 'success');
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error saving banner', error);
     uiStore.addToast('Erreur lors de la sauvegarde : ' + (error.response?.data?.error || error.message), 'error');
   } finally {

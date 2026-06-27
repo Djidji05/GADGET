@@ -2,6 +2,7 @@
 
 declare module '@/services/api' {
   export const api: any
+  export default api
   export interface Store {
     id: number
     name: string
@@ -61,13 +62,14 @@ declare module '@/services/api' {
     address?: string
     last_login?: string
     status?: 'active' | 'suspended' | 'closed'
+    store?: any
   }
 
   export interface Order {
     id: number
     user_id: number
     total_amount: number
-    status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'confirmed'
+    status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'confirmed' | 'partially_paid' | 'cancelled_refund_pending' | 'refunded'
     created_at: string
     updated_at: string
     items?: OrderItem[]
@@ -76,6 +78,8 @@ declare module '@/services/api' {
     shipped_at?: string
     delivered_at?: string
     shipping_address?: string
+    shipping_coordinates?: { lat: number; lng: number }
+    reference_point?: string
     user?: User
   }
 
@@ -232,11 +236,17 @@ declare module '@/services/api' {
     }>>
     getTopProducts: (limit?: number) => Promise<any[]>
     getTopClients: (limit?: number) => Promise<any[]>
-    getTrafficSources: () => Promise<any[]>
+    getTrafficSources: (period?: string) => Promise<any>
+    getDeviceStats: (period?: string) => Promise<any>
     getConversionRate: (period?: string) => Promise<any>
+    getVendorActions: (limit?: number) => Promise<any>
     getAlerts: () => Promise<any>
+    getSecurityAlerts: () => Promise<any>
+    resolveSecurityAlert: (id: string) => Promise<any>
     getRevenueEvolution: (type: string) => Promise<any>
     getMonthlyTarget: () => Promise<any>
+    getNotificationsCount: () => Promise<any>
+    setMonthlyTarget: (target: number) => Promise<any>
     getSalesByCategory: () => Promise<any>
     getCustomerDemographics: () => Promise<any>
   }
@@ -250,8 +260,8 @@ declare module '@/services/api' {
     createProduct: (productData: ProductCreateData) => Promise<ApiResponse<{ product: Product }>>
     update: (id: number, productData: any) => Promise<void> // Matches implementation
     updateProduct: (id: number, productData: ProductUpdateData) => Promise<ApiResponse<{ product: Product }>>
-    delete: (id: number) => Promise<void> // Matches implementation
-    deleteProduct: (id: number) => Promise<ApiResponse<{ message: string }>>
+    delete: (id: number, reason?: string) => Promise<void> // Matches implementation
+    deleteProduct: (id: number, reason?: string) => Promise<ApiResponse<{ message: string }>>
   }
 
   export const userService: {
@@ -260,6 +270,7 @@ declare module '@/services/api' {
     create: (userData: any) => Promise<number>
     update: (id: number, userData: any) => Promise<void>
     delete: (id: number) => Promise<void>
+    search: (query: string, role?: string) => Promise<User[]>
   }
 
   export const clientService: {
@@ -285,22 +296,28 @@ declare module '@/services/api' {
 
   export const categoryService: {
     getAll: () => Promise<Category[]>
+    create: (data: any) => Promise<any>
+    update: (id: number, data: any) => Promise<any>
+    delete: (id: number) => Promise<any>
   }
 
   export const brandService: {
     getAll: () => Promise<Brand[]>
+    create: (formData: FormData) => Promise<any>
+    update: (id: number, formData: FormData) => Promise<any>
+    delete: (id: number) => Promise<any>
   }
 
   export const financeService: {
-    getOverview: () => Promise<any>
+    getOverview: (period?: string) => Promise<any>
     getRevenueChart: (period?: string) => Promise<any>
     getExpenses: (category?: string) => Promise<any>
     createExpense: (expense: any) => Promise<any>
     deleteExpense: (id: number) => Promise<void>
-    getExpensesBreakdown: () => Promise<any>
-    getProfitTrend: () => Promise<any>
-    getPaymentMethods: () => Promise<any>
-    getTransactions: (limit?: number, type?: string) => Promise<any>
+    getExpensesBreakdown: (period?: string) => Promise<any>
+    getProfitTrend: (period?: string) => Promise<any>
+    getPaymentMethods: (period?: string) => Promise<any>
+    getTransactions: (limit?: number, type?: string, period?: string) => Promise<any>
   }
 
   export const notificationService: {
@@ -308,10 +325,13 @@ declare module '@/services/api' {
     markAsRead: (id: number) => Promise<void>
     markAllAsRead: () => Promise<void>
     delete: (id: number) => Promise<void>
+    deleteAll: () => Promise<void>
   }
 
   export const healthService: {
     checkHealth: () => Promise<ApiResponse<{ status: string }>>
+    getStats: () => Promise<any>
+    runMaintenance: () => Promise<any>
   }
 
   export const settingsService: {
@@ -338,6 +358,18 @@ declare module '@/services/api' {
     update: (slug: string, data: any) => Promise<any>
     delete: (slug: string) => Promise<any>
   }
+
+  export const adminService: any
+  export const refundService: any
+  export const ticketService: any
+  export const disputeService: any
+  export const seoService: any
+  export const messageService: any
+  export const searchService: any
+  export const personalisationService: any
+  export const reviewService: any
+  export const deliveryService: any
+  export const ambassadorService: any
 }
 
 declare module '@/stores/auth' {

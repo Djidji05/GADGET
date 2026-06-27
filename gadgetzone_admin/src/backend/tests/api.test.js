@@ -4,13 +4,14 @@ import sequelize from '../config/database.js';
 import app from '../../../server.js';
 
 // Import des modèles
-import { User, Product, Category, Order, OrderItem } from '../models/index.js';
+import { User, Product, Category, Order, OrderItem, Store } from '../models/index.js';
 
 describe('API Tests', () => {
   let authToken;
   let testUser;
   let testProduct;
   let testCategory;
+  let testStore;
 
   beforeAll(async () => {
     // Synchroniser la base de données pour les tests
@@ -23,12 +24,20 @@ describe('API Tests', () => {
     });
 
     // Créer un utilisateur de test
-    const hashedPassword = await bcrypt.hash('password123', 12);
+    const hashedPassword = await bcrypt.hash('Password123', 12);
     testUser = await User.create({
       name: 'Test User',
       email: 'test@example.com',
       password: hashedPassword,
       role: 'admin'
+    });
+
+    // Créer un magasin de test
+    testStore = await Store.create({
+      name: 'Test Store',
+      description: 'Store for testing purposes',
+      userId: testUser.id,
+      status: 'active'
     });
   });
 
@@ -43,7 +52,7 @@ describe('API Tests', () => {
         .post('/api/auth/login')
         .send({
           email: 'test@example.com',
-          password: 'password123'
+          password: 'Password123'
         });
 
       expect(response.status).toBe(200);
@@ -88,10 +97,11 @@ describe('API Tests', () => {
       // Créer un produit de test
       testProduct = await Product.create({
         name: 'Test Product',
-        description: 'Product for testing',
+        description: 'Product for testing purposes',
         price: 99.99,
         stock: 10,
-        category_id: testCategory.id
+        category_id: testCategory.id,
+        storeId: testStore.id
       });
     });
 
@@ -114,10 +124,11 @@ describe('API Tests', () => {
     test('POST /api/products - should create new product', async () => {
       const productData = {
         name: 'New Test Product',
-        description: 'New product description',
+        description: 'New product description for testing',
         price: 149.99,
         stock: 25,
-        category_id: testCategory.id
+        category_id: testCategory.id,
+        storeId: testStore.id
       };
 
       const response = await request(app)
@@ -126,16 +137,18 @@ describe('API Tests', () => {
         .send(productData);
 
       expect(response.status).toBe(201);
-      expect(response.body.product).toHaveProperty('name', 'New Test Product');
+      expect(response.body).toHaveProperty('name', 'New Test Product');
 
       // Nettoyer
-      await Product.destroy({ where: { id: response.body.product.id } });
+      await Product.destroy({ where: { id: response.body.id } });
     });
 
     test('PUT /api/products/:id - should update product', async () => {
       const updateData = {
         name: 'Updated Product Name',
-        price: 199.99
+        description: 'Updated product description for testing purposes',
+        price: 199.99,
+        category_id: testCategory.id
       };
 
       const response = await request(app)
@@ -144,7 +157,7 @@ describe('API Tests', () => {
         .send(updateData);
 
       expect(response.status).toBe(200);
-      expect(response.body.product).toHaveProperty('name', 'Updated Product Name');
+      expect(response.body).toHaveProperty('name', 'Updated Product Name');
     });
 
     test('DELETE /api/products/:id - should delete product', async () => {
@@ -152,8 +165,7 @@ describe('API Tests', () => {
         .delete(`/api/products/${testProduct.id}`)
         .set('Authorization', `Bearer ${authToken}`);
 
-      expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty('message', 'Produit supprimé avec succès');
+      expect(response.status).toBe(204);
     });
   });
 
@@ -164,10 +176,8 @@ describe('API Tests', () => {
         .set('Authorization', `Bearer ${authToken}`);
 
       expect(response.status).toBe(200);
-      expect(response.body.data).toHaveProperty('counts');
-      expect(response.body.data.counts).toHaveProperty('products');
-      expect(response.body.data.counts).toHaveProperty('orders');
-      expect(response.body.data.counts).toHaveProperty('users');
+      expect(response.body).toHaveProperty('chiffreAffaires');
+      expect(response.body).toHaveProperty('nbCommandes');
     });
 
     test('GET /api/stats/top-products - should get top products', async () => {
@@ -176,7 +186,7 @@ describe('API Tests', () => {
         .set('Authorization', `Bearer ${authToken}`);
 
       expect(response.status).toBe(200);
-      expect(Array.isArray(response.body.data)).toBe(true);
+      expect(Array.isArray(response.body)).toBe(true);
     });
 
     test('GET /api/stats/inventory-alerts - should get inventory alerts', async () => {

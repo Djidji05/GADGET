@@ -141,6 +141,8 @@ export default {
         email_placeholder: "Adrès imèl ou",
         subscribe: "Enskri",
         subscribing: "Ap enskri...",
+        moncash: "MonCash",
+        natcash: "Natcash",
         description: "Mache ou ka fè konfyans pou dekouvri tout bagay: soti nan Teknoloji rive nan Lamòd, pase nan Kay ak plis ankò. Kalite garanti ak sèvis eksepsyonèl nan peyi d Ayiti.",
         shop: "Boutik",
         support: "Sèvis Kliyan",
@@ -149,7 +151,6 @@ export default {
         privacy: "Konfidansyalite",
         terms: "Kondisyon yo",
         sitemap: "Plan sit la",
-        natcash: "NatCash",
         working_days: "Len - Vend: 9è - 6è",
         weekend: "Sam: 9è - 3è",
     },
@@ -468,6 +469,10 @@ export default {
         see_more: 'Wè plis',
         about: 'Sou nou',
         contact: 'Kontakte nou',
+        faq: 'FAQ',
+        cookie_text: 'Nou itilize cookies pou amelyore eksperyans ou sou HTFasil. 🍪',
+        cookie_accept: 'Mwen konprann !',
+        cookie_learn_more: 'Aprann plis'
     },
     account: {
         profile: 'Pwofil',

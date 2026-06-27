@@ -91,7 +91,7 @@
             @click="closeSearch"
           >
             <div class="w-8 h-8 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-              <img v-if="product.image_url" :src="product.image_url" class="w-full h-full object-cover" />
+              <img alt="" v-if="product.image_url" :src="product.image_url" class="w-full h-full object-cover" />
               <ShoppingBag v-else class="w-4 h-4 text-gray-400" />
             </div>
             <div class="flex-1 min-w-0">
@@ -113,7 +113,7 @@
             @click="closeSearch"
           >
             <div class="w-8 h-8 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-              <img v-if="store.logoUrl" :src="store.logoUrl" class="w-full h-full object-cover" />
+              <img alt="" v-if="store.logoUrl" :src="store.logoUrl" class="w-full h-full object-cover" />
               <StoreIcon v-else class="w-4 h-4 text-gray-400" />
             </div>
             <div class="flex-1 min-w-0">

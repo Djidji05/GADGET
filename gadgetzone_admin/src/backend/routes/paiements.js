@@ -17,6 +17,18 @@ router.use(authenticateToken);
 router.post('/init-moncash', paymentController.initMonCash);
 
 /**
+ * POST /api/paiements/init-stripe
+ * Initier un paiement Stripe
+ */
+router.post('/init-stripe', paymentController.initStripe);
+
+/**
+ * GET /api/paiements/callback/verify
+ * Vérifier la transaction depuis la redirection de retour
+ */
+router.get('/callback/verify', paymentController.verifyCallbackPayment);
+
+/**
  * GET /api/paiements/verify/:orderId
  * Vérifier manuellement un paiement (Polling)
  */

@@ -11,23 +11,25 @@ const Product = sequelize.define('Product', {
     type: DataTypes.STRING,
     allowNull: false
   },
+  slug: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    unique: true
+  },
   description: {
     type: DataTypes.TEXT
   },
   price: {
     type: DataTypes.DECIMAL(10, 2),
-    allowNull: false,
-    comment: '@deprecated: Use Offer model for multi-vendor pricing'
+    allowNull: false
   },
   original_price: {
     type: DataTypes.DECIMAL(10, 2),
-    allowNull: true,
-    comment: '@deprecated: Use Offer model'
+    allowNull: true
   },
   stock: {
     type: DataTypes.INTEGER,
-    defaultValue: 0,
-    comment: '@deprecated: Use Offer model'
+    defaultValue: 0
   },
   category_id: {
     type: DataTypes.INTEGER,
@@ -39,8 +41,7 @@ const Product = sequelize.define('Product', {
   },
   storeId: {
     type: DataTypes.INTEGER,
-    allowNull: true,
-    comment: '@deprecated: Products are now global, multi-vendeurs via Offer'
+    allowNull: true
   },
   image_url: {
     type: DataTypes.TEXT

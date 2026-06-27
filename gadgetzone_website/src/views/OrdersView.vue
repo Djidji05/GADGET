@@ -67,6 +67,7 @@
                </p>
             </div>
             
+           <div class="flex flex-col items-end gap-2">
              <span
              :class="[
                'px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wide',
@@ -75,6 +76,15 @@
            >
              {{ getOrderStatusText(order.status) }}
            </span>
+           
+           <button 
+             v-if="order.status === 'partially_paid'" 
+             @click.prevent="$router.push(`/orders/${order.id}`)"
+             class="text-[10px] font-bold px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700 shadow-sm"
+           >
+             Payer le reste
+           </button>
+           </div>
           </div>
         </div>
       </router-link>
@@ -214,11 +224,13 @@ const getOrderTotal = (orderData: Order) => {
 const getOrderStatusClass = (status: Order['status']) => {
   const classes = {
     pending: 'bg-yellow-100 text-yellow-700',
+    partially_paid: 'bg-orange-100 text-orange-700',
     confirmed: 'bg-blue-100 text-blue-700',
     processing: 'bg-purple-100 text-purple-700',
     shipped: 'bg-indigo-100 text-indigo-700',
     delivered: 'bg-green-100 text-green-700',
     cancelled: 'bg-red-100 text-red-700',
+    cancelled_refund_pending: 'bg-red-100 text-red-700',
   }
   return classes[status] || 'bg-gray-100 text-gray-800'
 }
@@ -226,11 +238,13 @@ const getOrderStatusClass = (status: Order['status']) => {
 const getOrderStatusText = (status: Order['status']) => {
   const texts = {
     pending: t('account.status_waiting'),
+    partially_paid: 'Paiement partiel',
     confirmed: t('account.status_progress'),
     processing: t('account.status_progress'),
     shipped: t('account.status_expediated'),
     delivered: t('account.status_delivered'),
     cancelled: t('account.status_cancelled'),
+    cancelled_refund_pending: 'Remboursement',
   }
   return texts[status] || status
 }

@@ -4,8 +4,17 @@ export interface CartItem {
   id: number
   productId: number
   offerId?: number
+  offer?: {
+    id: number
+    name?: string
+    Store?: {
+      id: number
+      name: string
+    }
+  }
   product: {
     id: number
+    slug?: string
     name: string
     description?: string
     price: number
@@ -23,6 +32,12 @@ export interface Cart {
   totalAmount: number
   createdAt: string
   updatedAt: string
+  promoInfo?: {
+    code: string
+    discount: number
+    discountType: 'percentage' | 'fixed'
+    discountAmount: number
+  }
 }
 
 export const cartService = {

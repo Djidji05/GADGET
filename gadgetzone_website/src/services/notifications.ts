@@ -39,5 +39,20 @@ export const notificationsService = {
     async deleteNotification(id: number): Promise<{ message: string }> {
         const response = await api.delete(`/notifications/${id}`)
         return response.data
+    },
+
+    async getVapidKey(): Promise<string> {
+        const response = await api.get('/push/vapid-key')
+        return response.data.publicKey
+    },
+
+    async subscribePush(subscription: any): Promise<any> {
+        const response = await api.post('/push/subscribe', subscription)
+        return response.data
+    },
+
+    async unsubscribePush(endpoint: string): Promise<any> {
+        const response = await api.post('/push/unsubscribe', { endpoint })
+        return response.data
     }
 }

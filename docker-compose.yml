@@ -4,8 +4,8 @@ services:
       image: postgres:15-alpine
       restart: always
       environment:
-          POSTGRES_USER: ${DB_USER:-postgres}
-          POSTGRES_PASSWORD: ${DB_PASSWORD:-htfasil_secret_pwd}
+          POSTGRES_USER: ${DB_USER:?DB_USER is required}
+          POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
           POSTGRES_DB: ${DB_NAME:-htfasil}
       volumes:
           - postgres_data:/var/lib/postgresql/data
@@ -26,7 +26,7 @@ services:
       image: getmeili/meilisearch:v1.3
       restart: always
       environment:
-          MEILI_MASTER_KEY: ${MEILISEARCH_KEY:-masterKey_HTFasil_2024}
+          MEILI_MASTER_KEY: ${MEILISEARCH_KEY:?MEILISEARCH_KEY is required}
           MEILI_NO_ANALYTICS: "true"
           MEILI_ENV: production
       volumes:
@@ -44,14 +44,15 @@ services:
           DB_HOST: db
           REDIS_HOST: redis
           MEILISEARCH_HOST: http://meilisearch:7700
-          MEILISEARCH_KEY: ${MEILISEARCH_KEY:-masterKey_HTFasil_2024}
+          MEILISEARCH_KEY: ${MEILISEARCH_KEY:?MEILISEARCH_KEY is required}
           DB_PORT: 5432
-          DB_USER: ${DB_USER:-postgres}
-          DB_PASSWORD: ${DB_PASSWORD:-htfasil_secret_pwd}
+          DB_USER: ${DB_USER:?DB_USER is required}
+          DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
           DB_NAME: ${DB_NAME:-htfasil}
           NODE_ENV: production
           BACKEND_PORT: 3001
-          JWT_SECRET: ${JWT_SECRET:-your_super_secret_jwt_key_here}
+          JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+          SENTRY_DSN: ${SENTRY_DSN:-}
       depends_on:
           - db
           - redis

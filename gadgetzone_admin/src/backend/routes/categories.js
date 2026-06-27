@@ -1,6 +1,7 @@
 import express from 'express';
 import { Category } from '../models/index.js';
 import { clearCache } from '../middleware/cacheMiddleware.js';
+import { authenticateToken, requireAdmin } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -46,7 +47,7 @@ router.get('/:id', async (req, res) => {
  * POST /api/categories
  * Crée une nouvelle catégorie
  */
-router.post('/', async (req, res) => {
+router.post('/', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { name, description, slug, icon, commission_rate, parentId } = req.body;
 
@@ -78,7 +79,7 @@ router.post('/', async (req, res) => {
  * PUT /api/categories/:id
  * Met à jour une catégorie
  */
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
     const { name, description, slug, icon, commission_rate, parentId } = req.body;
@@ -113,7 +114,7 @@ router.put('/:id', async (req, res) => {
  * DELETE /api/categories/:id
  * Supprime une catégorie
  */
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const { id } = req.params;
 

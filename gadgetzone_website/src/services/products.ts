@@ -2,6 +2,7 @@ import api from './api'
 
 export interface Product {
   id: number
+  slug?: string
   name: string
   description: string
   price: number
@@ -33,10 +34,13 @@ export interface Category {
   name: string
   description?: string
   image?: string
+  parentId?: number | null
+  parent_id?: number | null
 }
 
 export interface Store {
   id: number
+  slug?: string
   name: string
   description?: string
   logoUrl?: string
@@ -71,8 +75,8 @@ export const productsService = {
     return response.data
   },
 
-  // Obtenir un produit par ID
-  getProduct: async (id: number) => {
+  // Obtenir un produit par ID ou Slug
+  getProduct: async (id: number | string) => {
     const response = await api.get(`/products/${id}`)
     return response.data
   },
@@ -125,8 +129,13 @@ export const productsService = {
     return response.data
   },
 
-  addReview: async (reviewData: { product_id: number; rating: number; comment?: string }) => {
+  addReview: async (reviewData: { product_id: number; rating: number; comment?: string; images?: string[] }) => {
     const response = await api.post('/reviews', reviewData)
+    return response.data
+  },
+
+  voteReview: async (reviewId: number, vote: 'helpful' | 'not_helpful') => {
+    const response = await api.post(`/reviews/${reviewId}/vote`, { vote })
     return response.data
   },
   

@@ -1,6 +1,6 @@
 <template>
-<div 
-    class="group relative bg-white rounded-2xl p-2 md:p-3 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 cursor-pointer h-full flex" 
+  <div 
+    class="group relative bg-white dark:bg-gray-900 rounded-2xl p-2 md:p-3 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-800 cursor-pointer h-full flex" 
     :class="[
       viewMode === 'list' ? 'flex-row gap-4 md:gap-6 items-center' : 'flex-col hover:-translate-y-1',
       viewMode === 'list' ? 'w-full' : ''
@@ -10,7 +10,7 @@
     
     <!-- Image Container -->
     <div 
-      class="relative rounded-xl overflow-hidden bg-gray-50 group-hover:shadow-inner transition-all flex-shrink-0"
+      class="relative rounded-xl overflow-hidden bg-gray-50 dark:bg-gray-800 group-hover:shadow-inner transition-all flex-shrink-0"
       :class="viewMode === 'list' ? 'w-24 h-24 md:w-40 md:h-40' : 'w-full aspect-square mb-2 md:mb-3'"
       style="aspect-ratio: 1 / 1;"
     >
@@ -24,16 +24,29 @@
         loading="lazy"
         class="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500 ease-out"
       />
-      <div v-else class="w-full h-full flex items-center justify-center text-gray-300 bg-gray-100">
+      <div v-else class="w-full h-full flex items-center justify-center text-gray-300 bg-gray-100 dark:bg-gray-800">
         <i class="fas fa-image text-2xl md:text-3xl opacity-50"></i>
       </div>
 
       <!-- Discount Badge -->
       <div 
-        v-if="hasDiscount" 
+        v-if="activeFlashSale" 
+        class="absolute top-2 left-2 bg-orange-600 text-white text-[10px] md:text-xs font-black px-2.5 py-1 rounded-lg shadow-lg z-10 flex items-center gap-1 animate-pulse"
+      >
+        <i class="fas fa-bolt text-[9px]"></i> FLASH -{{ discountPercentage }}%
+      </div>
+      <div 
+        v-else-if="hasDiscount" 
         class="absolute top-2 left-2 bg-red-500 text-white text-[10px] md:text-xs font-black px-2 py-1 rounded-lg shadow-lg z-10"
       >
         -{{ discountPercentage }}%
+      </div>
+      <!-- Sponsored Badge -->
+      <div 
+        v-if="product.is_sponsored" 
+        class="absolute bottom-2 left-2 bg-black/60 text-white text-[9px] font-bold px-2 py-0.5 rounded backdrop-blur-sm z-10"
+      >
+        Sponsorisé
       </div>
     </div>
 
@@ -42,7 +55,7 @@
       <div>
         <!-- Title -->
         <h3 
-          class="font-semibold text-gray-800 leading-tight line-clamp-2 group-hover:text-blue-600 transition-colors"
+          class="font-semibold text-gray-800 dark:text-gray-250 leading-tight line-clamp-2 group-hover:text-blue-600 transition-colors"
           :class="viewMode === 'list' ? 'text-base md:text-xl mb-1' : 'text-sm md:text-[15px]'"
         >
           {{ product.name }}
@@ -50,10 +63,10 @@
 
         <!-- Vendor Name -->
         <div class="flex items-center gap-1.5 py-0.5">
-          <div class="w-4 h-4 rounded-full bg-blue-50 flex items-center justify-center">
+          <div class="w-4 h-4 rounded-full bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center">
             <i class="fas fa-store text-[8px] text-blue-500"></i>
           </div>
-          <span class="text-[10px] md:text-xs font-medium text-gray-500 truncate">
+          <span class="text-[10px] md:text-xs font-medium text-gray-500 dark:text-gray-400 truncate">
             {{ product.store?.name || 'HTFasil' }}
           </span>
         </div>
@@ -61,7 +74,7 @@
 
 
         <!-- List Mode Description Snippet (Optional but nice) -->
-        <p v-if="viewMode === 'list' && product.description" class="hidden md:block text-sm text-gray-500 line-clamp-2 mt-2 leading-relaxed">
+        <p v-if="viewMode === 'list' && product.description" class="hidden md:block text-sm text-gray-500 dark:text-gray-400 line-clamp-2 mt-2 leading-relaxed">
           {{ product.description }}
         </p>
       </div>
@@ -69,19 +82,20 @@
       <div class="mt-auto flex items-end justify-between pt-2">
         <div class="flex flex-col">
            <div class="flex items-baseline gap-2">
-             <span class="font-bold text-gray-900" :class="viewMode === 'list' ? 'text-lg md:text-2xl' : 'text-sm md:text-base'">
-               {{ formatPrice(product.price) }}
+             <span class="font-bold text-gray-900 dark:text-white" :class="viewMode === 'list' ? 'text-lg md:text-2xl' : 'text-sm md:text-base'">
+               {{ formatPrice(displayedPrice) }}
              </span>
              <span v-if="hasDiscount" class="text-[10px] md:text-xs text-gray-400 line-through font-medium">
-               {{ formatPrice(product.original_price) }}
+               {{ formatPrice(displayedOriginalPrice) }}
              </span>
            </div>
            
            <!-- List Mode Actions -->
            <div v-if="viewMode === 'list'" class="flex gap-2 md:gap-4 mt-3 md:mt-4">
               <button 
+                v-if="!isOwnProduct"
                 @click.stop="addToCart"
-                class="flex-1 md:flex-none px-4 md:px-6 py-2 bg-blue-600 text-white rounded-xl text-xs md:text-sm font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center gap-2"
+                class="flex-1 md:flex-none px-4 md:px-6 py-2 bg-blue-600 text-white rounded-xl text-xs md:text-sm font-bold shadow-lg shadow-blue-200 dark:shadow-none hover:bg-blue-700 active:scale-95 transition-all flex items-center justify-center gap-2"
               >
                 <i class="fas fa-shopping-bag"></i>
                 <span class="hidden xs:inline md:inline">Ajouter</span>
@@ -89,7 +103,7 @@
               </button>
               <button 
                 @click.stop="toggleWishlist"
-                class="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-gray-50 text-gray-400 hover:text-red-500 flex items-center justify-center transition-colors"
+                class="w-9 h-9 md:w-10 md:h-10 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-400 hover:text-red-500 flex items-center justify-center transition-colors"
                 title="Favoris"
               >
                 <i :class="isWishlisted ? 'fas fa-heart text-red-500' : 'far fa-heart'"></i>
@@ -100,9 +114,9 @@
         <!-- Grid Mode Actions -->
         <div v-if="viewMode === 'grid'" class="flex items-center gap-2">
             <!-- Mobile Rating -->
-            <div v-if="Number(product.rating || 0) > 0" class="flex md:hidden items-center gap-1 bg-yellow-50 px-2 py-1 rounded-lg border border-yellow-100">
+            <div v-if="Number(product.rating || 0) > 0" class="flex md:hidden items-center gap-1 bg-yellow-50 dark:bg-yellow-950/20 px-2 py-1 rounded-lg border border-yellow-100 dark:border-yellow-900/30">
                <i class="fas fa-star text-yellow-500 text-[10px]"></i>
-               <span class="text-xs font-bold text-gray-700">{{ Number(product.rating || 0).toFixed(1) }}</span>
+               <span class="text-xs font-bold text-gray-700 dark:text-gray-300">{{ Number(product.rating || 0).toFixed(1) }}</span>
             </div>
             
             <!-- Desktop Rating (Grid Only) -->
@@ -122,7 +136,7 @@
 
         <!-- Grid Mode Floating Add to Cart -->
         <button
-          v-if="viewMode === 'grid'"
+          v-if="viewMode === 'grid' && !isOwnProduct"
           @click.stop="addToCart"
           class="absolute bottom-2 right-2 w-8 h-8 md:w-10 md:h-10 rounded-full bg-blue-600 text-white shadow-lg flex items-center justify-center hover:bg-blue-700 hover:scale-110 active:scale-95 transition-all duration-300 z-10 group-hover:bottom-3"
           title="Ajouter au panier"
@@ -135,11 +149,13 @@
         <!-- Wishlist Grid Mode -->
         <button 
             v-if="viewMode === 'grid'"
-            class="absolute top-2 right-2 w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/90 backdrop-blur-sm shadow-sm flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-white transition-all transform hover:scale-110 z-10"
+            class="absolute top-2 right-2 w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm shadow-sm flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-white dark:hover:bg-gray-700 transition-all transform hover:scale-110 z-10"
             @click.stop="toggleWishlist"
+            title="Favoris"
         >
             <i :class="isWishlisted ? 'fas fa-heart text-red-500' : 'far fa-heart'" class="text-xs md:text-sm"></i>
         </button>
+
       </div>
     </div>
   </div>
@@ -149,9 +165,11 @@
 import { useRouter } from 'vue-router'
 import { useCartStore } from '@/stores/cart'
 import { useWishlistStore } from '@/stores/wishlist'
-import { computed } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import { computed, onMounted } from 'vue'
 import { useUiStore } from '@/stores/ui'
 import { ref, watchEffect } from 'vue'
+import api from '@/services/api'
 
 
 interface Props {
@@ -166,7 +184,15 @@ const props = withDefaults(defineProps<Props>(), {
 const router = useRouter()
 const cartStore = useCartStore()
 const wishlistStore = useWishlistStore()
+const authStore = useAuthStore()
 const uiStore = useUiStore()
+
+const isOwnProduct = computed(() => {
+  if (!authStore.isAuthenticated || !authStore.customer) return false
+  const userStoreId = authStore.customer.storeId
+  if (!userStoreId) return false
+  return userStoreId === props.product.storeId
+})
 
 const currentImageUrl = ref(props.product.image_url)
 
@@ -188,22 +214,53 @@ const handleImageError = () => {
 
 const isWishlisted = computed(() => wishlistStore.isInWishlist(props.product.id))
 
+const activeFlashSale = computed(() => {
+  if (props.product.flashSales && props.product.flashSales.length > 0) {
+    return props.product.flashSales[0]
+  }
+  return null
+})
+
 const hasDiscount = computed(() => {
+  if (activeFlashSale.value) return true
   const price = Number(props.product.price)
   const original = Number(props.product.original_price)
   return original > price
 })
 
 const discountPercentage = computed(() => {
+  if (activeFlashSale.value) return activeFlashSale.value.discount_percentage
   if (!hasDiscount.value) return 0
   const price = Number(props.product.price)
   const original = Number(props.product.original_price)
   return Math.round(((original - price) / original) * 100)
 })
 
+const displayedPrice = computed(() => {
+  if (activeFlashSale.value) return activeFlashSale.value.flash_price
+  return props.product.price
+})
+
+const displayedOriginalPrice = computed(() => {
+  if (activeFlashSale.value) return activeFlashSale.value.original_price
+  return props.product.original_price
+})
+
 const goToProduct = () => {
-  router.push(`/products/${props.product.id}`)
+  if (props.product.is_sponsored && props.product.boosts && props.product.boosts.length > 0) {
+    const boost = props.product.boosts[0]
+    api.post(`/boosts/${boost.id}/click`).catch(() => {})
+  }
+  const target = props.product.slug || props.product.id
+  router.push(`/products/${target}`)
 }
+
+onMounted(() => {
+  if (props.product.is_sponsored && props.product.boosts && props.product.boosts.length > 0) {
+    const boost = props.product.boosts[0]
+    api.post(`/boosts/${boost.id}/impression`).catch(() => {})
+  }
+})
 
 const toggleWishlist = () => {
   wishlistStore.toggleItem(props.product)

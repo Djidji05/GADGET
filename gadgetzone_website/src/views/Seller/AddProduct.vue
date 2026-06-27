@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full md:pt-4 pb-12">
+  <div class="w-full md:pt-4 pb-2">
     <!-- MOBILE HEADER (Blue Gradient Theme) -->
     <div class="md:hidden bg-gray-50 -mt-2 font-sans relative">
         <!-- Top Section -->
@@ -21,7 +21,7 @@
                     <div class="flex justify-center mb-4">
                         <div class="relative group cursor-pointer" @click="mainImageInput?.click()">
                             <div class="w-28 h-28 rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 flex items-center justify-center overflow-hidden">
-                                <img v-if="mainImagePreview" :src="mainImagePreview" class="w-full h-full object-cover" />
+                                <img alt="" v-if="mainImagePreview" :src="mainImagePreview" class="w-full h-full object-cover" />
                                 <div v-else class="flex flex-col items-center justify-center text-gray-400">
                                     <i class="fas fa-camera text-2xl mb-1"></i>
                                     <span class="text-[10px] uppercase font-bold">Photo</span>
@@ -56,7 +56,7 @@
       <SellerSidebar />
 
       <!-- Main Content -->
-      <div class="flex-1 w-full pb-24 md:pb-10">
+      <div class="flex-1 w-full pb-2 md:pb-6">
           
         <!-- Desktop Header -->
         <div class="hidden md:flex items-center justify-between mb-8">
@@ -197,6 +197,115 @@
                             class="w-full bg-gray-50 border-none rounded-xl py-3 px-4 text-sm font-medium text-gray-900 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder-gray-300 resize-none"
                         ></textarea>
                     </div>
+
+                    <!-- Specifications Grid Section -->
+                    <div class="border-t border-gray-150 pt-5 space-y-4">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Spécifications du produit</label>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Couleur(s) (ex: Bleu, Rose, Vert...)</label>
+                                <input 
+                                    v-model="form.specifications.Couleur" 
+                                    type="text" 
+                                    placeholder="Ex: Bleu, Rose, Vert, Noir"
+                                    class="w-full bg-gray-50 border-none rounded-xl py-3 px-4 text-xs font-medium text-gray-900 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder-gray-300"
+                                />
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Taille / Size (ex: S, M, L...)</label>
+                                <input 
+                                    v-model="form.specifications.Taille" 
+                                    type="text" 
+                                    placeholder="Ex: S, M, L ou 128Go, 256Go"
+                                    class="w-full bg-gray-50 border-none rounded-xl py-3 px-4 text-xs font-medium text-gray-900 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder-gray-300"
+                                />
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Poids (ex: 384.8 g)</label>
+                                <input 
+                                    v-model="form.specifications.Poids" 
+                                    type="text" 
+                                    placeholder="Ex: 384.8 g"
+                                    class="w-full bg-gray-50 border-none rounded-xl py-3 px-4 text-xs font-medium text-gray-900 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder-gray-300"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Dimensions</label>
+                                <input 
+                                    v-model="form.specifications.Dimensions" 
+                                    type="text" 
+                                    placeholder="Ex: 187.3 x 168.6 x 83.4 mm"
+                                    class="w-full bg-gray-50 border-none rounded-xl py-3 px-4 text-xs font-medium text-gray-900 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder-gray-300"
+                                />
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Autonomie</label>
+                                <input 
+                                    v-model="form.specifications.Autonomie" 
+                                    type="text" 
+                                    placeholder="Ex: Jusqu'à 20 heures"
+                                    class="w-full bg-gray-50 border-none rounded-xl py-3 px-4 text-xs font-medium text-gray-900 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder-gray-300"
+                                />
+                            </div>
+                            <div>
+                                <label class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Garantie</label>
+                                <input 
+                                    v-model="form.specifications.Garantie" 
+                                    type="text" 
+                                    placeholder="Ex: 1 An"
+                                    class="w-full bg-gray-50 border-none rounded-xl py-3 px-4 text-xs font-medium text-gray-900 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder-gray-300"
+                                />
+                            </div>
+                        </div>
+
+                        <!-- Custom specifications list -->
+                        <div class="border-t border-dashed border-gray-100 pt-4">
+                            <label class="block text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-2">Autres spécifications personnalisées</label>
+                            
+                            <!-- Current custom specs -->
+                            <div class="space-y-2 mb-3">
+                                <div v-for="(val, key) in customSpecs" :key="key" class="flex gap-2 items-center bg-gray-50 p-2 rounded-xl border border-gray-100/50">
+                                    <span class="text-xs font-bold text-gray-700 bg-white px-2.5 py-1 rounded-lg border border-gray-200 min-w-[100px]">{{ key }}</span>
+                                    <input 
+                                        v-model="form.specifications[key]" 
+                                        type="text" 
+                                        class="flex-1 bg-white border border-gray-200 rounded-xl py-1 px-3 text-xs font-medium text-gray-800 focus:ring-1 focus:ring-blue-500" 
+                                    />
+                                    <button type="button" @click="removeCustomSpec(key as string)" class="w-8 h-8 rounded-xl bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors">
+                                        <i class="fas fa-trash-alt text-xs"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Add custom spec -->
+                            <div class="flex gap-2 bg-blue-50/10 p-3 rounded-xl border border-blue-50/50 max-w-xl">
+                                <input 
+                                    v-model="newCustomKey" 
+                                    type="text" 
+                                    placeholder="Caractéristique (ex: RAM, Matériau...)"
+                                    class="w-1/2 bg-white border border-gray-200 rounded-xl py-1.5 px-3 text-xs font-medium text-gray-800 focus:ring-1 focus:ring-blue-500"
+                                />
+                                <input 
+                                    v-model="newCustomValue" 
+                                    type="text" 
+                                    placeholder="Valeur (ex: 8Go, Aluminium...)"
+                                    class="flex-1 bg-white border border-gray-200 rounded-xl py-1.5 px-3 text-xs font-medium text-gray-800 focus:ring-1 focus:ring-blue-500"
+                                    @keyup.enter="addCustomSpec"
+                                />
+                                <button 
+                                    type="button" 
+                                    @click="addCustomSpec"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-4 py-1.5 rounded-xl transition-all active:scale-95 flex items-center justify-center"
+                                >
+                                    Ajouter
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -273,7 +382,7 @@
                 <!-- Preview Grid -->
                 <div v-if="filePreviews.length > 0" class="mt-6 grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
                     <div v-for="(preview, index) in filePreviews" :key="index" class="relative group aspect-square rounded-xl overflow-hidden shadow-sm border border-gray-100">
-                        <img :src="preview.url || preview" class="w-full h-full object-cover" />
+                        <img alt="" :src="preview.url || preview" class="w-full h-full object-cover" />
                         <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                             <button type="button" @click.stop="removeImage(index)" class="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 shadow-lg transform hover:scale-110 transition-all">
                                 <i class="fas fa-trash-alt text-xs"></i>
@@ -287,27 +396,25 @@
                 </div>
             </div>
 
-            <div v-if="error" class="bg-red-50 text-red-600 p-4 rounded-xl text-sm font-medium text-center border border-red-100">
+            <div v-if="error" class="bg-red-50 text-red-650 p-4 rounded-xl text-sm font-medium text-center border border-red-100">
                 <i class="fas fa-exclamation-circle mr-2"></i> {{ error }}
+            </div>
+
+            <!-- Submit Button at the bottom (Flows naturally) -->
+            <div class="pt-4 flex justify-end">
+                <button 
+                    type="submit" 
+                    :disabled="loading"
+                    class="w-full md:w-auto px-8 py-4 bg-gray-900 hover:bg-black text-white rounded-2xl font-bold text-sm shadow-lg shadow-gray-200 transition-all active:scale-95 flex items-center justify-center gap-2"
+                >
+                    <i v-if="loading" class="fas fa-circle-notch animate-spin"></i>
+                    <span v-else>{{ isEdit ? 'Enregistrer les modifications' : 'Créer le produit' }}</span>
+                </button>
             </div>
 
         </form>
       </div>
     </div>
-
-
-    <!-- Mobile Sticky Bottom Action Bar -->
-    <div class="md:hidden fixed bottom-[65px] left-0 right-0 bg-white border-t border-gray-100 p-4 z-40 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
-        <button 
-            @click="submitProduct" 
-            :disabled="loading" 
-            class="w-full text-white rounded-2xl py-4 font-bold text-sm shadow-xl active:scale-[0.98] transition-all flex items-center justify-center gap-2 bg-gray-900 shadow-gray-200"
-        >
-            <i v-if="loading" class="fas fa-circle-notch animate-spin"></i>
-            <span v-else>{{ isEdit ? 'Enregistrer les modifications' : 'Créer le produit' }}</span>
-        </button>
-    </div>
-
   </div>
 </template>
 
@@ -342,7 +449,15 @@ const form = reactive({
   category_id: null,
   brand_id: null,
   image_url: '',
-  images: [] as string[]
+  images: [] as string[],
+  specifications: {
+    Couleur: '',
+    Taille: '',
+    Poids: '',
+    Dimensions: '',
+    Autonomie: '',
+    Garantie: ''
+  } as Record<string, string>
 });
 
 const brands = ref<any[]>([]);
@@ -417,6 +532,18 @@ const fetchProduct = async () => {
         form.brand_id = product.brand_id;
         form.image_url = product.image_url;
         form.images = product.images || [];
+        
+        // Merge fetched specifications with initialized standard keys
+        const fetchedSpecs = product.specifications || {};
+        form.specifications = {
+          Couleur: fetchedSpecs.Couleur || fetchedSpecs.Color || '',
+          Taille: fetchedSpecs.Taille || fetchedSpecs.Size || '',
+          Poids: fetchedSpecs.Poids || fetchedSpecs.Weight || '',
+          Dimensions: fetchedSpecs.Dimensions || '',
+          Autonomie: fetchedSpecs.Autonomie || '',
+          Garantie: fetchedSpecs.Garantie || '',
+          ...fetchedSpecs
+        };
         
         // Initialize previews from existing images
         if (product.image_url) {
@@ -506,12 +633,52 @@ const removeImage = (index: number) => {
     filePreviews.value.splice(index, 1);
 };
 
+const newCustomKey = ref('');
+const newCustomValue = ref('');
+const standardKeys = ['Couleur', 'Taille', 'Poids', 'Dimensions', 'Autonomie', 'Garantie', 'Color', 'Size', 'Weight'];
+
+const customSpecs = computed(() => {
+  const custom: Record<string, string> = {};
+  if (!form.specifications) return custom;
+  Object.keys(form.specifications).forEach(k => {
+    if (!standardKeys.includes(k)) {
+      custom[k] = form.specifications[k] || '';
+    }
+  });
+  return custom;
+});
+
+const addCustomSpec = () => {
+  const key = newCustomKey.value.trim();
+  const val = newCustomValue.value.trim();
+  if (!key || !val) return;
+  form.specifications[key] = val;
+  newCustomKey.value = '';
+  newCustomValue.value = '';
+};
+
+const removeCustomSpec = (key: string) => {
+  delete form.specifications[key];
+};
+
 const submitProduct = async () => {
   loading.value = true;
   error.value = '';
 
   try {
-     const productData = { ...form };
+     // Clean empty standard specifications before submitting
+     const cleanedSpecs: Record<string, string> = {};
+     Object.keys(form.specifications).forEach(k => {
+       const val = form.specifications[k];
+       if (val && String(val).trim() !== '') {
+         cleanedSpecs[k] = String(val).trim();
+       }
+     });
+
+     const productData = { 
+       ...form,
+       specifications: cleanedSpecs
+     };
      
      // 1. Filter out remaining existing images from previews
      const remainingExistingImages = filePreviews.value

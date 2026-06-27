@@ -15,9 +15,13 @@ export const useProductsStore = defineStore('products', () => {
   const featuredProducts = ref<Product[]>([])
   const newProducts = ref<Product[]>([])
   const activeVendors = ref<any[]>([])
-  const isLoading = ref(false)
+  const activeRequests = ref(0)
+  const isLoading = computed(() => activeRequests.value > 0)
   const error = ref<string | null>(null)
   const usingFallback = ref(false)
+  
+  const startLoading = () => { activeRequests.value++ }
+  const stopLoading = () => { activeRequests.value = Math.max(0, activeRequests.value - 1) }
 
   // Pagination
   const currentPage = ref(1)
@@ -28,7 +32,7 @@ export const useProductsStore = defineStore('products', () => {
   const searchQuery = ref('')
   const selectedCategory = ref<number | null>(null)
   const selectedBrand = ref<number | null>(null)
-  const selectedVendor = ref<number | null>(null)
+  const selectedVendor = ref<number | string | null>(null)
   const productIds = ref<number[] | null>(null)
   const minPrice = ref<number | null>(null)
   const maxPrice = ref<number | null>(null)
@@ -53,7 +57,7 @@ export const useProductsStore = defineStore('products', () => {
   const loadProducts = async (page = 1, filters?: { search?: string; category?: number; brand?: number; minPrice?: number; maxPrice?: number }) => {
     try {
       console.log('📦 Loading products...')
-      isLoading.value = true
+      startLoading()
       error.value = null
       usingFallback.value = false
 
@@ -108,14 +112,14 @@ export const useProductsStore = defineStore('products', () => {
       usingFallback.value = true
       console.log('✅ Fallback products loaded:', fallbackFeaturedProducts.length)
     } finally {
-      isLoading.value = false
+      stopLoading()
     }
   }
 
-  const loadProduct = async (id: number) => {
+  const loadProduct = async (id: number | string) => {
     try {
       console.log('📦 Loading product:', id)
-      isLoading.value = true
+      startLoading()
       error.value = null
 
       const product = await productsService.getProduct(id)
@@ -132,21 +136,21 @@ export const useProductsStore = defineStore('products', () => {
       error.value = errorResponse.response?.data?.message || 'Produit non trouvé'
 
       // Chercher dans les fallbacks
-      const fallbackProduct = fallbackFeaturedProducts.find((p) => p.id === id)
+      const fallbackProduct = fallbackFeaturedProducts.find((p) => p.id === Number(id))
       if (fallbackProduct) {
         return fallbackProduct
       }
 
       throw err
     } finally {
-      isLoading.value = false
+      stopLoading()
     }
   }
 
   const loadCategories = async () => {
     try {
       console.log('📂 Loading categories...')
-      isLoading.value = true
+      startLoading()
       error.value = null
       usingFallback.value = false
 
@@ -172,14 +176,14 @@ export const useProductsStore = defineStore('products', () => {
       usingFallback.value = true
       console.log('✅ Fallback categories loaded:', fallbackCategories.length)
     } finally {
-      isLoading.value = false
+      stopLoading()
     }
   }
 
   const loadBrands = async () => {
     try {
       console.log('🏷️ Loading brands...')
-      isLoading.value = true
+      startLoading()
       error.value = null
       usingFallback.value = false
 
@@ -197,14 +201,14 @@ export const useProductsStore = defineStore('products', () => {
       // Fallback logic if needed
       brands.value = []
     } finally {
-      isLoading.value = false
+      stopLoading()
     }
   }
 
   const loadActiveVendors = async () => {
     try {
       console.log('🏪 Loading active vendors...')
-      isLoading.value = true
+      startLoading()
       error.value = null
 
       const response = await productsService.getVendors()
@@ -220,14 +224,14 @@ export const useProductsStore = defineStore('products', () => {
       console.warn('⚠️ Vendors API failed')
       activeVendors.value = []
     } finally {
-      isLoading.value = false
+      stopLoading()
     }
   }
 
   const loadFeaturedProducts = async () => {
     try {
       console.log('⭐ Loading featured products...')
-      isLoading.value = true
+      startLoading()
       error.value = null
       usingFallback.value = false
 
@@ -263,14 +267,14 @@ export const useProductsStore = defineStore('products', () => {
       featuredProducts.value = []
       usingFallback.value = false
     } finally {
-      isLoading.value = false
+      stopLoading()
     }
   }
 
   const loadNewProducts = async () => {
     try {
       console.log('🆕 Loading new products...')
-      isLoading.value = true
+      startLoading()
       error.value = null
       usingFallback.value = false
 
@@ -293,14 +297,14 @@ export const useProductsStore = defineStore('products', () => {
       // Fallback logic if needed
       newProducts.value = []
     } finally {
-      isLoading.value = false
+      stopLoading()
     }
   }
 
   const searchProducts = async (query: string) => {
     try {
       console.log('🔍 Searching products:', query)
-      isLoading.value = true
+      startLoading()
       error.value = null
 
       const results = await productsService.searchProducts(query, userLat.value || undefined, userLng.value || undefined)
@@ -323,14 +327,14 @@ export const useProductsStore = defineStore('products', () => {
           product.description?.toLowerCase().includes(query.toLowerCase()),
       )
     } finally {
-      isLoading.value = false
+      stopLoading()
     }
   }
 
   const loadProductsByCategory = async (categoryId: number) => {
     try {
       console.log('📦 Loading products by category:', categoryId)
-      isLoading.value = true
+      startLoading()
       error.value = null
 
       const products = await productsService.getProductsByCategory(categoryId)
@@ -349,7 +353,7 @@ export const useProductsStore = defineStore('products', () => {
       // Fallback: filtrer localement
       return fallbackFeaturedProducts.filter((product) => product.category_id === categoryId)
     } finally {
-      isLoading.value = false
+      stopLoading()
     }
   }
 

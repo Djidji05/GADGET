@@ -146,27 +146,26 @@ const faqs = [
       'Vérifiez que vos informations sont correctes et que vous avez suffisamment de fonds. Si le problème persiste, contactez votre banque ou essayez une autre méthode de paiement.',
   },
 
-  // Shipping
   {
     id: 7,
     category: 'shipping',
-    question: 'Quels sont les délais de livraison?',
+    question: 'Quels sont les délais et zones de livraison?',
     answer:
-      'Les délais de livraison varient selon votre localisation: Port-au-Prince: 1-2 jours, Provinces: 3-5 jours.',
+      'Nous couvrons l\'intégralité du territoire national. Les délais moyens sont de 24h à 48h pour la zone métropolitaine de Port-au-Prince, et de 3 à 5 jours ouvrés pour les villes de province, sous réserve des conditions de circulation.',
   },
   {
     id: 8,
     category: 'shipping',
-    question: 'Quels sont les frais de livraison?',
+    question: 'Quels sont les tarifs de livraison?',
     answer:
-      'Les frais de livraison sont de 250 HTG pour les commandes de moins de 5000 HTG. La livraison est gratuite pour les commandes de 5000 HTG et plus.',
+      'La livraison est facturée à un tarif forfaitaire de 250 HTG pour les commandes standards. Elle est **gratuite** pour toute commande supérieure à 5 000 HTG.',
   },
   {
     id: 9,
     category: 'shipping',
-    question: 'Puis-je choisir un créneau de livraison?',
+    question: 'Puis-je modifier l\'adresse de livraison après commande?',
     answer:
-      "Pour le moment, nous livrons pendant nos heures d'ouverture (9h-18h). Nous vous contacterons avant la livraison.",
+      "Une modification est possible tant que le colis n'a pas quitté l'entrepôt du vendeur. Contactez immédiatement notre support via l'Assistant IA ou par téléphone pour toute mise à jour urgente.",
   },
 
   // Returns

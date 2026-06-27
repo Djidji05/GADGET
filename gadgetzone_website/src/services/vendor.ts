@@ -42,8 +42,8 @@ export const vendorService = {
     },
 
     // Créer une demande de boost
-    createBoost: async (productId: number, packageName: string) => {
-        const response = await api.post('/vendors/me/boost', { productId, packageName })
+    createBoost: async (productId: number, packageName: string, adData: { costModel?: string; budget?: number; targetCategories?: string[] } = {}) => {
+        const response = await api.post('/vendors/me/boost', { productId, packageName, ...adData })
         return response.data
     },
 

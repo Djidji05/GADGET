@@ -41,9 +41,16 @@ import StoreFollower from './StoreFollower.js';
 import OrderTracking from './OrderTracking.js';
 import SecurityLog from './SecurityLog.js';
 import Visit from './Visit.js';
-
-
-// Définir les associations
+import Wishlist from './Wishlist.js';
+import FlashSale from './FlashSale.js';
+import LoyaltyAccount from './LoyaltyAccount.js';
+import LoyaltyTransaction from './LoyaltyTransaction.js';
+import PushSubscription from './PushSubscription.js';
+import ReviewVote from './ReviewVote.js';
+import Achievement from './Achievement.js';
+import UserAchievement from './UserAchievement.js';
+import QRPayment from './QRPayment.js';
+import OrderPayment from './OrderPayment.js';// Définir les associations
 Order.hasMany(OrderItem, { foreignKey: 'order_id', as: 'items' });
 OrderItem.belongsTo(Order, { foreignKey: 'order_id' });
 
@@ -68,6 +75,24 @@ Review.belongsTo(Product, { foreignKey: 'product_id', as: 'product' });
 User.hasMany(Review, { foreignKey: 'user_id', as: 'reviews' });
 Review.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 
+// ReviewVote associations
+Review.hasMany(ReviewVote, { foreignKey: 'review_id', as: 'votes' });
+ReviewVote.belongsTo(Review, { foreignKey: 'review_id' });
+User.hasMany(ReviewVote, { foreignKey: 'user_id', as: 'review_votes' });
+ReviewVote.belongsTo(User, { foreignKey: 'user_id' });
+
+// PushSubscription associations
+User.hasMany(PushSubscription, { foreignKey: 'user_id', as: 'push_subscriptions' });
+PushSubscription.belongsTo(User, { foreignKey: 'user_id' });
+
+// UserAchievement associations
+User.hasMany(UserAchievement, { foreignKey: 'user_id', as: 'user_achievements' });
+UserAchievement.belongsTo(User, { foreignKey: 'user_id' });
+Achievement.hasMany(UserAchievement, { foreignKey: 'achievement_id', as: 'user_achievements' });
+UserAchievement.belongsTo(Achievement, { foreignKey: 'achievement_id', as: 'achievement' });
+User.belongsToMany(Achievement, { through: UserAchievement, foreignKey: 'user_id', as: 'achievements' });
+Achievement.belongsToMany(User, { through: UserAchievement, foreignKey: 'achievement_id', as: 'users' });
+
 Brand.hasMany(Product, { foreignKey: 'brand_id', as: 'products' });
 Product.belongsTo(Brand, { foreignKey: 'brand_id', as: 'brand' });
 
@@ -89,11 +114,22 @@ Store.belongsToMany(User, { through: StoreFollower, foreignKey: 'storeId', as: '
 Store.hasMany(Product, { foreignKey: 'storeId', as: 'products' });
 Product.belongsTo(Store, { foreignKey: 'storeId', as: 'store' });
 
+Store.hasMany(Boost, { foreignKey: 'storeId', as: 'boosts' });
+Boost.belongsTo(Store, { foreignKey: 'storeId', as: 'store' });
+
+Product.hasMany(Boost, { foreignKey: 'productId', as: 'boosts' });
+Boost.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
+
 Store.hasMany(Payout, { foreignKey: 'storeId', as: 'payouts' });
 Payout.belongsTo(Store, { foreignKey: 'storeId', as: 'store' });
 
 Store.hasOne(Wallet, { foreignKey: 'storeId', as: 'wallet' });
 Wallet.belongsTo(Store, { foreignKey: 'storeId', as: 'store' });
+
+Store.hasMany(QRPayment, { foreignKey: 'store_id', as: 'qrPayments' });
+QRPayment.belongsTo(Store, { foreignKey: 'store_id', as: 'store' });
+User.hasMany(QRPayment, { foreignKey: 'payer_user_id', as: 'qrPaymentsPaid' });
+QRPayment.belongsTo(User, { foreignKey: 'payer_user_id', as: 'payer' });
 
 Store.hasMany(Promotion, { foreignKey: 'storeId', as: 'promotions' });
 Promotion.belongsTo(Store, { foreignKey: 'storeId', as: 'store' });
@@ -104,6 +140,9 @@ Deposit.belongsTo(Store, { foreignKey: 'storeId', as: 'store' });
 // Logistics associations (Phase 13)
 Store.hasMany(Order, { foreignKey: 'store_id', as: 'store_orders' });
 Order.belongsTo(Store, { foreignKey: 'store_id', as: 'store' });
+
+Order.hasMany(OrderPayment, { foreignKey: 'order_id', as: 'payments' });
+OrderPayment.belongsTo(Order, { foreignKey: 'order_id' });
 
 Order.hasMany(OrderTracking, { foreignKey: 'order_id', as: 'trackingHistory' });
 OrderTracking.belongsTo(Order, { foreignKey: 'order_id' });
@@ -177,13 +216,6 @@ Refund.belongsTo(User, { foreignKey: 'user_id', as: 'customer' });
 
 Refund.belongsTo(User, { foreignKey: 'processed_by', as: 'processor' });
 
-// Boost associations
-Store.hasMany(Boost, { foreignKey: 'storeId', as: 'boosts' });
-Boost.belongsTo(Store, { foreignKey: 'storeId', as: 'store' });
-
-Product.hasMany(Boost, { foreignKey: 'productId', as: 'boosts' });
-Boost.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
-
 // Community Forum associations
 Store.hasMany(ForumPost, { foreignKey: 'storeId', as: 'forumPosts' });
 ForumPost.belongsTo(Store, { foreignKey: 'storeId', as: 'author' });
@@ -200,6 +232,26 @@ ForumLike.belongsTo(ForumPost, { foreignKey: 'postId', as: 'post' });
 Store.hasMany(ForumLike, { foreignKey: 'storeId', as: 'forumLikes' });
 ForumLike.belongsTo(Store, { foreignKey: 'storeId', as: 'voter' });
 
+
+// ─── Wishlist associations ───────────────────────────────────────────────────
+User.hasMany(Wishlist, { foreignKey: 'user_id', as: 'wishlistItems' });
+Wishlist.belongsTo(User, { foreignKey: 'user_id' });
+Wishlist.belongsTo(Product, { foreignKey: 'product_id', as: 'product' });
+Product.hasMany(Wishlist, { foreignKey: 'product_id' });
+
+// ─── FlashSale associations ───────────────────────────────────────────────────
+Product.hasMany(FlashSale, { foreignKey: 'product_id', as: 'flashSales' });
+FlashSale.belongsTo(Product, { foreignKey: 'product_id', as: 'product' });
+Store.hasMany(FlashSale, { foreignKey: 'store_id', as: 'flashSales' });
+FlashSale.belongsTo(Store, { foreignKey: 'store_id', as: 'store' });
+
+// ─── Loyalty associations ─────────────────────────────────────────────────────
+User.hasOne(LoyaltyAccount, { foreignKey: 'user_id', as: 'loyaltyAccount' });
+LoyaltyAccount.belongsTo(User, { foreignKey: 'user_id' });
+
+User.hasMany(LoyaltyTransaction, { foreignKey: 'user_id', as: 'loyaltyTransactions' });
+LoyaltyTransaction.belongsTo(User, { foreignKey: 'user_id' });
+LoyaltyTransaction.belongsTo(Order, { foreignKey: 'order_id', as: 'order' });
 
 // Hooks de Dénormalisation pour la performance "Rocket"
 const updateProductBuyBox = async (productId) => {
@@ -288,10 +340,19 @@ const db = {
   StoreFollower,
   OrderTracking,
   SecurityLog,
-  Visit
+  Visit,
+  Wishlist,
+  FlashSale,
+  LoyaltyAccount,
+  LoyaltyTransaction,
+  PushSubscription,
+  Achievement,
+  UserAchievement,
+  QRPayment,
+  OrderPayment
 };
 
 
-export { sequelize, Product, User, Address, Order, OrderItem, Category, Cart, CartItem, Brand, Expense, Newsletter, Campaign, Page, BlogPost, Role, Notification, Review, Store, Payout, OrderLog, Banner, HomepageConfig, Conversation, Message, Promotion, Deposit, Referral, Dispute, DisputeMessage, Refund, Setting, Offer, Boost, ForumPost, ForumComment, ForumLike, Wallet, StoreFollower, OrderTracking, SecurityLog, Visit };
+export { sequelize, Product, User, Address, Order, OrderItem, Category, Cart, CartItem, Brand, Expense, Newsletter, Campaign, Page, BlogPost, Role, Notification, Review, Store, Payout, OrderLog, Banner, HomepageConfig, Conversation, Message, Promotion, Deposit, Referral, Dispute, DisputeMessage, Refund, Setting, Offer, Boost, ForumPost, ForumComment, ForumLike, Wallet, StoreFollower, OrderTracking, SecurityLog, Visit, Wishlist, FlashSale, LoyaltyAccount, LoyaltyTransaction, PushSubscription, ReviewVote, Achievement, UserAchievement, QRPayment, OrderPayment };
 
 export default db;

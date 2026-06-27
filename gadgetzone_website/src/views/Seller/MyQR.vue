@@ -4,11 +4,13 @@ import { useRouter, useRoute } from 'vue-router';
 import api from '../../services/api';
 import { useNotificationsStore } from '../../stores/notifications';
 import { useUiStore } from '../../stores/ui';
+import { useSSEStore } from '../../stores/sse';
 import { Html5Qrcode } from 'html5-qrcode';
 
 const router = useRouter();
 const notificationsStore = useNotificationsStore();
 const uiStore = useUiStore();
+const sseStore = useSSEStore();
 
 const store = ref<any>(null);
 const loading = ref(true);
@@ -42,7 +44,45 @@ const storeUrl = computed(() => {
     return `${origin}/store/${store.value.id}`;
 });
 
+const qrType = ref<'static' | 'dynamic'>('static');
+const paymentAmount = ref<number | null>(null);
+const qrRef = ref<string | null>(null);
+const qrPaymentStatus = ref<'pending' | 'paid'>('pending');
+const generating = ref(false);
+let unsubscribeSSE: (() => void) | null = null;
+
+const generateDynamicQR = async () => {
+    if (!paymentAmount.value || paymentAmount.value <= 0) {
+        uiStore.showToast('Veuillez saisir un montant valide.', 'error');
+        return;
+    }
+    try {
+        generating.value = true;
+        qrPaymentStatus.value = 'pending';
+        const res = await api.post('/qr-payments/create', { amount: paymentAmount.value });
+        if (res.data && res.data.success) {
+            qrRef.value = res.data.ref;
+            uiStore.showToast('QR Code de paiement généré !', 'success');
+        }
+    } catch (e: any) {
+        console.error("Failed to generate dynamic QR", e);
+        uiStore.showToast(e.response?.data?.message || 'Erreur lors de la génération', 'error');
+    } finally {
+        generating.value = false;
+    }
+};
+
+const dynamicQrUrl = computed(() => {
+    if (!qrRef.value) return '';
+    const origin = window.location.origin;
+    return `${origin}/pay-qr?ref=${qrRef.value}`;
+});
+
 const qrImageUrl = computed(() => {
+    if (qrType.value === 'dynamic') {
+        if (!dynamicQrUrl.value) return '';
+        return `https://api.qrserver.com/v1/create-qr-code/?size=250x250&color=1e3a8a&bgcolor=ffffff&data=${encodeURIComponent(dynamicQrUrl.value)}`;
+    }
     if (!storeUrl.value) return '';
     return `https://api.qrserver.com/v1/create-qr-code/?size=250x250&color=1e3a8a&bgcolor=ffffff&data=${encodeURIComponent(storeUrl.value)}`;
 });
@@ -209,6 +249,15 @@ onMounted(() => {
     // Hide main seller bottom nav while on this page to avoid redundancy
     uiStore.isSellerNavVisible = false;
 
+    // Connect to SSE and listen for payments
+    sseStore.connect();
+    unsubscribeSSE = sseStore.onEvent('qr_payment_received', (data: any) => {
+        if (data && data.ref === qrRef.value) {
+            qrPaymentStatus.value = 'paid';
+            uiStore.showToast(`Paiement de ${data.amount} HTG reçu ! ✅`, 'success');
+        }
+    });
+
     // Direct access to scanner via query param
     if (route.query.tab === 'scanner') {
         activeTab.value = 'scanner';
@@ -222,6 +271,9 @@ onMounted(() => {
 onUnmounted(() => {
     if (scannerActive.value) {
         stopScanner();
+    }
+    if (unsubscribeSSE) {
+        unsubscribeSSE();
     }
     // Always restore bottom nav when leaving the page
     uiStore.isSellerNavVisible = true;
@@ -285,34 +337,75 @@ onUnmounted(() => {
 
             <!-- SHOP QR TAB CONTENT (Reference Image Style) -->
             <div v-else class="flex-1 flex flex-col items-center px-6 pt-4 animate-in fade-in duration-700">
-                <div v-if="store" class="w-full max-w-[340px] bg-white rounded-[32px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.05)] relative">
-                    <!-- QR SECTION -->
-                    <div class="p-8 pb-4 flex flex-col items-center">
-                        <div class="p-4 bg-white rounded-2xl border border-gray-100 shadow-sm mb-6">
-                            <img :src="qrImageUrl" alt="QR Code" class="w-[220px] h-[220px] object-contain" />
+                <div v-if="store" class="w-full max-w-[340px] bg-white dark:bg-gray-900 rounded-[32px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.05)] relative">
+                    
+                    <!-- Toggle Switch -->
+                    <div class="px-8 pt-8 pb-2">
+                        <div class="flex bg-gray-100 dark:bg-gray-800 rounded-full p-1 w-full border border-gray-200/50 dark:border-gray-700">
+                            <button @click="qrType = 'static'" :class="qrType === 'static' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'" class="flex-1 py-2 text-xs font-bold rounded-full transition-all">Statique</button>
+                            <button @click="qrType = 'dynamic'" :class="qrType === 'dynamic' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700'" class="flex-1 py-2 text-xs font-bold rounded-full transition-all">Paiement QR</button>
                         </div>
+                    </div>
+
+                    <!-- SUCCESS STATE FOR PAID DYNAMIC QR -->
+                    <div v-if="qrType === 'dynamic' && qrPaymentStatus === 'paid'" class="p-8 flex flex-col items-center justify-center min-h-[300px] text-center animate-in zoom-in duration-500">
+                        <div class="w-20 h-20 rounded-full bg-green-500 text-white flex items-center justify-center mb-6 shadow-xl shadow-green-200">
+                            <i class="fas fa-check text-3xl"></i>
+                        </div>
+                        <h3 class="text-2xl font-black text-gray-900 dark:text-white mb-2">Paiement Reçu !</h3>
+                        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">La transaction de {{ paymentAmount }} HTG a été validée avec succès.</p>
+                        <button @click="qrPaymentStatus = 'pending'; qrRef = null; paymentAmount = null" class="mt-8 px-6 py-2 bg-blue-600 text-white text-xs font-bold uppercase tracking-wider rounded-xl active:scale-95 transition-all">Nouvelle facture</button>
+                    </div>
+
+                    <!-- NORMAL STATE -->
+                    <div v-else class="p-8 pb-4 flex flex-col items-center">
                         
-                        <h3 class="text-xl font-black text-gray-900 tracking-tight uppercase">{{ store.name }}</h3>
-                        <p class="text-gray-500 font-bold text-sm mt-1 mb-4">{{ store.phone || 'HTFasil Vendor' }}</p>
+                        <!-- DYNAMIC QR INPUT -->
+                        <div v-if="qrType === 'dynamic' && !qrRef" class="w-full flex flex-col items-center mb-4">
+                            <label class="text-[11px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-3 text-left w-full">Montant de la transaction (HTG)</label>
+                            <div class="relative w-full mb-4">
+                                <input v-model.number="paymentAmount" type="number" placeholder="Ex: 500" class="w-full px-5 py-3 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white font-bold outline-none focus:border-blue-500 transition-colors" />
+                                <span class="absolute right-4 top-1/2 -translate-y-1/2 font-black text-xs text-gray-400">HTG</span>
+                            </div>
+                            <button @click="generateDynamicQR" :disabled="generating" class="w-full py-4 rounded-2xl bg-blue-600 text-white font-black text-xs uppercase tracking-widest active:scale-95 transition-all disabled:opacity-50">
+                                {{ generating ? 'Génération...' : 'Générer le Code QR' }}
+                            </button>
+                        </div>
+
+                        <!-- DISPLAY QR CODE -->
+                        <div v-else class="flex flex-col items-center w-full">
+                            <div class="p-4 bg-white rounded-2xl border border-gray-100 shadow-sm mb-6 relative">
+                                <img :src="qrImageUrl" alt="QR Code" class="w-[220px] h-[220px] object-contain" />
+                                <!-- Pulsing loader for dynamic pending QR -->
+                                <div v-if="qrType === 'dynamic'" class="absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-1 bg-amber-500 text-white text-[9px] font-black uppercase tracking-wider rounded-full shadow-md animate-pulse">
+                                    En attente de paiement...
+                                </div>
+                            </div>
+                            
+                            <h3 class="text-xl font-black text-gray-900 dark:text-white tracking-tight uppercase">{{ store.name }}</h3>
+                            <p class="text-gray-500 dark:text-gray-400 font-bold text-sm mt-1 mb-4">
+                                {{ qrType === 'dynamic' ? `Facture : ${paymentAmount} HTG` : (store.phone || 'HTFasil Vendor') }}
+                            </p>
+                        </div>
                     </div>
 
                     <!-- TICKET DIVIDER -->
-                    <div class="relative py-2 flex items-center">
-                        <div class="absolute left-0 -translate-x-1/2 w-8 h-8 rounded-full bg-[#FFF8F0]"></div>
-                        <div class="flex-1 border-t-2 border-dashed border-gray-100"></div>
-                        <div class="absolute right-0 translate-x-1/2 w-8 h-8 rounded-full bg-[#FFF8F0]"></div>
+                    <div v-if="qrType === 'static' || qrRef" class="relative py-2 flex items-center">
+                        <div class="absolute left-0 -translate-x-1/2 w-8 h-8 rounded-full bg-[#FFF8F0] dark:bg-gray-950"></div>
+                        <div class="flex-1 border-t-2 border-dashed border-gray-100 dark:border-gray-800"></div>
+                        <div class="absolute right-0 translate-x-1/2 w-8 h-8 rounded-full bg-[#FFF8F0] dark:bg-gray-950"></div>
                     </div>
 
                     <!-- ACTION SECTION -->
-                    <div class="px-8 py-6 flex items-center justify-around">
+                    <div v-if="qrType === 'static' || qrRef" class="px-8 py-6 flex items-center justify-around">
                         <button @click="shareToWhatsApp" class="flex items-center gap-2 group active:scale-95 transition-all">
                             <i class="fas fa-share-nodes text-blue-600 text-lg"></i>
-                            <span class="text-[11px] font-black text-gray-700">Partager le QR</span>
+                            <span class="text-[11px] font-black text-gray-700 dark:text-gray-300">Partager le QR</span>
                         </button>
-                        <div class="w-[1px] h-6 bg-gray-100"></div>
+                        <div class="w-[1px] h-6 bg-gray-100 dark:bg-gray-800"></div>
                         <button @click="downloadQR" class="flex items-center gap-2 group active:scale-95 transition-all">
                             <i class="fas fa-file-arrow-down text-blue-600 text-lg"></i>
-                            <span class="text-[11px] font-black text-gray-700">Télécharger</span>
+                            <span class="text-[11px] font-black text-gray-700 dark:text-gray-300">Télécharger</span>
                         </button>
                     </div>
                 </div>
@@ -339,30 +432,7 @@ onUnmounted(() => {
             </div>
         </div>
 
-        <!-- NEW BOTTOM TAB BAR (Reference Image Style) -->
-        <div class="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 w-full max-w-[350px] px-6">
-            <div class="flex items-center bg-white rounded-full shadow-[0_15px_35px_rgba(0,0,0,0.08)] p-1.5 h-[64px] border border-gray-100">
-                <button 
-                  @click="activeTab = 'scanner'; startScanner()"
-                  class="flex-1 flex items-center justify-center gap-3 rounded-full h-full transition-all duration-300 active:scale-95"
-                  :class="activeTab === 'scanner' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400'"
-                >
-                    <i class="fas fa-table-cells-large text-lg"></i>
-                    <span class="text-[10px] font-black uppercase tracking-tight">Scanner le QR</span>
-                </button>
-                <button 
-                  @click="activeTab = 'shop_qr'; stopScanner()"
-                  class="flex-1 flex items-center justify-center gap-3 rounded-full h-full transition-all duration-300 active:scale-95"
-                  :class="activeTab === 'shop_qr' ? 'bg-blue-600 text-white shadow-lg' : 'text-gray-400'"
-                >
-                    <i class="fas fa-barcode text-lg"></i>
-                    <div class="flex flex-col items-start leading-[1]">
-                        <span class="text-[10px] font-black uppercase">Mon</span>
-                        <span class="text-[10px] font-black uppercase">QR</span>
-                    </div>
-                </button>
-            </div>
-        </div>
+
     </div>
 </template>
 

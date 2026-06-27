@@ -180,7 +180,7 @@
                   <div v-else class="flex flex-col items-center">
                     <p class="text-sm text-green-600 font-medium my-2">✅ Fichier sélectionné</p>
                     <button type="button" @click="form.identityData = '';" class="text-xs text-red-500 hover:underline">Supprimer</button>
-                    <img v-if="form.identityData.startsWith('data:image')" :src="form.identityData" class="mt-2 h-24 object-contain" />
+                    <img alt="" v-if="form.identityData.startsWith('data:image')" :src="form.identityData" class="mt-2 h-24 object-contain" />
                   </div>
                 </div>
               </div>

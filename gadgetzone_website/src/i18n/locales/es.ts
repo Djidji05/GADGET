@@ -368,6 +368,12 @@ export default {
         edit: 'Editar',
         close: 'Cerrar',
         discover: 'Descubrir',
+        about: 'Sobre nosotros',
+        contact: 'Contacto',
+        faq: 'FAQ',
+        cookie_text: 'Utilizamos cookies para mejorar su experiencia en HTFasil. 🍪',
+        cookie_accept: '¡Entendido!',
+        cookie_learn_more: 'Saber más'
     },
     account: {
         profile: 'Perfil',

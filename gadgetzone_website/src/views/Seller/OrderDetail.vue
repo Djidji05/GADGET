@@ -7,8 +7,9 @@
       <!-- Main Content Area -->
       <div class="flex-1 min-h-screen bg-gray-50 rounded-3xl overflow-hidden shadow-sm md:shadow-md md:mx-0 pb-40 md:pb-28 relative">
 
-    <!-- Top Navigation -->
-    <div class="bg-white sticky top-0 z-30 px-4 py-2 shadow-sm border-b border-gray-100 flex items-center gap-3">
+
+    <!-- Top Navigation (Mobile only — desktop uses global navbar) -->
+    <div class="md:hidden bg-white sticky top-0 z-30 px-4 py-2 shadow-sm border-b border-gray-100 flex items-center gap-3">
         <button @click="router.back()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100">
             <i class="fas fa-arrow-left text-gray-600"></i>
         </button>
@@ -17,6 +18,18 @@
             <div v-else class="h-6 w-32 bg-gray-200 rounded animate-pulse"></div>
         </div>
     </div>
+
+    <!-- Desktop Back Button -->
+    <div class="hidden md:flex items-center gap-3 mb-6">
+        <button @click="router.back()" class="w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-slate-200 hover:bg-slate-50 transition-colors shadow-sm">
+            <i class="fas fa-arrow-left text-slate-600 text-sm"></i>
+        </button>
+        <div>
+            <h1 class="text-2xl font-black text-slate-800 tracking-tight" v-if="order">Commande #{{ order.order_number }}</h1>
+            <div v-else class="h-7 w-48 bg-slate-200 rounded-lg animate-pulse"></div>
+        </div>
+    </div>
+
 
     <div v-if="loading" class="flex flex-col items-center justify-center py-20">
         <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-900 mb-4"></div>
@@ -45,6 +58,7 @@
                     <span class="font-bold text-gray-900 capitalize text-lg">
                         {{ 
                             order.status === 'pending' ? 'En attente' : 
+                            order.status === 'partially_paid' ? 'Paiement Incomplet' : 
                             order.status === 'confirmed' ? 'Confirmé' : 
                             order.status === 'processing' ? 'En préparation' : 
                             order.status === 'shipped' ? 'Expédié' : 
@@ -123,7 +137,7 @@
             <div class="space-y-4 divide-y divide-gray-50">
                 <div v-for="item in order.items" :key="item.id" class="pt-4 first:pt-0 flex gap-4">
                     <div class="w-16 h-16 rounded-xl bg-gray-50 border border-gray-100 p-1 flex-shrink-0">
-                        <img :src="item.product?.image_url" class="w-full h-full object-cover rounded-lg mix-blend-multiply" />
+                        <img alt="" :src="item.product?.image_url" class="w-full h-full object-cover rounded-lg mix-blend-multiply" />
                     </div>
                     <div class="flex-1">
                         <p class="font-bold text-gray-900 text-sm line-clamp-2">{{ item.product?.name }}</p>
@@ -152,12 +166,12 @@
                 </div>
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-500 font-medium whitespace-nowrap">Commission Totale (Vérifiée)</span>
-                    <span class="font-bold text-red-500">- {{ formatPrice(orderTotal - order.items.reduce((acc, i) => acc + ((i.price * i.quantity) * (1 - (i.product?.category?.commission_rate || 10) / 100)), 0)) }} HTG</span>
+                    <span class="font-bold text-red-500">- {{ formatPrice(orderTotal - order.items.reduce((acc: number, i: any) => acc + ((i.price * i.quantity) * (1 - (i.product?.category?.commission_rate || 10) / 100)), 0)) }} HTG</span>
                 </div>
                 <div class="flex justify-between items-center text-xl font-black pt-4 border-t border-gray-100 mt-2">
                     <span class="text-gray-900">Gain Net</span>
                     <div class="text-right">
-                        <span class="text-blue-600 block leading-none">{{ formatPrice(order.items.reduce((acc, i) => acc + ((i.price * i.quantity) * (1 - (i.product?.category?.commission_rate || 10) / 100)), 0)) }} <span class="text-xs opacity-60">HTG</span></span>
+                        <span class="text-blue-600 block leading-none">{{ formatPrice(order.items.reduce((acc: number, i: any) => acc + ((i.price * i.quantity) * (1 - (i.product?.category?.commission_rate || 10) / 100)), 0)) }} <span class="text-xs opacity-60">HTG</span></span>
                         <span class="text-[10px] text-emerald-500 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-100 uppercase tracking-tighter mt-1 inline-block">Vérification Terminée</span>
                     </div>
                 </div>
@@ -238,6 +252,12 @@
             <button @click="updateStatus('confirmed')" class="flex-[2] py-3.5 rounded-xl bg-blue-900 text-white font-bold text-sm shadow-lg shadow-blue-200 active:scale-[0.98] transition-all">
                 Valider la commande
             </button>
+        </template>
+        
+        <template v-else-if="order.status.toLowerCase() === 'partially_paid'">
+            <div class="w-full text-center py-3 bg-red-50 text-red-700 rounded-2xl font-bold text-sm border border-red-100">
+                <i class="fas fa-exclamation-triangle mr-2"></i> Paiement Incomplet - NE PAS EXPÉDIER
+            </div>
         </template>
 
         <template v-else-if="order.status.toLowerCase() === 'confirmed'">
@@ -396,18 +416,21 @@ const formatPrice = (price: number) => {
 };
 
 const formatDate = (date: string) => {
-  if (!date || isNaN(new Date(date).getTime())) return 'Date inconnue';
-  return new Date(date).toLocaleDateString('fr-FR', {
-    day: 'numeric',
-    month: 'long',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-};
+    if (!date) return ''
+    const locale = 'fr-HT'
+    return new Date(date).toLocaleString(locale, {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    })
+}
 
 const getStatusText = (status: string) => {
   const texts: Record<string, string> = {
     pending: 'En attente',
+    partially_paid: 'Paiement Incomplet',
     confirmed: 'Confirmée',
     processing: 'En préparation',
     shipped: 'Expédiée',
@@ -420,6 +443,7 @@ const getStatusText = (status: string) => {
 const getLogColor = (status: string) => {
     switch(status) {
         case 'pending': return 'bg-yellow-500';
+        case 'partially_paid': return 'bg-orange-500';
         case 'confirmed': return 'bg-blue-500';
         case 'processing': return 'bg-indigo-500';
         case 'shipped': return 'bg-purple-500';

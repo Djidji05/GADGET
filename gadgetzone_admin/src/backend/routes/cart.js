@@ -1,3 +1,4 @@
+import express from 'express';
 import { Cart, CartItem, Offer, Store, Promotion } from '../models/index.js';
 import Product from '../models/Product.js';
 import { authenticateToken } from '../middleware/auth.js';
@@ -129,6 +130,14 @@ router.post('/add', async (req, res) => {
     const product = await Product.findByPk(productId);
     if (!product) {
       return res.status(404).json({ message: 'Produit non trouvé' });
+    }
+
+    // Vérifier que le vendeur n'achète pas ses propres produits
+    if (req.user.role === 'vendor' || req.user.role === 'admin') {
+      const store = await Store.findOne({ where: { userId: customerId } });
+      if (store && product.storeId === store.id) {
+        return res.status(400).json({ message: "Vous ne pouvez pas acheter vos propres produits." });
+      }
     }
 
     // Déterminer le prix (Offre, variante ou de base)

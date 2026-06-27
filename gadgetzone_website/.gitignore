@@ -7,6 +7,15 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Build output logs
+build_website*.txt
+website_errors.txt
+website_parsed.json
+
+# Debug & temp
+debug_*.txt
+tc.log
+
 node_modules
 .DS_Store
 dist

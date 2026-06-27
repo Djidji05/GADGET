@@ -62,6 +62,9 @@ export default {
         reviews: 'Modération Avis',
         analytics: 'Analytics',
         boosts: 'Boosts',
-        sellerAcademy: 'Seller Academy',
+        sellerAcademy: 'Académie Vendeurs',
+        flashSales: 'Ventes Flash',
+        sitePages: 'Pages du site (CGU, etc.)',
+        disputes: 'Litiges',
     }
 }

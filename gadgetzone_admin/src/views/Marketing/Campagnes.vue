@@ -290,7 +290,7 @@ const showModal = ref(false);
 const isEditing = ref(false);
 
 const form = ref({
-  id: null as number | null,
+  id: undefined as number | undefined,
   name: '',
   type: 'Email',
   status: 'Draft',
@@ -336,7 +336,7 @@ const openModal = (campaign: any = null) => {
   } else {
     isEditing.value = false;
     form.value = {
-      id: null,
+      id: undefined,
       name: '',
       type: 'Email',
       status: 'Draft',
@@ -359,10 +359,10 @@ const handleSubmit = async () => {
   submitting.value = true;
   try {
     if (isEditing.value && form.value.id) {
-      await campaignsService.update(form.value.id, form.value);
+      await campaignsService.update(form.value.id, form.value as any);
       uiStore.addToast('Campagne mise à jour', 'success');
     } else {
-      await campaignsService.create(form.value);
+      await campaignsService.create(form.value as any);
       uiStore.addToast('Campagne créée avec succès', 'success');
     }
     showModal.value = false;

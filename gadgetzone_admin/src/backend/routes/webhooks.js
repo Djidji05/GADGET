@@ -11,4 +11,10 @@ const router = express.Router();
  */
 router.post('/moncash', webhookLimiter, paymentController.handleMonCashWebhook);
 
+/**
+ * POST /api/webhooks/stripe
+ * Webhook endpoint for Stripe checkout sessions notifications
+ */
+router.post('/stripe', webhookLimiter, paymentController.handleStripeWebhook);
+
 export default router;

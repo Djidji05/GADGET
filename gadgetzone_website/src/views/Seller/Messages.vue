@@ -1,13 +1,19 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick, computed } from 'vue';
+import { ref, onMounted, onUnmounted, nextTick, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { messageService, disputeService } from '@/services/api';
 import { useNotificationsStore } from '@/stores/notifications';
+import { useAuthStore } from '@/stores/auth';
+import { useSSEStore } from '@/stores/sse';
 import { useRoute } from 'vue-router';
 
 const router = useRouter();
 const route = useRoute();
 const notificationsStore = useNotificationsStore();
+const authStore = useAuthStore();
+const sseStore = useSSEStore();
+
+const currentUserId = computed(() => authStore.customer?.id);
 
 interface Message {
   id: number;
@@ -181,6 +187,8 @@ const formatDateShort = (date: string) => {
     return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
 };
 
+let unsubscribeMessageSSE: (() => void) | null = null;
+
 onMounted(() => {
     if (route.query.view === 'disputes') {
         activeTab.value = 'disputes';
@@ -189,13 +197,54 @@ onMounted(() => {
         fetchConversations();
     }
     notificationsStore.fetchNotifications(true);
+
+    // Écouter les nouveaux messages SSE en temps réel
+    unsubscribeMessageSSE = sseStore.onEvent('new_message', (data: any) => {
+        // Mettre à jour la liste des conversations
+        const conv = conversations.value.find(c => c.id === data.conversationId);
+        if (conv) {
+            conv.lastMessage = data.content;
+            conv.lastMessageAt = data.createdAt;
+            // Déplacer la conversation en haut
+            conversations.value = [conv, ...conversations.value.filter(c => c.id !== data.conversationId)];
+        } else {
+            // Recharger si conversation inconnue
+            fetchConversations();
+        }
+
+        // Si la conversation est active, ajouter le message en temps réel
+        if (selectedConversation.value && selectedConversation.value.id === data.conversationId) {
+            if (!messages.value.some(m => m.id === data.id)) {
+                messages.value.push({
+                    id: data.id,
+                    conversationId: data.conversationId,
+                    senderId: data.senderId,
+                    content: data.content,
+                    createdAt: data.createdAt,
+                    isRead: true
+                });
+                nextTick(() => {
+                    scrollToBottom();
+                });
+            }
+        } else if (conv) {
+            // Incrémenter le compteur non lu si c'est une autre conversation
+            conv.unreadCount = (conv.unreadCount || 0) + 1;
+        }
+    });
+});
+
+onUnmounted(() => {
+    if (unsubscribeMessageSSE) {
+        unsubscribeMessageSSE();
+    }
 });
 </script>
 
 <template>
 <div class="bg-gray-50 h-screen flex flex-col font-sans overflow-hidden">
         <!-- Header (Mobile Only) -->
-        <div v-if="!selectedConversation && !selectedDispute" class="bg-blue-900 text-white px-6 pt-12 pb-6 md:hidden">
+        <div v-if="!selectedConversation && !selectedDispute" class="bg-blue-900 text-white px-6 pt-12 pb-6 lg:hidden">
             <div class="flex items-center gap-4">
                 <button @click="router.push('/seller/dashboard')" class="w-10 h-10 flex items-center justify-center rounded-full bg-white/10">
                     <i class="fas fa-arrow-left"></i>
@@ -206,8 +255,8 @@ onMounted(() => {
 
         <div class="flex flex-1 overflow-hidden">
             <!-- Conversations/Disputes List -->
-            <div :class="['w-full md:w-80 lg:w-96 bg-white border-r border-gray-100 flex flex-col', (selectedConversation || selectedDispute) ? 'hidden md:flex' : 'flex']">
-                <div class="p-6 border-b border-gray-50 hidden md:block">
+            <div :class="['w-full lg:w-96 bg-white border-r border-gray-100 flex flex-col', (selectedConversation || selectedDispute) ? 'hidden lg:flex' : 'flex']">
+                <div class="p-6 border-b border-gray-50 hidden lg:block">
                     <h2 class="text-xl font-bold text-gray-900">Communication</h2>
                 </div>
                 
@@ -256,7 +305,7 @@ onMounted(() => {
                         >
                             <div class="relative flex-shrink-0">
                                 <div class="w-14 h-14 rounded-full bg-gray-100 overflow-hidden border border-gray-50 shadow-sm">
-                                    <img v-if="conv.otherParticipant.avatar || conv.otherParticipant.logoUrl" :src="conv.otherParticipant.avatar || conv.otherParticipant.logoUrl" class="w-full h-full object-cover" />
+                                    <img alt="" v-if="conv.otherParticipant.avatar || conv.otherParticipant.logoUrl" :src="conv.otherParticipant.avatar || conv.otherParticipant.logoUrl" class="w-full h-full object-cover" />
                                     <div v-else class="w-full h-full flex items-center justify-center bg-blue-100 text-blue-600 font-bold text-lg uppercase">
                                         {{ conv.otherParticipant.name.charAt(0) }}
                                     </div>
@@ -330,15 +379,15 @@ onMounted(() => {
             </div>
 
             <!-- Chat Area -->
-            <div :class="['flex-1 bg-white flex flex-col', (!selectedConversation && !selectedDispute) ? 'hidden md:flex' : 'flex']">
+            <div :class="['flex-1 bg-white flex flex-col', (!selectedConversation && !selectedDispute) ? 'hidden lg:flex' : 'flex']">
                 <template v-if="selectedConversation && activeTab === 'messages'">
                     <!-- Chat Header -->
                     <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-4 bg-white sticky top-0 z-10">
-                        <button @click="selectedConversation = null" class="md:hidden text-gray-400">
+                        <button @click="selectedConversation = null" class="lg:hidden text-gray-400">
                             <i class="fas fa-arrow-left"></i>
                         </button>
                         <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center overflow-hidden">
-                            <img v-if="selectedConversation.otherParticipant.avatar || selectedConversation.otherParticipant.logoUrl" :src="selectedConversation.otherParticipant.avatar || selectedConversation.otherParticipant.logoUrl" class="w-full h-full object-cover" />
+                            <img alt="" v-if="selectedConversation.otherParticipant.avatar || selectedConversation.otherParticipant.logoUrl" :src="selectedConversation.otherParticipant.avatar || selectedConversation.otherParticipant.logoUrl" class="w-full h-full object-cover" />
                             <span v-else class="font-bold text-blue-600">{{ selectedConversation.otherParticipant.name.charAt(0) }}</span>
                         </div>
                         <div>
@@ -354,15 +403,15 @@ onMounted(() => {
                         </div>
                         
                         <template v-else>
-                            <div v-for="(msg, index) in messages" :key="msg.id" :class="['flex', msg.senderId === 0 ? 'justify-end' : 'justify-start']">
+                            <div v-for="(msg, index) in messages" :key="msg.id" :class="['flex', msg.senderId === currentUserId ? 'justify-end' : 'justify-start']">
                                 <div :class="[
                                     'max-w-[75%] px-4 py-3 rounded-2xl shadow-sm text-sm',
-                                    msg.senderId === 0 ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white text-gray-800 rounded-tl-none border border-gray-100'
+                                    msg.senderId === currentUserId ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white text-gray-800 rounded-tl-none border border-gray-100'
                                 ]">
                                     <p class="leading-relaxed">{{ msg.content }}</p>
-                                    <div :class="['text-[9px] mt-1 flex items-center gap-1', msg.senderId === 0 ? 'text-blue-100 justify-end' : 'text-gray-400']">
+                                    <div :class="['text-[9px] mt-1 flex items-center gap-1', msg.senderId === currentUserId ? 'text-blue-100 justify-end' : 'text-gray-400']">
                                         {{ formatTime(msg.createdAt) }}
-                                        <i v-if="msg.senderId === 0" class="fas fa-check-double scale-75 opacity-80"></i>
+                                        <i v-if="msg.senderId === currentUserId" class="fas fa-check-double scale-75 opacity-80"></i>
                                     </div>
                                 </div>
                             </div>
@@ -396,7 +445,7 @@ onMounted(() => {
                 <template v-else-if="selectedDispute && activeTab === 'disputes'">
                     <!-- Dispute Header -->
                     <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-4 bg-white sticky top-0 z-10">
-                        <button @click="selectedDispute = null" class="md:hidden text-gray-400">
+                        <button @click="selectedDispute = null" class="lg:hidden text-gray-400">
                             <i class="fas fa-arrow-left"></i>
                         </button>
                         <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center text-red-500">
@@ -465,7 +514,7 @@ onMounted(() => {
                     </div>
                 </template>
 
-                <div v-else class="flex-1 hidden md:flex flex-col items-center justify-center text-center p-20 bg-gray-50/30">
+                <div v-else class="flex-1 hidden lg:flex flex-col items-center justify-center text-center p-20 bg-gray-50/30">
                     <div class="w-24 h-24 bg-white rounded-3xl shadow-sm flex items-center justify-center mb-6">
                         <i :class="['text-4xl', activeTab === 'disputes' ? 'fas fa-gavel text-red-100' : 'fas fa-comment-dots text-blue-100']"></i>
                     </div>

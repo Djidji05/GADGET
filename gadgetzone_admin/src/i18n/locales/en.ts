@@ -61,5 +61,8 @@ export default {
         documentation: 'Documentation',
         reviews: 'Reviews Moderation',
         analytics: 'Analytics',
+        flashSales: 'Flash Sales',
+        sitePages: 'Site Pages (T&C, etc.)',
+        disputes: 'Disputes',
     }
 }

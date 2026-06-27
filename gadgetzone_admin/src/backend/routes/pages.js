@@ -1,5 +1,6 @@
 import express from 'express';
 import Page from '../models/Page.js';
+import { authenticateToken, requireAdmin } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -36,7 +37,7 @@ router.get('/:slug', async (req, res) => {
 });
 
 // Create page
-router.post('/', async (req, res) => {
+router.post('/', authenticateToken, requireAdmin, async (req, res) => {
     try {
         const page = await Page.create(req.body);
         res.status(201).json(page);
@@ -47,9 +48,9 @@ router.post('/', async (req, res) => {
 });
 
 // Update page
-router.put('/:id', async (req, res) => {
+router.put('/:id', authenticateToken, requireAdmin, async (req, res) => {
     try {
-        const page = await Page.findByPk(req.params.id);
+        const page = await Page.findOne({ where: { slug: req.params.id } });
 
         if (!page) {
             return res.status(404).json({ message: 'Page non trouvée' });
@@ -64,9 +65,9 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete page
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authenticateToken, requireAdmin, async (req, res) => {
     try {
-        const page = await Page.findByPk(req.params.id);
+        const page = await Page.findOne({ where: { slug: req.params.id } });
 
         if (!page) {
             return res.status(404).json({ message: 'Page non trouvée' });

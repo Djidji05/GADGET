@@ -1,5 +1,6 @@
 import express from 'express';
 import db, { Store, User, Product, Order, OrderItem, Payout, OrderLog, Deposit, Review, Message, Conversation, Category, Boost, ForumPost, ForumComment, ForumLike, StoreFollower } from '../models/index.js';
+import { slugify } from '../utils/slugify.js';
 import PaymentService from '../services/PaymentService.js';
 import { authenticateToken, requireAdmin, isSeller, checkStoreActive, optionalAuth } from '../middleware/auth.js';
 
@@ -67,8 +68,17 @@ router.post('/apply', authenticateToken, async (req, res) => {
             });
         }
 
+        let slug = slugify(storeName);
+        let uniqueSlug = slug;
+        let counter = 1;
+        while (await Store.findOne({ where: { slug: uniqueSlug } })) {
+            uniqueSlug = `${slug}-${counter}`;
+            counter++;
+        }
+
         const newStore = await Store.create({
             name: storeName,
+            slug: uniqueSlug,
             description: storeDescription,
             userId,
             status: 'pending',
@@ -185,11 +195,19 @@ router.get('/:id', optionalAuth, async (req, res) => {
                 attributes: ['id', 'name', 'description', 'logoUrl', 'bannerUrl', 'status', 'follower_count', 'trust_score']
             });
         } else {
-            // Recherche par nom normalisé/exact
+            // Recherche par slug
             vendor = await Store.findOne({
-                where: { name: id },
+                where: { slug: id },
                 attributes: ['id', 'name', 'description', 'logoUrl', 'bannerUrl', 'status', 'follower_count', 'trust_score']
             });
+
+            // Fallback: search by name if slug not found (for backward compatibility during migration)
+            if (!vendor) {
+                vendor = await Store.findOne({
+                    where: { name: id },
+                    attributes: ['id', 'name', 'description', 'logoUrl', 'bannerUrl', 'status', 'follower_count', 'trust_score']
+                });
+            }
         }
 
         if (!vendor || vendor.status !== 'active') {
@@ -322,11 +340,10 @@ router.put('/me', authenticateToken, isSeller, async (req, res) => {
         const { 
             name, description, logoUrl, bannerUrl,
             phone, address, facebook, instagram,
-            moncashNumber, natcashNumber 
+            moncashNumber, natcashNumber, settings 
         } = req.body;
 
-        await store.update({
-            name: name !== undefined ? name : store.name,
+        const updateFields = {
             description: description !== undefined ? description : store.description,
             logoUrl: logoUrl !== undefined ? logoUrl : store.logoUrl,
             bannerUrl: bannerUrl !== undefined ? bannerUrl : store.bannerUrl,
@@ -337,8 +354,23 @@ router.put('/me', authenticateToken, isSeller, async (req, res) => {
             moncashNumber: moncashNumber !== undefined ? moncashNumber : store.moncashNumber,
             natcashNumber: natcashNumber !== undefined ? natcashNumber : store.natcashNumber,
             latitude: req.body.latitude !== undefined ? req.body.latitude : store.latitude,
-            longitude: req.body.longitude !== undefined ? req.body.longitude : store.longitude
-        });
+            longitude: req.body.longitude !== undefined ? req.body.longitude : store.longitude,
+            settings: settings !== undefined ? settings : store.settings
+        };
+
+        if (name !== undefined && name !== store.name) {
+            updateFields.name = name;
+            let slug = slugify(name);
+            let uniqueSlug = slug;
+            let counter = 1;
+            while (await Store.findOne({ where: { slug: uniqueSlug, id: { [Op.ne]: store.id } } })) {
+                uniqueSlug = `${slug}-${counter}`;
+                counter++;
+            }
+            updateFields.slug = uniqueSlug;
+        }
+
+        await store.update(updateFields);
 
         res.json({ message: 'Boutique mise à jour', store });
 
@@ -457,63 +489,42 @@ router.get('/me/orders', authenticateToken, isSeller, checkStoreActive, async (r
         const { page = 1, limit = 10, search, status } = req.query;
         const offset = (page - 1) * limit;
 
-        // 1. GET ALL ORDER IDS for this vendor (The "Vendor Filter")
-        // This is the most robust way to filter by storeId across joins in PostgreSQL
-        const orderIdsObjects = await OrderItem.findAll({
-            attributes: [[db.sequelize.fn('DISTINCT', db.sequelize.col('order_id')), 'order_id']],
-            include: [{
-                model: Product,
-                as: 'product',
-                where: { storeId },
-                attributes: []
-            }],
-            raw: true
-        });
-        const vendorOrderIds = orderIdsObjects.map(o => o.order_id).filter(Boolean);
-
-        if (vendorOrderIds.length === 0) {
-            return res.json({
-                orders: [],
-                pagination: {
-                    total: 0,
-                    page: parseInt(page),
-                    limit: parseInt(limit),
-                    totalPages: 0
-                }
-            });
-        }
-
+        // 1. Utilisation directe de store_id sur la table Order (Phase 13)
         const baseWhere = {
-            id: { [Op.in]: vendorOrderIds }
+            store_id: storeId
         };
 
         if (search) {
             const isNumeric = !isNaN(search);
             if (isNumeric) {
-                baseWhere.id = { [Op.and]: [baseWhere.id, parseInt(search)] };
+                baseWhere.id = parseInt(search);
             } else {
                 baseWhere['$user.name$'] = { [Op.like]: `%${search}%` };
             }
         }
         if (status && status !== 'all') {
+            if (status === 'pending' || status === 'payment_pending') {
+                return res.json({
+                    orders: [],
+                    pagination: {
+                        total: 0,
+                        page: parseInt(page),
+                        limit: parseInt(limit),
+                        totalPages: 0
+                    }
+                });
+            }
             baseWhere.status = status;
         } else {
-            baseWhere.status = { [Op.ne]: 'payment_pending' }; // 🔒 Cacher les brouillons non payés par défaut
+            baseWhere.status = { [Op.notIn]: ['pending', 'payment_pending'] }; // 🔒 Cacher les brouillons et commandes en attente
         }
 
         // 2. COUNT QUERY
-        const isDashboardRequest = parseInt(limit) <= 5 && !search && (!status || status === 'all');
-        let totalCount = 0;
-
-        if (isDashboardRequest) {
-            totalCount = Math.min(vendorOrderIds.length, 5);
-        } else {
-            totalCount = await Order.count({
-                distinct: true,
-                include: search && isNaN(search) ? [{ model: User, as: 'user', attributes: [] }] : [],
-                where: baseWhere
-            });
-        }
+        const totalCount = await Order.count({
+            distinct: true,
+            include: (search && isNaN(search)) ? [{ model: User, as: 'user', attributes: [] }] : [],
+            where: baseWhere
+        });
 
         // 3. FETCH DATA (Standard query now)
         const orders = await Order.findAll({
@@ -526,7 +537,6 @@ router.get('/me/orders', authenticateToken, isSeller, checkStoreActive, async (r
                     include: [{
                         model: Product,
                         as: 'product',
-                        where: { storeId },
                         required: true,
                         attributes: ['id', 'name', 'price', 'image_url'],
                         include: [{
@@ -752,9 +762,8 @@ router.get('/me/stats', authenticateToken, isSeller, checkStoreActive, async (re
             // 2. Gross Sales & Total Orders (Filtered by period)
             OrderItem.findOne({
                 include: [{
-                    model: Product,
-                    as: 'product',
-                    where: { storeId },
+                    model: Order,
+                    where: { store_id: storeId, status: { [Op.ne]: 'pending' } },
                     attributes: [],
                     required: true
                 }],
@@ -770,47 +779,39 @@ router.get('/me/stats', authenticateToken, isSeller, checkStoreActive, async (re
 
             // 3. Optimized Net Sales (Filtered by period)
             db.sequelize.query(`
-                SELECT COALESCE(SUM((oi.price * oi.quantity) * (1 - COALESCE(c.commission_rate, :rate) / 100.0)), 0) as total
-                FROM order_items oi
-                JOIN products p ON oi.product_id = p.id
-                LEFT JOIN categories c ON p.category_id = c.id
-                JOIN orders o ON oi.order_id = o.id
-                WHERE p."storeId" = :storeId AND o.status = 'delivered'
-                AND oi.created_at >= NOW() - INTERVAL '${interval}'
+                SELECT COALESCE(SUM(o.seller_net_amount), 0) as total
+                FROM orders o
+                WHERE o.store_id = :storeId AND o.status = 'delivered'
+                AND o.created_at >= NOW() - INTERVAL '${interval}'
             `, { 
-                replacements: { storeId, rate: defaultCommissionRate }, 
+                replacements: { storeId }, 
                 type: 'SELECT' 
             }),
 
             // 4. Optimized Pending Net Sales
             db.sequelize.query(`
-                SELECT COALESCE(SUM((oi.price * oi.quantity) * (1 - COALESCE(c.commission_rate, :rate) / 100.0)), 0) as total
-                FROM order_items oi
-                JOIN products p ON oi.product_id = p.id
-                LEFT JOIN categories c ON p.category_id = c.id
-                JOIN orders o ON oi.order_id = o.id
-                WHERE p."storeId" = :storeId 
-                AND o.status IN ('pending', 'shipped', 'confirmed', 'processing')
+                SELECT COALESCE(SUM(o.seller_net_amount), 0) as total
+                FROM orders o
+                WHERE o.store_id = :storeId 
+                AND o.status IN ('shipped', 'confirmed', 'processing')
             `, { 
-                replacements: { storeId, rate: defaultCommissionRate }, 
+                replacements: { storeId }, 
                 type: 'SELECT' 
             }),
 
             // 5. Sales by date for chart (Dynamic interval & grouping)
             db.sequelize.query(`
                 SELECT 
-                    (DATE_TRUNC('${truncation}', oi.created_at))::TEXT as date,
-                    COALESCE(SUM((oi.price * oi.quantity) * (1 - COALESCE(c.commission_rate, :rate) / 100.0)), 0) as amount
-                FROM order_items oi
-                JOIN products p ON oi.product_id = p.id
-                LEFT JOIN categories c ON p.category_id = c.id
-                JOIN orders o ON oi.order_id = o.id
-                WHERE p."storeId" = :storeId 
-                AND oi.created_at >= NOW() - INTERVAL '${interval}'
-                GROUP BY DATE_TRUNC('${truncation}', oi.created_at)
-                ORDER BY DATE_TRUNC('${truncation}', oi.created_at) ASC
+                    (DATE_TRUNC('${truncation}', o.created_at))::TEXT as date,
+                    COALESCE(SUM(o.seller_net_amount), 0) as amount
+                FROM orders o
+                WHERE o.store_id = :storeId 
+                AND o.status != 'pending'
+                AND o.created_at >= NOW() - INTERVAL '${interval}'
+                GROUP BY DATE_TRUNC('${truncation}', o.created_at)
+                ORDER BY DATE_TRUNC('${truncation}', o.created_at) ASC
             `, { 
-                replacements: { storeId, rate: defaultCommissionRate }, 
+                replacements: { storeId }, 
                 type: 'SELECT' 
             }),
 
@@ -818,16 +819,16 @@ router.get('/me/stats', authenticateToken, isSeller, checkStoreActive, async (re
             OrderItem.findAll({
                 include: [
                     {
+                        model: Order,
+                        where: { store_id: storeId, status: { [Op.ne]: 'pending' } },
+                        required: true,
+                        attributes: ['seller_commission_rate']
+                    },
+                    {
                         model: Product,
                         as: 'product',
-                        where: { storeId },
                         required: true,
-                        attributes: ['name', 'image_url'],
-                        include: [{
-                            model: Category,
-                            as: 'category',
-                            attributes: ['commission_rate']
-                        }]
+                        attributes: ['name', 'image_url']
                     }
                 ],
                 where: {
@@ -869,7 +870,22 @@ router.get('/me/stats', authenticateToken, isSeller, checkStoreActive, async (re
                     senderId: { [Op.ne]: userId },
                     isRead: false
                 }
-            })
+            }),
+
+            // 10. Lifetime Net Sales
+            db.sequelize.query(`
+                SELECT COALESCE(SUM(o.seller_net_amount), 0) as total
+                FROM orders o
+                WHERE o.store_id = :storeId AND o.status = 'delivered'
+            `, { replacements: { storeId }, type: 'SELECT' }),
+
+            // 11. Lifetime Pending Net Sales
+            db.sequelize.query(`
+                SELECT COALESCE(SUM(o.seller_net_amount), 0) as total
+                FROM orders o
+                WHERE o.store_id = :storeId 
+                AND o.status IN ('shipped', 'confirmed', 'processing')
+            `, { replacements: { storeId }, type: 'SELECT' })
         ]);
 
         const productsCount = results[0];
@@ -881,12 +897,17 @@ router.get('/me/stats', authenticateToken, isSeller, checkStoreActive, async (re
         const depositStats = results[6];
         const healthOrders = results[7];
         const unreadMessagesCount = results[8];
+        const lifetimeNetResult = results[9];
+        const lifetimePendingResult = results[10];
 
         const totalGross = parseFloat(totalStats?.totalGross || 0);
         const totalNet = parseFloat(netStatsResult[0]?.total || 0);
         const totalPendingNet = parseFloat(pendingStatsResult[0]?.total || 0);
         const totalDeposits = parseFloat(depositStats?.totalDeposits || 0);
         const totalOrdersCount = parseInt(totalStats?.totalOrders || 0);
+
+        const lifetimeNetSales = parseFloat(lifetimeNetResult[0]?.total || 0);
+        const lifetimePendingSales = parseFloat(lifetimePendingResult[0]?.total || 0);
 
         // Calculate Health Score
         let healthScoreValue = 100;
@@ -904,6 +925,8 @@ router.get('/me/stats', authenticateToken, isSeller, checkStoreActive, async (re
             sales: totalGross,
             netSales: totalNet,
             pendingNetSales: totalPendingNet,
+            lifetimeNetSales,
+            lifetimePendingSales,
             totalDeposits,
             orders: totalOrdersCount,
             healthScore: healthScoreValue,
@@ -911,8 +934,9 @@ router.get('/me/stats', authenticateToken, isSeller, checkStoreActive, async (re
             conversionRate: conversionRateValue,
             chartData: salesByDateResults,
             recentSales: recentItems.map(item => {
-                const categoryRate = item.product?.category?.commission_rate;
-                const effectiveRate = categoryRate !== undefined ? parseFloat(categoryRate) : defaultCommissionRate;
+                const effectiveRate = item.Order && item.Order.seller_commission_rate !== undefined 
+                    ? parseFloat(item.Order.seller_commission_rate) 
+                    : defaultCommissionRate;
                 const grossPrice = parseFloat(item.price);
                 const netPrice = grossPrice * (1 - effectiveRate / 100);
 
@@ -1024,12 +1048,32 @@ router.get('/me/payouts', authenticateToken, isSeller, checkStoreActive, async (
 router.get('/me/deposits', authenticateToken, isSeller, checkStoreActive, async (req, res) => {
     try {
         const storeId = req.store.id;
-        const { search, page = 1, limit = 10 } = req.query;
+        const { search, page = 1, limit = 10, month, year } = req.query;
         const offset = (page - 1) * limit;
 
         const where = { storeId };
         if (search) {
             where.reference = { [Op.like]: `%${search}%` };
+        }
+
+        if (year) {
+            const y = parseInt(year);
+            if (month) {
+                const m = parseInt(month);
+                const startDate = new Date(y, m - 1, 1);
+                const endDate = new Date(y, m, 1);
+                where.date = {
+                    [Op.gte]: startDate,
+                    [Op.lt]: endDate
+                };
+            } else {
+                const startDate = new Date(y, 0, 1);
+                const endDate = new Date(y + 1, 0, 1);
+                where.date = {
+                    [Op.gte]: startDate,
+                    [Op.lt]: endDate
+                };
+            }
         }
 
         const { count, rows } = await Deposit.findAndCountAll({
@@ -1041,7 +1085,7 @@ router.get('/me/deposits', authenticateToken, isSeller, checkStoreActive, async 
 
         // Calculate total deposits via SQL aggregation (⚡ Memory efficient)
         const totals = await Deposit.findOne({
-            where: { storeId, status: 'completed' },
+            where: { ...where, status: 'completed' },
             attributes: [[db.sequelize.fn('SUM', db.sequelize.col('amount')), 'total']],
             raw: true
         });
@@ -1099,65 +1143,74 @@ router.post('/me/payouts', authenticateToken, isSeller, checkStoreActive, async 
             await storeRecord.save();
         }
 
-        // 1. Optimized Balance Calculation (Direct SQL)
-        const defaultCommissionRate = parseFloat(req.store.commission_rate || 3);
-        
-        const [netSalesResult, depositStats, payoutStats] = await Promise.all([
-          // Net Sales from delivered orders
-          db.sequelize.query(`
-              SELECT COALESCE(SUM((oi.price * oi.quantity) * (1 - COALESCE(c.commission_rate, :rate) / 100.0)), 0) as total
-              FROM order_items oi
-              JOIN products p ON oi.product_id = p.id
-              LEFT JOIN categories c ON p.category_id = c.id
-              JOIN orders o ON oi.order_id = o.id
-              WHERE p."storeId" = :storeId AND o.status = 'delivered'
-          `, { replacements: { storeId, rate: defaultCommissionRate }, type: 'SELECT' }),
+        // ✅ Transaction atomique et verrouillage de ligne pour éviter les race conditions (double-retrait)
+        await db.sequelize.transaction(async (t) => {
+            // Verrouiller la boutique pour sérialiser les requêtes concurrentes de ce vendeur
+            await Store.findByPk(storeId, { transaction: t, lock: t.LOCK.UPDATE });
 
-          // Credits from logic deposits
-          Deposit.findOne({
-              where: { storeId, status: 'completed' },
-              attributes: [[db.sequelize.fn('SUM', db.sequelize.col('amount')), 'total']],
-              raw: true
-          }),
+            // 1. Optimized Balance Calculation (Direct SQL using Order snapshots)
+            const [netSalesResult, depositStats, payoutStats] = await Promise.all([
+              // Net Sales from delivered orders based on snapshot seller_net_amount
+              db.sequelize.query(`
+                  SELECT COALESCE(SUM(o.seller_net_amount), 0) as total
+                  FROM orders o
+                  WHERE o.store_id = :storeId AND o.status = 'delivered'
+              `, { replacements: { storeId }, type: db.sequelize.QueryTypes.SELECT, transaction: t }),
 
-          // Debits from Payouts (Paid + Currently Pending)
-          Payout.findOne({
-              where: { storeId, status: { [Op.in]: ['completed', 'pending'] } },
-              attributes: [[db.sequelize.fn('SUM', db.sequelize.col('amount')), 'total']],
-              raw: true
-          })
-        ]);
+              // Credits from logic deposits
+              Deposit.findOne({
+                  where: { storeId, status: 'completed' },
+                  attributes: [[db.sequelize.fn('SUM', db.sequelize.col('amount')), 'total']],
+                  raw: true,
+                  transaction: t
+              }),
 
-        const totalNetSales = parseFloat(netSalesResult[0]?.total || 0);
-        const totalDeposits = parseFloat(depositStats?.total || 0);
-        const totalDebits = parseFloat(payoutStats?.total || 0);
-        
-        const totalCredits = totalNetSales + totalDeposits;
-        const availableBalance = Math.round((totalCredits - totalDebits) * 100) / 100;
+              // Debits from Payouts (Paid + Currently Pending)
+              Payout.findOne({
+                  where: { storeId, status: { [Op.in]: ['completed', 'pending'] } },
+                  attributes: [[db.sequelize.fn('SUM', db.sequelize.col('amount')), 'total']],
+                  raw: true,
+                  transaction: t
+              })
+            ]);
 
-        console.log(`[Payout] Store #${storeId} - Credits: ${totalCredits}, Debits: ${totalDebits}, Available: ${availableBalance}, Requested: ${amount}`);
+            const totalNetSales = parseFloat(netSalesResult[0]?.total || 0);
+            const totalDeposits = parseFloat(depositStats?.total || 0);
+            const totalDebits = parseFloat(payoutStats?.total || 0);
+            
+            const totalCredits = totalNetSales + totalDeposits;
+            const availableBalance = Math.round((totalCredits - totalDebits) * 100) / 100;
 
-        if (amount > availableBalance) {
-            return res.status(400).json({
-                message: `Solde insuffisant. Votre solde disponible est de ${availableBalance} G.`,
-                available: availableBalance
+            console.log(`[Payout] Store #${storeId} - Credits: ${totalCredits}, Debits: ${totalDebits}, Available: ${availableBalance}, Requested: ${amount}`);
+
+            if (amount > availableBalance) {
+                const err = new Error(`Solde insuffisant. Votre solde disponible est de ${availableBalance} G.`);
+                err.status = 400;
+                err.available = availableBalance;
+                throw err;
+            }
+
+            const payout = await Payout.create({
+                storeId,
+                amount: Math.round(amount * 100) / 100,
+                method,
+                status: 'pending', // Require Admin Approval
+                adminNote: `En attente d'approbation. ${method} envoyé au ${phone} (${accountName})`
+            }, { transaction: t });
+
+            res.status(201).json({
+                message: 'Demande de retrait envoyée avec succès.',
+                payout
             });
-        }
-
-        const payout = await Payout.create({
-            storeId,
-            amount: Math.round(amount * 100) / 100,
-            method,
-            status: 'pending', // Require Admin Approval
-            adminNote: `En attente d'approbation. ${method} envoyé au ${phone} (${accountName})`
-        });
-
-        res.status(201).json({
-            message: 'Demande de retrait envoyée avec succès.',
-            payout
         });
 
     } catch (error) {
+        if (error.status === 400) {
+            return res.status(400).json({
+                message: error.message,
+                available: error.available
+            });
+        }
         console.error('Create payout error:', error);
         res.status(500).json({ error: 'Erreur serveur' });
     }
@@ -1187,7 +1240,9 @@ router.get('/me/transactions', authenticateToken, isSeller, checkStoreActive, as
                     },
                     { 
                         model: Order, 
-                        attributes: ['id', 'status', 'created_at'], 
+                        where: { status: { [Op.ne]: 'pending' } },
+                        required: true,
+                        attributes: ['id', 'status', 'created_at', 'seller_commission_rate', 'seller_net_amount', 'total_amount'], 
                         include: [{ model: User, as: 'user', attributes: ['name'] }] 
                     }
                 ],
@@ -1216,15 +1271,32 @@ router.get('/me/transactions', authenticateToken, isSeller, checkStoreActive, as
         ]);
 
         // 4. Normalize and Merge
+        const orderSubtotals = {};
+        orderItems.forEach(item => {
+            const orderId = item.order_id;
+            const gross = Number(item.price) * item.quantity;
+            orderSubtotals[orderId] = (orderSubtotals[orderId] || 0) + gross;
+        });
+
         const defaultCommissionRate = parseFloat(req.store.commission_rate || 3);
         const salesTransactions = orderItems.map(item => {
-            const categoryRate = item.product?.category?.commission_rate;
-            const effectiveRate = categoryRate !== undefined ? parseFloat(categoryRate) : defaultCommissionRate;
+            const order = item.Order || item.order || {};
+            const orderId = item.order_id;
+            const effectiveRate = order.seller_commission_rate !== undefined ? parseFloat(order.seller_commission_rate) : defaultCommissionRate;
 
             const gross = Number(item.price) * item.quantity;
-            const fee = gross * (effectiveRate / 100);
-            const net = gross - fee;
-            const order = item.Order || item.order || {};
+            
+            // Calculer le net vendeur proportionnel basé sur le snapshot de la commande
+            let net = gross * (1 - effectiveRate / 100);
+            let fee = gross * (effectiveRate / 100);
+            
+            if (order.seller_net_amount !== undefined && order.seller_net_amount !== null && orderSubtotals[orderId] > 0) {
+                const orderSubtotal = orderSubtotals[orderId];
+                const ratio = gross / orderSubtotal;
+                net = parseFloat(order.seller_net_amount) * ratio;
+                const discountedGross = parseFloat(order.total_amount || 0) * ratio;
+                fee = discountedGross - net;
+            }
 
             return {
                 id: `sale_${item.id}`,
@@ -1312,7 +1384,7 @@ router.get('/me/products', authenticateToken, isSeller, checkStoreActive, async 
  */
 router.post('/me/boost', authenticateToken, isSeller, checkStoreActive, async (req, res) => {
     try {
-        const { productId, packageName } = req.body;
+        const { productId, packageName, costModel = 'flat', budget, targetCategories } = req.body;
         const storeId = req.store.id;
 
         const product = await Product.findOne({ where: { id: productId, storeId } });
@@ -1329,12 +1401,19 @@ router.post('/me/boost', authenticateToken, isSeller, checkStoreActive, async (r
         const pkg = packages[packageName];
         if (!pkg) return res.status(400).json({ error: 'Pack invalide.' });
 
+        if (costModel && !['flat', 'cpc', 'cpm'].includes(costModel)) {
+            return res.status(400).json({ error: 'Modèle de coût invalide.' });
+        }
+
         const boost = await Boost.create({
             storeId,
             productId,
             package_name: packageName,
             amount: pkg.price,
             duration_days: pkg.duration,
+            cost_model: costModel,
+            budget: budget ? Number(budget) : null,
+            target_categories: targetCategories || null,
             status: 'pending'
         });
 

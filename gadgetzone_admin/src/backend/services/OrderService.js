@@ -1,8 +1,10 @@
 import BaseService from './BaseService.js';
 import OrderRepository from '../repositories/OrderRepository.js';
-import { Order, Product, User, Referral, OrderLog, Offer, Store, Wallet, OrderItem, OrderTracking, sequelize } from '../models/index.js';
+import { Order, Product, User, Referral, OrderLog, Offer, Store, Wallet, OrderItem, OrderTracking, sequelize, LoyaltyAccount, LoyaltyTransaction, FlashSale } from '../models/index.js';
 import { notifyNewOrder, notifyOrderStatusChange } from '../utils/notificationHelper.js';
 import TrustScoreService from './TrustScoreService.js';
+import { sendToUser } from '../utils/sseManager.js';
+import loyaltyService from './loyaltyService.js';
 import crypto from 'crypto';
 
 export default class OrderService extends BaseService {
@@ -21,53 +23,111 @@ export default class OrderService extends BaseService {
 
     async createOrder(data) {
         console.log('📝 OrderService.createOrder: Processing payload', JSON.stringify(data, null, 2));
-        const { user_id, items, shipping_address, shipping_coordinates, reference_point, referral_code, payment_method } = data;
+        const user_id = data.user_id || data.userId;
+        const items = data.items;
+        const shipping_address = data.shipping_address || data.shippingAddress;
+        const shipping_coordinates = data.shipping_coordinates || data.shippingCoordinates;
+        const reference_point = data.reference_point || data.referencePoint;
+        const referral_code = data.referral_code || data.referralCode;
+        const payment_method = data.payment_method || data.paymentMethod;
+        const points_to_use = data.points_to_use || data.pointsToUse;
 
 
         return await sequelize.transaction(async (t) => {
             const user = await User.findByPk(user_id, { transaction: t });
             if (!user) throw new Error('User not found');
 
+            // Find user's store (if any) to prevent self-purchases
+            const userStore = await Store.findOne({ where: { userId: user_id }, transaction: t });
+
             // 1. Fetch products & Validate Stock
             const itemsWithOffers = [];
+            const { Op } = (await import('sequelize')).default;
+
             for (const item of items) {
+                const actualProductId = item.product_id || item.productId;
+
                 // 🛡️ SÉCURITÉ : Bloquer les quantités négatives ou nulles (Vecteur de Vol)
                 if (!item.quantity || item.quantity <= 0 || !Number.isInteger(item.quantity)) {
-                    throw new Error(`Quantité invalide pour le produit ${item.product_id}. La quantité doit être un nombre entier positif.`);
+                    throw new Error(`Quantité invalide pour le produit ${actualProductId}. La quantité doit être un nombre entier positif.`);
                 }
 
-                // 🛡️ RECHERCHE DE L'OFFRE (Source de vérité pour le prix et la boutique)
-                let offerId = item.offerId || item.offer_id || item.id;
-                let offer = offerId ? await Offer.findByPk(offerId, { transaction: t }) : null;
+                const product = await Product.findByPk(actualProductId, { transaction: t });
+                if (!product) throw new Error(`Produit ${actualProductId} introuvable`);
 
-                if (!offer) {
-                    console.log(`⚠️ Offre non spécifiée ou introuvable pour le produit ${item.product_id}. Recherche d'une offre par défaut...`);
-                    offer = await Offer.findOne({ 
-                        where: { productId: item.product_id || item.productId },
-                        transaction: t 
-                    });
+                if (!product.storeId) {
+                    throw new Error(`Le produit ${product.name} n'a pas de vendeur attribué (storeId manquant).`);
                 }
 
-                if (!offer) {
-                    throw new Error(`Aucune offre (même par défaut) n'a pu être trouvée pour l'article ${item.product_id || item.productId}`);
+                // 🛡️ SÉCURITÉ : Bloquer le vendeur s'il essaie d'acheter son propre produit
+                if (userStore && product.storeId === userStore.id) {
+                    throw new Error(`Vous ne pouvez pas acheter vos propres produits (${product.name}).`);
                 }
 
+                // ⚡ VENTES FLASH : Vérifier s'il existe une vente flash active pour ce produit
+                const now = new Date();
+                const activeFlashSale = await FlashSale.findOne({
+                    where: {
+                        product_id: actualProductId,
+                        status: 'active',
+                        start_at: { [Op.lte]: now },
+                        end_at: { [Op.gte]: now }
+                    },
+                    transaction: t,
+                    lock: t.LOCK.UPDATE
+                });
 
-                const product = await Product.findByPk(item.product_id, { transaction: t });
-                if (!product) throw new Error(`Produit ${item.product_id} introuvable`);
+                let itemPrice = Number(product.price);
+                if (activeFlashSale) {
+                    // Si limite de stock configurée, vérifier la disponibilité
+                    if (activeFlashSale.stock_limit === null || activeFlashSale.current_stock > 0) {
+                        if (activeFlashSale.stock_limit !== null && activeFlashSale.current_stock < item.quantity) {
+                            throw new Error(`Stock insuffisant en Vente Flash pour le produit ${product.name} (Disponible : ${activeFlashSale.current_stock}).`);
+                        }
+                        itemPrice = Number(activeFlashSale.flash_price);
 
-                // 🛡️ SÉCURITÉ : Vérifier l'intégrité de l'offre
-                if (offer.productId !== product.id) {
-                    throw new Error(`Incohérence détectée : L'offre ${offer.id} ne correspond pas au produit ${product.id}.`);
+                        // Réserver le stock de la vente flash
+                        if (activeFlashSale.stock_limit !== null) {
+                            await activeFlashSale.decrement('current_stock', { by: item.quantity, transaction: t });
+                        }
+                    }
+                } else {
+                    // 🏷️ PROMOTIONS AUTOMATIQUES : Appliquer les promotions actives
+                    const { applyPromotionsToProduct } = await import('../utils/promotionHelper.js');
+                    const processedProduct = await applyPromotionsToProduct(product);
+                    itemPrice = Number(processedProduct.price);
                 }
 
                 itemsWithOffers.push({
                     ...item,
-                    offer,
                     product,
-                    price: offer.price,
-                    storeId: offer.storeId // Source de vérité (DB) pour le groupement par boutique
+                    price: itemPrice,
+                    storeId: product.storeId
                 });
+            }
+
+            // 🛡️ POINTS FIDELITÉ : Calculer et valider la réduction
+            let pointsToUse = Number(points_to_use) || 0;
+            let overallDiscount = 0;
+            let overallSubtotal = itemsWithOffers.reduce((acc, item) => acc + (Number(item.price) * item.quantity), 0);
+
+            if (pointsToUse > 0) {
+                const loyaltyAccount = await LoyaltyAccount.findOne({ 
+                    where: { user_id }, 
+                    transaction: t,
+                    lock: t.LOCK.UPDATE 
+                });
+                if (!loyaltyAccount || loyaltyAccount.points_balance < pointsToUse) {
+                    throw new Error('Solde de points insuffisant');
+                }
+                
+                // Calcul de la réduction (5 HTG par tranche de 100 points)
+                overallDiscount = Math.floor(pointsToUse / 100) * 5;
+                const maxDiscount = Math.floor(overallSubtotal * 0.5);
+                overallDiscount = Math.min(overallDiscount, maxDiscount);
+                
+                // Mettre à jour le solde de points de l'utilisateur
+                await loyaltyAccount.decrement('points_balance', { by: pointsToUse, transaction: t });
             }
 
             // 2. Group by Store
@@ -76,8 +136,7 @@ export default class OrderService extends BaseService {
                 const storeId = item.storeId;
                 if (!itemsByStore[storeId]) itemsByStore[storeId] = [];
                 itemsByStore[storeId].push({
-                    product_id: item.product_id,
-                    offer_id: item.offer.id,
+                    product_id: item.product_id || item.productId,
                     quantity: item.quantity,
                     price: item.price
                 });
@@ -88,33 +147,76 @@ export default class OrderService extends BaseService {
             const createdOrders = [];
             const groupPaymentToken = `GRP-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
 
-            for (const storeId in itemsByStore) {
+            let remainingPointsToAllocate = pointsToUse;
+            const itemsByStoreKeys = Object.keys(itemsByStore);
+
+            for (let i = 0; i < itemsByStoreKeys.length; i++) {
+                const storeId = itemsByStoreKeys[i];
                 const storeItems = itemsByStore[storeId];
                 let subtotalAmount = storeItems.reduce((acc, item) => acc + (Number(item.price) * item.quantity), 0);
 
-                const shippingFee = subtotalAmount > 5000 ? 0 : 250;
+                let storeDiscount = 0;
+                if (overallDiscount > 0 && overallSubtotal > 0) {
+                    const ratio = subtotalAmount / overallSubtotal;
+                    storeDiscount = Math.round(overallDiscount * ratio);
+                }
 
-                let monCashFee = 0;
-                if (payment_method && payment_method.type === 'moncashwise') {
-                    const amountForFee = subtotalAmount + shippingFee;
-                    if (amountForFee >= 20 && amountForFee <= 99) monCashFee = 7;
-                    else if (amountForFee <= 249) monCashFee = 14;
-                    else if (amountForFee <= 499) monCashFee = 19;
-                    else if (amountForFee <= 999) monCashFee = 30;
-                    else if (amountForFee <= 1999) monCashFee = 60;
-                    else if (amountForFee <= 3999) monCashFee = 105;
-                    else if (amountForFee <= 7999) monCashFee = 171;
-                    else if (amountForFee <= 11999) monCashFee = 247;
-                    else if (amountForFee <= 19999) monCashFee = 366;
-                    else if (amountForFee <= 39999) monCashFee = 629;
-                    else if (amountForFee <= 59999) monCashFee = 1011;
-                    else if (amountForFee >= 60000) monCashFee = 1368;
+                let storePointsSpent = 0;
+                if (pointsToUse > 0 && overallSubtotal > 0) {
+                    if (i === itemsByStoreKeys.length - 1) {
+                        storePointsSpent = remainingPointsToAllocate;
+                    } else {
+                        const ratio = subtotalAmount / overallSubtotal;
+                        storePointsSpent = Math.round(pointsToUse * ratio);
+                        remainingPointsToAllocate -= storePointsSpent;
+                    }
                 }
 
                 const store = await Store.findByPk(storeId, { transaction: t });
                 const commissionRate = store ? Number(store.commission_rate || 5) : 5; // Par défaut 5%
-                const sellerNetAmount = Math.round(subtotalAmount * (1 - (commissionRate / 100)));
-                const totalAmount = subtotalAmount + shippingFee + monCashFee;
+
+                let shippingFee = 250; // Fallback par défaut
+                let deliveryCity = '';
+                try {
+                    const addressObj = typeof shipping_address === 'string' ? JSON.parse(shipping_address) : shipping_address;
+                    deliveryCity = addressObj?.city?.trim() || '';
+                } catch (e) {
+                    deliveryCity = '';
+                }
+
+                let deliverable = true;
+                if (store) {
+                    let settings = store.settings;
+                    if (typeof settings === 'string') {
+                        try { settings = JSON.parse(settings); } catch (e) { settings = {}; }
+                    }
+                    if (settings?.shipping?.enabledZones && Array.isArray(settings.shipping.enabledZones)) {
+                        const matchedZone = settings.shipping.enabledZones.find(z => z.city && z.city.toLowerCase() === deliveryCity.toLowerCase());
+                        if (matchedZone) {
+                            if (matchedZone.deliverable === false) {
+                                deliverable = false;
+                            } else {
+                                const baseFee = Number(matchedZone.baseFee) || 0;
+                                const perItemFee = Number(matchedZone.perItemFee) || 0;
+                                
+                                const totalQty = storeItems.reduce((acc, item) => acc + (Number(item.quantity) || 1), 0);
+                                shippingFee = baseFee + Math.max(0, totalQty - 1) * perItemFee;
+                            }
+                        } else {
+                            if (settings.shipping.setupCompleted) {
+                                deliverable = false;
+                            }
+                        }
+                    }
+                }
+
+                if (!deliverable) {
+                    throw new Error(`La boutique "${store?.name || 'Vendeur'}" ne livre pas à "${deliveryCity || 'cette destination'}".`);
+                }
+
+                let monCashFee = 0;
+                const sellerNetAmount = Math.round(Math.max(0, subtotalAmount - storeDiscount) * (1 - (commissionRate / 100)) + shippingFee);
+                const totalAmount = Math.max(0, subtotalAmount + shippingFee + monCashFee - storeDiscount);
                 const roundedTotal = Math.round(totalAmount);
                 const orderNumber = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
@@ -133,6 +235,17 @@ export default class OrderService extends BaseService {
                     payment_method: payment_method ? JSON.stringify(payment_method) : null,
                     payment_group_id: groupPaymentToken // 🔗 Lien permanent multi-vendeurs
                 }, storeItems, { transaction: t });
+
+                // Enregistrer la transaction de fidélité par commande pour remboursement individuel possible
+                if (storePointsSpent > 0) {
+                    await LoyaltyTransaction.create({
+                        user_id,
+                        order_id: order.id,
+                        points_spent: storePointsSpent,
+                        reason: 'purchase_redeem',
+                        description: `Points utilisés pour la réduction sur la commande #${order.id}`
+                    }, { transaction: t });
+                }
 
                 // Referral commission (Initialisation en attente de paiement)
                 if (ambassador && ambassador.id !== user_id) {
@@ -154,6 +267,25 @@ export default class OrderService extends BaseService {
                 totalOrders: createdOrders.length,
                 totalAmount: createdOrders.reduce((acc, o) => acc + Number(o.total_amount), 0)
             };
+        });
+
+        // 📡 SSE : Notifier chaque vendeur concerné en temps réel (après commit transaction)
+        setImmediate(async () => {
+            try {
+                // Récupérer les vendeurs liés aux boutiques de la commande
+                const storeIds = [...new Set(items.map(i => i.storeId).filter(Boolean))];
+                for (const storeId of storeIds) {
+                    const store = await Store.findByPk(storeId, { include: [{ model: User, as: 'owner', attributes: ['id'] }] });
+                    if (store?.owner?.id) {
+                        sendToUser(store.owner.id, 'new_order', {
+                            message: 'Nouvelle commande reçue !',
+                            timestamp: new Date().toISOString()
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error('❌ SSE [new_order]:', err.message);
+            }
         });
     }
 
@@ -232,6 +364,32 @@ export default class OrderService extends BaseService {
                         setImmediate(() => TrustScoreService.calculateStoreScore(storeId).catch(console.error));
                     }
                 }
+
+                // 🌟 POINTS FIDELITÉ : 1 point par HTG dépensé (non-bloquant)
+                setImmediate(async () => {
+                    try {
+                        const pointsToAdd = Math.floor(Number(order.total_amount));
+                        if (pointsToAdd > 0) {
+                            await loyaltyService.addPoints(
+                                order.user_id,
+                                pointsToAdd,
+                                `Commande #${id} livrée — +${pointsToAdd} pts`
+                            );
+
+                            // Check and unlock achievements
+                            await loyaltyService.unlockAchievement(order.user_id, 'first_purchase');
+
+                            const totalSpent = await Order.sum('total_amount', {
+                                where: { user_id: order.user_id, status: 'delivered' }
+                            });
+                            if (totalSpent >= 10000) {
+                                await loyaltyService.unlockAchievement(order.user_id, 'big_spender');
+                            }
+                        }
+                    } catch (err) {
+                        console.error('❌ Points fidélité [updateOrderStatus]:', err.message);
+                    }
+                });
             }
 
             notifyOrderStatusChange(updated, oldStatus, newStatus).catch(console.error);
@@ -248,6 +406,9 @@ export default class OrderService extends BaseService {
         if (!cancellableStatuses.includes(order.status)) {
             throw new Error(`Impossible d'annuler une commande au statut '${order.status}'.`);
         }
+        
+        // 🔑 Capturer le statut actuel AVANT la transaction pour la logique financière
+        const oldStatus = order.status;
 
         return await sequelize.transaction(async (t) => {
             for (const item of order.items) {
@@ -257,10 +418,45 @@ export default class OrderService extends BaseService {
                 if (item.offer_id) {
                     await Offer.increment('stock', { where: { id: item.offer_id }, by: item.quantity, transaction: t });
                 }
+
+                // ⚡ RÉAPPROVISIONNEMENT DE LA VENTE FLASH SI EXISTANTE ET ACTIVE
+                const activeFlashSale = await FlashSale.findOne({
+                    where: {
+                        product_id: item.product_id,
+                        status: 'active'
+                    },
+                    transaction: t,
+                    lock: t.LOCK.UPDATE
+                });
+                if (activeFlashSale && activeFlashSale.stock_limit !== null) {
+                    const toRestore = Math.min(item.quantity, activeFlashSale.stock_limit - activeFlashSale.current_stock);
+                    if (toRestore > 0) {
+                        await activeFlashSale.increment('current_stock', { by: toRestore, transaction: t });
+                    }
+                }
             }
 
             // 🚫 ANNULER LES COMMISSIONS DE PARRAINAGE
             await Referral.update({ status: 'cancelled' }, { where: { order_id: id }, transaction: t });
+
+            // 💸 RÉVERSION DES POINTS DE FIDELITÉ
+            const loyaltyTx = await LoyaltyTransaction.findOne({
+                where: { order_id: id, reason: 'purchase_redeem' },
+                transaction: t
+            });
+            if (loyaltyTx && loyaltyTx.points_spent > 0) {
+                const loyaltyAccount = await LoyaltyAccount.findOne({ where: { user_id: order.user_id }, transaction: t });
+                if (loyaltyAccount) {
+                    await loyaltyAccount.increment('points_balance', { by: loyaltyTx.points_spent, transaction: t });
+                    await LoyaltyTransaction.create({
+                        user_id: order.user_id,
+                        order_id: id,
+                        points_earned: loyaltyTx.points_spent,
+                        reason: 'purchase_refund',
+                        description: `Restitution de ${loyaltyTx.points_spent} points suite à l'annulation de la commande #${id}`
+                    }, { transaction: t });
+                }
+            }
 
             // 💸 RÉVERSION FINANCIÈRE (Pending Balance)
             if (oldStatus === 'confirmed') {
@@ -291,7 +487,6 @@ export default class OrderService extends BaseService {
                 }
             }
 
-            const oldStatus = order.status;
             const updated = await order.update({ status: 'cancelled' }, { transaction: t });
 
             await OrderLog.create({
@@ -303,7 +498,7 @@ export default class OrderService extends BaseService {
                 details: 'Order cancelled by user/admin. Stock and Referral reverted.'
             }, { transaction: t });
 
-            notifyOrderStatusChange(updated, 'pending', 'cancelled').catch(console.error);
+            notifyOrderStatusChange(updated, oldStatus, 'cancelled').catch(console.error);
             return updated;
         });
     }
@@ -370,6 +565,32 @@ export default class OrderService extends BaseService {
                 await wallet.increment('total_earned', { by: netAmount, transaction: t });
                 
                 setImmediate(() => TrustScoreService.calculateStoreScore(order.store_id).catch(console.error));
+
+                // 🌟 POINTS FIDELITÉ : 1 point par HTG dépensé (non-bloquant)
+                setImmediate(async () => {
+                    try {
+                        const pointsToAdd = Math.floor(Number(order.total_amount));
+                        if (pointsToAdd > 0) {
+                            await loyaltyService.addPoints(
+                                order.user_id,
+                                pointsToAdd,
+                                `Commande #${id} livrée — +${pointsToAdd} pts`
+                            );
+
+                            // Check and unlock achievements
+                            await loyaltyService.unlockAchievement(order.user_id, 'first_purchase');
+
+                            const totalSpent = await Order.sum('total_amount', {
+                                where: { user_id: order.user_id, status: 'delivered' }
+                            });
+                            if (totalSpent >= 10000) {
+                                await loyaltyService.unlockAchievement(order.user_id, 'big_spender');
+                            }
+                        }
+                    } catch (err) {
+                        console.error('❌ Points fidélité [verifyDeliveryScan]:', err.message);
+                    }
+                });
             }
 
             notifyOrderStatusChange(order, oldStatus, 'delivered').catch(console.error);
@@ -403,5 +624,80 @@ export default class OrderService extends BaseService {
 
         if (externalT) return await logic(externalT);
         return await sequelize.transaction(logic);
+    }
+
+    async calculateShippingFee(items, shippingAddress) {
+        if (!items || !Array.isArray(items) || items.length === 0) {
+            return { shippingFee: 0, breakdown: {} };
+        }
+        
+        const deliveryCity = shippingAddress?.city?.trim() || '';
+        
+        // Group by store
+        const storeQuantities = {};
+        const storeSubtotals = {};
+        for (const item of items) {
+            const actualProductId = item.productId || item.product_id;
+            const product = await Product.findByPk(actualProductId);
+            if (!product) continue;
+            
+            const storeId = product.storeId;
+            if (!storeId) continue;
+            
+            storeQuantities[storeId] = (storeQuantities[storeId] || 0) + (Number(item.quantity) || 1);
+            storeSubtotals[storeId] = (storeSubtotals[storeId] || 0) + (Number(product.price) * (Number(item.quantity) || 1));
+        }
+        
+        let totalShippingFee = 0;
+        const breakdown = {};
+        
+        for (const storeId of Object.keys(storeQuantities)) {
+            const store = await Store.findByPk(storeId);
+            let shippingFee = 250; // Fallback par défaut
+            let deliverable = true;
+            
+            if (store) {
+                let settings = store.settings;
+                if (typeof settings === 'string') {
+                    try { settings = JSON.parse(settings); } catch (e) { settings = {}; }
+                }
+                if (settings?.shipping?.enabledZones && Array.isArray(settings.shipping.enabledZones)) {
+                    const matchedZone = settings.shipping.enabledZones.find(z => z.city && z.city.toLowerCase() === deliveryCity.toLowerCase());
+                    if (matchedZone) {
+                        if (matchedZone.deliverable === false) {
+                            deliverable = false;
+                            shippingFee = 0;
+                        } else {
+                            const baseFee = Number(matchedZone.baseFee) || 0;
+                            const perItemFee = Number(matchedZone.perItemFee) || 0;
+                            
+                            const totalQty = storeQuantities[storeId] || 1;
+                            shippingFee = baseFee + Math.max(0, totalQty - 1) * perItemFee;
+                        }
+                    } else {
+                        if (settings.shipping.setupCompleted) {
+                            deliverable = false;
+                            shippingFee = 0;
+                        }
+                    }
+                }
+            }
+            breakdown[storeId] = {
+                shippingFee,
+                deliverable,
+                storeName: store?.name || 'Vendeur'
+            };
+            if (deliverable) {
+                totalShippingFee += shippingFee;
+            }
+        }
+        
+        const allDeliverable = Object.values(breakdown).every(b => b.deliverable);
+        
+        return {
+            shippingFee: totalShippingFee,
+            deliverable: allDeliverable,
+            breakdown
+        };
     }
 }

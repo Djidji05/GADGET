@@ -96,6 +96,61 @@ export const useNotificationsStore = defineStore('notifications', {
             } catch (err) {
                 console.error('Erreur lors de la suppression de la notification:', err)
             }
+        },
+
+        async setupPushNotifications() {
+            if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+                console.log('Push notifications are not supported on this browser.')
+                return
+            }
+
+            try {
+                // Wait for the Service Worker to be ready
+                const reg = await navigator.serviceWorker.ready
+                
+                // Get VAPID public key
+                const publicKey = await notificationsService.getVapidKey()
+                if (!publicKey) return
+
+                // Check permission status
+                let permission = Notification.permission
+                if (permission === 'default') {
+                    permission = await Notification.requestPermission()
+                }
+
+                if (permission !== 'granted') {
+                    console.log('Notification permission not granted.')
+                    return
+                }
+
+                // Convert base64 VAPID key
+                const padding = '='.repeat((4 - publicKey.length % 4) % 4)
+                const base64 = (publicKey + padding).replace(/\-/g, '+').replace(/_/g, '/')
+                const rawData = window.atob(base64)
+                const outputArray = new Uint8Array(rawData.length)
+                for (let i = 0; i < rawData.length; ++i) {
+                    outputArray[i] = rawData.charCodeAt(i)
+                }
+
+                // Subscribe on the push manager
+                const subscription = await reg.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: outputArray
+                })
+
+                const subJson = subscription.toJSON()
+                await notificationsService.subscribePush({
+                    endpoint: subJson.endpoint,
+                    keys: {
+                        p256dh: subJson.keys?.p256dh,
+                        auth: subJson.keys?.auth
+                    }
+                })
+
+                console.log('✅ Push notification subscription successful')
+            } catch (err) {
+                console.error('❌ Failed to setup push notifications:', err)
+            }
         }
     }
 })

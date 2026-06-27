@@ -2,6 +2,8 @@ import express from 'express';
 import { Conversation, Message, User, Store } from '../models/index.js';
 import { authenticateToken } from '../middleware/auth.js';
 import { Op } from 'sequelize';
+import { sendToUser } from '../utils/sseManager.js';
+import webPushService from '../services/webPushService.js';
 
 const router = express.Router();
 
@@ -109,6 +111,7 @@ router.get('/conversations/:id/messages', authenticateToken, async (req, res) =>
 /**
  * POST /api/messages/send
  * Send a message (creates conversation if not exists)
+ * ✨ Envoie en temps réel via SSE + Push Notification
  */
 router.post('/send', authenticateToken, async (req, res) => {
     try {
@@ -147,6 +150,23 @@ router.post('/send', authenticateToken, async (req, res) => {
             senderId,
             content
         });
+
+        // 📡 Envoyer en temps réel via SSE au destinataire
+        sendToUser(receiverId, 'new_message', {
+            id: message.id,
+            conversationId: conversation.id,
+            senderId,
+            content,
+            createdAt: message.createdAt
+        });
+
+        // 📱 Push notification au destinataire (en arrière-plan, non bloquant)
+        const sender = await User.findByPk(senderId, {
+            attributes: ['name'],
+            include: [{ model: Store, as: 'store', attributes: ['name'] }]
+        });
+        const senderName = sender?.store?.name || sender?.name || 'Quelqu\'un';
+        webPushService.notifyNewMessage(receiverId, senderName).catch(() => {});
 
         res.status(201).json(message);
     } catch (error) {

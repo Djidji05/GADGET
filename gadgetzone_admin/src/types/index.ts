@@ -67,7 +67,7 @@ export interface Order {
   id: number
   user_id: number
   total_amount: number
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'confirmed'
+  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'confirmed' | 'partially_paid' | 'cancelled_refund_pending' | 'refunded'
   created_at: string
   updated_at: string
   user?: User
@@ -77,6 +77,8 @@ export interface Order {
   shipped_at?: string
   delivered_at?: string
   shipping_address?: string
+  shipping_coordinates?: { lat: number; lng: number }
+  reference_point?: string
 }
 
 export interface ApiResponse<T> {
@@ -161,7 +163,7 @@ export interface OrderCreateData {
 }
 
 export interface OrderUpdateData {
-  status?: 'pending' | 'confirmed' | 'shipped' | 'delivered'
+  status?: 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled' | 'partially_paid' | 'cancelled_refund_pending' | 'refunded'
 }
 
 export interface QueryParams {

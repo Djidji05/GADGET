@@ -4,7 +4,7 @@
       <div v-if="sectionTitle || sectionSubtitle" class="mb-5 px-1">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="text-2xl md:text-3xl font-bold text-gray-900">{{ sectionTitle }}</h2>
+            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">{{ sectionTitle }}</h2>
             <p v-if="sectionSubtitle" class="text-gray-500 text-sm mt-1">{{ sectionSubtitle }}</p>
           </div>
           <router-link v-if="sectionLink" :to="sectionLink" class="text-blue-600 text-sm font-bold hover:underline">
@@ -15,10 +15,10 @@
 
       <div class="relative group">
         <!-- Skeleton Loading State -->
-        <div v-if="isLoading" class="flex overflow-x-auto gap-4 md:gap-6 pb-6 no-scrollbar snap-x snap-mandatory px-1">
+        <div v-if="isLoading" class="flex overflow-x-auto gap-4 md:gap-6 pb-6 no-scrollbar snap-x snap-mandatory -mx-4 px-4 md:mx-0 md:px-0">
           <div 
             v-for="n in (layout === 'slider' ? 3 : cardsPerView)" 
-            :key="n"
+            :key="'skeleton-' + n"
             :class="[
               'bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden flex flex-col animate-pulse',
               layout === 'slider'
@@ -36,12 +36,13 @@
           </div>
         </div>
 
-        <template v-else>
+        <div v-else key="discovery-content" class="discovery-content-wrapper">
           <!-- Navigation Buttons (Desktop only) -->
           <button 
             v-if="layout === 'slider'"
+            key="btn-left"
             @click="scroll('left')"
-            class="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-gray-800 w-10 h-10 hidden md:flex items-center justify-center rounded-full shadow-lg backdrop-blur-sm transition-all duration-300 opacity-0 group-hover:opacity-100 -left-2 md:-left-5 pointer-events-auto"
+            class="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 dark:bg-gray-800/95 hover:bg-white dark:hover:bg-gray-700 text-gray-800 dark:text-gray-250 w-10 h-10 hidden md:flex items-center justify-center rounded-full shadow-lg backdrop-blur-sm transition-all duration-300 opacity-0 group-hover:opacity-100 -left-2 md:-left-5 pointer-events-auto"
             aria-label="Scroll left"
           >
             <i class="fas fa-chevron-left"></i>
@@ -49,8 +50,9 @@
   
           <button 
             v-if="layout === 'slider'"
+            key="btn-right"
             @click="scroll('right')"
-            class="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white text-gray-800 w-10 h-10 hidden md:flex items-center justify-center rounded-full shadow-lg backdrop-blur-sm transition-all duration-300 opacity-0 group-hover:opacity-100 -right-2 md:-right-5 pointer-events-auto"
+            class="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 dark:bg-gray-800/95 hover:bg-white dark:hover:bg-gray-700 text-gray-800 dark:text-gray-250 w-10 h-10 hidden md:flex items-center justify-center rounded-full shadow-lg backdrop-blur-sm transition-all duration-300 opacity-0 group-hover:opacity-100 -right-2 md:-right-5 pointer-events-auto"
             aria-label="Scroll right"
           >
             <i class="fas fa-chevron-right"></i>
@@ -58,10 +60,11 @@
   
           <div 
             ref="scrollContainer"
+            key="scroll-container"
             :class="[
               layout === 'slider' 
-                ? 'flex overflow-x-auto gap-4 md:gap-6 pb-6 no-scrollbar snap-x snap-mandatory scroll-smooth' 
-                : `flex overflow-x-auto gap-4 pb-6 no-scrollbar snap-x snap-mandatory scroll-smooth md:grid md:gap-6 md:overflow-visible md:pb-0 ${getMaxColsClass()}`
+                ? 'flex overflow-x-auto gap-4 md:gap-6 pb-6 no-scrollbar snap-x snap-mandatory scroll-smooth -mx-4 px-4 md:mx-0 md:px-0' 
+                : `flex overflow-x-auto gap-4 pb-6 no-scrollbar snap-x snap-mandatory scroll-smooth -mx-4 px-4 md:mx-0 md:px-0 md:grid md:gap-6 md:overflow-visible md:pb-0 ${getMaxColsClass()}`
             ]"
           >
             <!-- Loop through discovery cards -->
@@ -69,7 +72,7 @@
               v-for="card in cards" 
               :key="card.id"
               :class="[
-                'bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden flex flex-col hover:shadow-xl transition-shadow duration-300',
+                'bg-white dark:bg-gray-900 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col hover:shadow-xl transition-shadow duration-300',
                 layout === 'slider'
                   ? `flex-shrink-0 w-[290px] sm:w-[320px] md:w-[calc(50%-12px)] snap-center first:ml-4 last:mr-4 ${getLgWidthClass()}`
                   : 'flex-shrink-0 w-[240px] sm:w-[280px] snap-center md:w-full md:flex-shrink-1'
@@ -78,7 +81,7 @@
               <!-- Grid Card Type -->
               <template v-if="getCardType(card) === 'grid'">
                 <div class="p-5 flex flex-col h-full">
-                  <h3 class="text-xl font-bold text-gray-900 mb-4 line-clamp-1">{{ translateIfPossible(card.title) || card.title }}</h3>
+                  <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 line-clamp-1">{{ translateIfPossible(card.title) || card.title }}</h3>
                   
                   <div 
                     class="grid gap-3 mb-4 flex-1"
@@ -95,7 +98,7 @@
                       @click="navigateTo(item.link || '#')"
                     >
                       <div 
-                        class="aspect-square bg-white rounded-2xl p-2 mb-2 flex items-center justify-center border border-gray-100 group-hover:border-blue-100 group-hover:bg-blue-50 transition-all overflow-hidden"
+                        class="aspect-square bg-white dark:bg-gray-950 rounded-2xl p-2 mb-2 flex items-center justify-center border border-gray-100 dark:border-gray-800 group-hover:border-blue-100 dark:group-hover:border-blue-900 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/20 transition-all overflow-hidden"
                         style="aspect-ratio: 1 / 1;"
                       >
                         <img 
@@ -109,8 +112,8 @@
                         />
                         <div v-else class="text-gray-300"><i class="fas fa-image text-2xl"></i></div>
                       </div>
-                      <p class="text-[10px] md:text-xs font-semibold text-gray-700 truncate mb-0.5">{{ item.name }}</p>
-                      <p v-if="item.subtext" class="text-[9px] md:text-[10px] text-gray-500">{{ item.subtext }}</p>
+                      <p class="text-[10px] md:text-xs font-semibold text-gray-700 dark:text-gray-300 truncate mb-0.5">{{ item.name }}</p>
+                      <p v-if="item.subtext" class="text-[9px] md:text-[10px] text-gray-500 dark:text-gray-400">{{ item.subtext }}</p>
                     </div>
                   </div>
                   
@@ -122,11 +125,11 @@
   
               <!-- Promo/Banner Card Type -->
               <template v-else>
-                <div class="p-5 flex flex-col h-full bg-white relative">
+                <div class="p-5 flex flex-col h-full bg-white dark:bg-gray-900 relative">
                   <!-- Header -->
                   <div class="mb-4">
-                    <h3 class="text-xl font-bold text-gray-900 line-clamp-1">{{ translateIfPossible(card.title) || card.title }}</h3>
-                    <p v-if="card.subtitle" class="text-xs text-gray-500 mt-1">{{ translateIfPossible(card.subtitle) || card.subtitle }}</p>
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white line-clamp-1">{{ translateIfPossible(card.title) || card.title }}</h3>
+                    <p v-if="card.subtitle" class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ translateIfPossible(card.subtitle) || card.subtitle }}</p>
                   </div>
   
                   <!-- Content (Image) -->
@@ -173,7 +176,7 @@
               </template>
             </div>
           </div>
-        </template>
+        </div>
       </div>
     </div>
   </section>
@@ -292,5 +295,9 @@ const translateIfPossible = (text: string | undefined) => {
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+.discovery-content-wrapper {
+  display: block;
+  width: 100%;
 }
 </style>

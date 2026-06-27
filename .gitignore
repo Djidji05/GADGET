@@ -18,11 +18,50 @@ build/
 .env.production.local
 
 # Logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+logs/
+src/logs/
+
+# Debug & diagnostic output files
+debug_*.txt
+debug-*.json
+debug*.log
+image_check_log*.txt
+all_product_images.txt
+debug_images_output.txt
+
+# Build output logs
+build_*.txt
+build_admin*.txt
+build_website*.txt
+
+# Sync & backend logs
+backend_*.log
+sync_log*.txt
+server_test.log
+
+# Jest test logs
+jest_*.txt
+jest_*.log
+
+# Type check & error dumps
+type_errors*.txt
+admin_type_check.txt
+
+# Misc temp outputs
+output*.txt
+cart_*.txt
+cart_*.log
+tc.log
+error.txt
+schema_check.txt
+init_log.txt
+posts_details.txt
 
 # Editor directories and files
 .vscode/*

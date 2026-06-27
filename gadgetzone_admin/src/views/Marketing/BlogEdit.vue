@@ -1,124 +1,142 @@
 <template>
-  <div class="mx-auto max-w-screen-xl p-4 md:p-6 2xl:p-10">
+  <div class="mx-auto max-w-screen-xl p-4 md:p-6 2xl:p-10 pb-24 animate-fadeIn">
     <!-- Breadcrumb -->
-    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <h2 class="text-title-md2 font-bold text-black dark:text-white">
-        {{ isEdit ? 'Modifier l\'Article' : 'Nouvel Article' }}
-      </h2>
+    <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <i class="las la-pen-nib text-blue-600 text-3xl"></i>
+          {{ isEdit ? 'Modifier l\'Article' : 'Nouvel Article' }}
+        </h2>
+        <p class="text-xs text-gray-500 mt-1">Rédigez ou éditez le contenu et configurez la visibilité de l'article sur la Marketplace.</p>
+      </div>
 
       <nav>
-        <ol class="flex items-center gap-2">
+        <ol class="flex items-center gap-2 text-sm text-gray-500 font-medium">
           <li>
-            <router-link class="font-medium" to="/marketing/blog">Blog /</router-link>
+            <router-link class="hover:text-blue-650" to="/marketing/blog">Blog</router-link>
           </li>
-          <li class="font-medium text-primary">{{ isEdit ? 'Modifier' : 'Nouveau' }}</li>
+          <li class="text-gray-400">/</li>
+          <li class="text-blue-600 font-bold">{{ isEdit ? 'Modifier' : 'Nouveau' }}</li>
         </ol>
       </nav>
     </div>
 
-    <div class="grid grid-cols-1 gap-9 sm:grid-cols-2">
-      <div class="flex flex-col gap-9">
-        <!-- Input Fields -->
-        <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-          <div class="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
-            <h3 class="font-medium text-black dark:text-white">
+    <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+      <!-- Left Column: Article Form -->
+      <div class="lg:col-span-2 space-y-6">
+        <div class="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-2xl shadow-sm overflow-hidden">
+          <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50">
+            <h3 class="font-bold text-gray-900 dark:text-white">
               Contenu de l'article
             </h3>
           </div>
           <form @submit.prevent="savePost">
-            <div class="p-6.5">
-              <div class="mb-4.5">
-                <label class="mb-2.5 block text-black dark:text-white">
-                  Titre
+            <div class="p-6 space-y-5">
+              <div>
+                <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-gray-300">
+                  Titre de l'article *
                 </label>
                 <input
                   v-model="post.title"
                   type="text"
-                  placeholder="Titre de l'article"
+                  placeholder="Ex: Top 10 des gadgets high-tech incontournables de 2026"
                   required
-                  class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                  class="w-full rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 py-3 px-5 text-sm font-semibold outline-none focus:border-blue-500 transition"
                 />
               </div>
 
-              <div class="mb-4.5">
-                <label class="mb-2.5 block text-black dark:text-white">
-                  Image de couverture
+              <div>
+                <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-gray-300">
+                  Image de couverture (Optionnelle)
                 </label>
                 <div class="flex items-center gap-4">
                   <input
                     type="file"
                     accept="image/*"
                     @change="handleFileUpload"
-                    class="w-full cursor-pointer rounded border-[1.5px] border-stroke bg-transparent py-2 px-5 font-medium outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:py-3 file:px-5 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/5 dark:file:text-white dark:focus:border-primary"
+                    class="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-xs file:font-bold file:uppercase file:tracking-wider file:bg-blue-50 file:text-blue-600 hover:file:bg-blue-100 cursor-pointer outline-none dark:file:bg-blue-950/35 dark:file:text-blue-450"
                   />
-                  <div v-if="uploading" class="h-5 w-5 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                  <div v-if="uploading" class="h-5 w-5 animate-spin rounded-full border-2 border-blue-650 border-t-transparent shrink-0"></div>
                 </div>
-                <p class="mt-1 text-xs text-gray-400">Format recommandé : JPG, PNG (Max 5Mo)</p>
+                <p class="mt-1 text-xs text-gray-400">Format recommandé : JPG, PNG (Max 5Mo). Ratio : 16:9 recommandé.</p>
               </div>
 
-              <div class="mb-6">
-                <label class="mb-2.5 block text-black dark:text-white">
-                  Contenu
+              <div>
+                <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-gray-300">
+                  Corps de l'article *
                 </label>
                 <textarea
                   v-model="post.content"
-                  rows="12"
+                  rows="14"
                   placeholder="Rédigez votre article ici..."
                   required
-                  class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                  class="w-full rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-black/30 py-3 px-5 text-sm outline-none focus:border-blue-500 transition-all resize-y font-sans leading-relaxed"
                 ></textarea>
               </div>
 
-              <button
-                type="submit"
-                :disabled="loading"
-                class="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90 disabled:bg-opacity-50"
-              >
-                {{ loading ? 'Enregistrement...' : 'Enregistrer' }}
-              </button>
+              <div class="flex items-center gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
+                <button
+                  type="submit"
+                  :disabled="loading"
+                  class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-bold text-white hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all shadow-sm"
+                >
+                  <span v-if="loading" class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+                  <i v-else class="las la-save text-lg"></i>
+                  {{ loading ? 'Enregistrement...' : 'Enregistrer' }}
+                </button>
+                <button
+                  type="button"
+                  @click="$router.push('/marketing/blog')"
+                  class="px-6 py-3 border border-gray-200 dark:border-gray-800 rounded-xl font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-850 transition-all"
+                >
+                  Annuler
+                </button>
+              </div>
             </div>
           </form>
         </div>
       </div>
 
-      <div class="flex flex-col gap-9">
-        <!-- Preview & Settings -->
-        <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-          <div class="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
-            <h3 class="font-medium text-black dark:text-white">
-              Paramètres & Aperçu
+      <!-- Right Column: Settings & Preview -->
+      <div class="lg:col-span-1 space-y-6">
+        <div class="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-2xl shadow-sm overflow-hidden">
+          <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50">
+            <h3 class="font-bold text-gray-900 dark:text-white">
+              Paramètres & Statut
             </h3>
           </div>
-          <div class="p-6.5">
-            <div class="mb-4.5">
-              <label class="mb-2.5 block text-black dark:text-white">
-                Statut
+          <div class="p-6 space-y-5">
+            <div>
+              <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-gray-300">
+                Statut de publication
               </label>
               <select
                 v-model="post.status"
-                class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                class="w-full rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 py-3 px-5 text-sm font-semibold outline-none focus:border-blue-500 transition"
               >
                 <option value="draft">Brouillon</option>
                 <option value="published">Publié</option>
               </select>
             </div>
 
-            <div class="mb-4.5">
-              <label class="mb-2.5 block text-black dark:text-white">
-                Aperçu de l'image
+            <div>
+              <label class="mb-2 block text-sm font-bold text-gray-750 dark:text-gray-350">
+                Aperçu de la couverture
               </label>
-              <div v-if="post.featuredImage" class="relative block h-48 w-full overflow-hidden rounded-md bg-gray-200">
+              <div v-if="post.featuredImage" class="relative block h-40 w-full overflow-hidden rounded-xl border border-gray-150 dark:border-gray-800 bg-gray-100">
                 <img :src="getImageUrl(post.featuredImage)" alt="Preview" class="h-full w-full object-cover" />
               </div>
-              <div v-else class="flex h-48 w-full items-center justify-center rounded-md bg-gray-100 dark:bg-gray-800">
-                <span class="text-gray-400">Aucune image</span>
+              <div v-else class="flex h-40 w-full flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-black/20 text-gray-400">
+                <i class="las la-image text-3xl mb-1"></i>
+                <span class="text-xs font-semibold">Aucune image</span>
               </div>
             </div>
             
-            <div class="mt-8 rounded-md bg-gray-50 p-4 dark:bg-gray-900">
-                <p class="text-xs text-gray-500">
-                    <strong>Note:</strong> Les articles publiés sont immédiatement visibles sur la section Blog du site public.
-                </p>
+            <div class="rounded-xl bg-blue-50/50 p-4 border border-blue-100/50 dark:bg-blue-950/20 dark:border-blue-900/20">
+              <p class="text-xs text-blue-700 dark:text-blue-400 leading-relaxed font-semibold">
+                <i class="las la-info-circle text-sm mr-1"></i>
+                Les articles au statut "Publié" sont instantanément mis en ligne sur la section Blog de la plateforme publique.
+              </p>
             </div>
           </div>
         </div>

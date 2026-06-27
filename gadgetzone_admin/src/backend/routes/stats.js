@@ -42,13 +42,9 @@ router.get('/overview', async (req, res) => {
       productCount,
       userCount
     ] = await Promise.all([
-      // Total Revenue (Commissions Marketplace)
       sequelize.query(`
-        SELECT COALESCE(SUM(oi.price * oi.quantity * s.commission_rate / 100), 0) as total
-        FROM order_items oi
-        JOIN orders o ON oi.order_id = o.id
-        JOIN products p ON oi.product_id = p.id
-        JOIN stores s ON p."storeId" = s.id
+        SELECT COALESCE(SUM(o.total_amount - o.seller_net_amount), 0) as total
+        FROM orders o
         WHERE o.status = 'delivered' AND o.created_at >= :startDate
       `, { replacements: { startDate }, type: sequelize.QueryTypes.SELECT }),
       

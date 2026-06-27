@@ -29,6 +29,12 @@ router.get('/:id', authenticateToken, orderController.getOrderById);
 router.post('/', authenticateToken, orderController.createOrder);
 
 /**
+ * POST /api/orders/calculate-shipping
+ * Estimate shipping fees for current cart items
+ */
+router.post('/calculate-shipping', authenticateToken, orderController.calculateShipping);
+
+/**
  * PUT /api/orders/:id/cancel
  * Cancel an order
  */

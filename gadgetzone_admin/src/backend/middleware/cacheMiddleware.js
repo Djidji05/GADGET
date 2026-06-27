@@ -1,4 +1,4 @@
-import { getCache, setCache } from '../config/redis.js';
+import { getCache, setCache, delCache, delCacheByPattern } from '../config/redis.js';
 
 /**
  * Enhanced Cache Middleware for Express
@@ -83,7 +83,6 @@ export const cacheMiddleware = (durationInMinutes = 5) => {
 export const clearCache = (pattern = null) => {
     if (!pattern) {
         memoryCache.clear();
-        // Redis clear if needed (requires flushdb or specific pattern)
         console.log('[Cache] Memory cleared');
     } else {
         const keys = Array.from(memoryCache.keys());
@@ -93,6 +92,9 @@ export const clearCache = (pattern = null) => {
             }
         });
         console.log(`[Cache] Memory pattern cleared: ${pattern}`);
+        delCacheByPattern(`*${pattern}*`).catch(err =>
+            console.error(`[Cache] Redis clear pattern error [${pattern}]:`, err.message)
+        );
     }
 };
 

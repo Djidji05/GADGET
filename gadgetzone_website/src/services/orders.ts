@@ -39,6 +39,7 @@ export interface CreateOrderData {
   referencePoint?: string
   paymentMethod: PaymentMethod
   promoCode?: string
+  pointsToUse?: number
 }
 
 export interface Order {
@@ -46,7 +47,7 @@ export interface Order {
   orderNumber: string
   customerId: number
   offerId?: number
-  status: 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
+  status: 'pending' | 'partially_paid' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
 
   items: OrderItem[]
   shippingAddress: ShippingAddress
@@ -62,6 +63,7 @@ export interface Order {
   deliveryToken?: string
   user?: any
   delivered_at?: string
+  total_paid?: number
 }
 
 export interface CheckoutSummary {
@@ -76,12 +78,19 @@ export interface CheckoutSummary {
 const mapOrderResponse = (data: any): Order => {
   return {
     ...data,
-    shippingAddress: typeof data.shipping_address === 'string'
+    shippingAddress: (typeof data.shipping_address === 'string' && data.shipping_address.startsWith('{'))
       ? JSON.parse(data.shipping_address)
       : data.shipping_address,
-    paymentMethod: typeof data.payment_method === 'string'
-      ? JSON.parse(data.payment_method)
-      : (data.payment_method || { type: 'card', details: {} }), // Safe fallback
+    paymentMethod: (() => {
+      if (typeof data.payment_method === 'string') {
+        try {
+          return JSON.parse(data.payment_method);
+        } catch (e) {
+          return { type: data.payment_method.toLowerCase() === 'moncash' ? 'moncashwise' : 'card', name: data.payment_method };
+        }
+      }
+      return data.payment_method || { type: 'card', details: {} };
+    })(),
     orderNumber: data.order_number || data.orderNumber, // Handle both cases just to be safe
     createdAt: data.created_at || data.createdAt,
     updatedAt: data.updated_at || data.updatedAt,
@@ -121,7 +130,8 @@ export const ordersService = {
       shipping_address: data.shippingAddress,
       shipping_coordinates: data.shippingCoordinates,
       reference_point: data.referencePoint,
-      payment_method: data.paymentMethod
+      payment_method: data.paymentMethod,
+      points_to_use: data.pointsToUse
     }
 
     const response = await api.post('/orders', payload)
@@ -156,5 +166,11 @@ export const ordersService = {
   updateOrderStatus: async (id: number, status: Order['status']): Promise<Order> => {
     const response = await api.put(`/orders/${id}/status`, { status })
     return mapOrderResponse(response.data)
+  },
+
+  // Obtenir le suivi détaillé GPS / timeline d'une commande
+  getOrderTracking: async (orderId: number): Promise<any> => {
+    const response = await api.get(`/tracking/${orderId}`)
+    return response.data
   }
 }

@@ -1,5 +1,6 @@
+import fs from 'fs';
 import OrderService from '../services/OrderService.js';
-import { User, sequelize } from '../models/index.js';
+import { User, Order, sequelize } from '../models/index.js';
 import { Op } from 'sequelize';
 
 class OrderController {
@@ -75,6 +76,7 @@ class OrderController {
     createOrder = async (req, res) => {
         try {
             console.log('📦 Create Order Request:', JSON.stringify(req.body, null, 2));
+            fs.appendFileSync('C:\\Users\\ndjiv\\OneDrive\\Desktop\\Gadget\\gadgetzone_admin\\scratch\\debug.log', '📦 Create Order Request: ' + JSON.stringify(req.body) + '\n');
             
             // 🛡️ SÉCURISATION : Forcer l'ID utilisateur à celui de la session pour éviter l'usurpation
             const orderData = {
@@ -86,6 +88,9 @@ class OrderController {
             res.status(201).json(order);
         } catch (error) {
             console.error('❌ Controller Error [createOrder]:', error); // Log full error object (includes stack)
+            try {
+                fs.appendFileSync('C:\\Users\\ndjiv\\OneDrive\\Desktop\\Gadget\\gadgetzone_admin\\scratch\\debug.log', '❌ Controller Error [createOrder]: ' + error.message + '\n' + error.stack + '\n');
+            } catch (e) {}
             res.status(400).json({ error: error.message, stack: error.stack });
         }
 
@@ -144,6 +149,17 @@ class OrderController {
         } catch (error) {
             console.error('❌ Controller Error [trackOrderByNumber]:', error);
             res.status(500).json({ error: 'Failed to track order' });
+        }
+    };
+
+    calculateShipping = async (req, res) => {
+        try {
+            const { items, shippingAddress } = req.body;
+            const result = await this.orderService.calculateShippingFee(items, shippingAddress);
+            res.json(result);
+        } catch (error) {
+            console.error('❌ Controller Error [calculateShipping]:', error);
+            res.status(400).json({ error: error.message });
         }
     };
 }

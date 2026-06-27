@@ -234,12 +234,12 @@ const getTransactionCategory = (tx: any) => {
 
 <template>
   <div class="w-full font-sans bg-gray-50/50 min-h-screen pt-4 pb-12">
-        <div class="flex flex-col md:flex-row gap-6">
+        <div class="flex flex-col lg:flex-row gap-6">
             <SellerSidebar />
             
             <div class="flex-1">
                 <!-- MOBILE FIXED TOP NAVBAR -->
-                <div v-if="!selectedTransaction" class="md:hidden fixed top-0 left-0 right-0 z-40 bg-gray-50 shadow-sm border-b border-gray-200/50">
+                <div v-if="!selectedTransaction" class="lg:hidden fixed top-0 left-0 right-0 z-40 bg-gray-50 shadow-sm border-b border-gray-200/50">
                     <div class="px-4 pt-4 pb-2">
                         <!-- Header -->
                         <div class="flex items-center justify-between mb-3">
@@ -272,10 +272,10 @@ const getTransactionCategory = (tx: any) => {
                 </div>
 
                 <!-- Spacer for Fixed Navbar on Mobile -->
-                <div v-if="!selectedTransaction" class="md:hidden h-[120px]"></div>
+                <div v-if="!selectedTransaction" class="lg:hidden h-[120px]"></div>
 
                 <!-- Desktop Header -->
-                <div class="hidden md:flex items-center justify-between mb-10">
+                <div class="hidden lg:flex items-center justify-between mb-10">
                     <div>
                         <h1 class="text-4xl font-black text-gray-900 mb-2">Historique financier</h1>
                         <p class="text-gray-500 font-medium">Consultez tous vos flux de fonds et transactions</p>
@@ -287,7 +287,7 @@ const getTransactionCategory = (tx: any) => {
                 </div>
 
                 <!-- Desktop Filters (Hidden on Mobile) -->
-                <div class="hidden md:flex gap-3 overflow-x-auto pb-8 px-4 scrollbar-hide no-scrollbar">
+                <div class="hidden lg:flex gap-3 overflow-x-auto pb-8 px-4 scrollbar-hide no-scrollbar">
                     <button 
                         v-for="filter in filters" 
                         :key="filter.value"
@@ -306,7 +306,8 @@ const getTransactionCategory = (tx: any) => {
                     <div v-for="i in 2" :key="i" class="animate-pulse bg-gray-200/50 h-48 rounded-[32px] w-full"></div>
                 </div>
 
-                <div v-else-if="groupedTransactions.length > 0" class="space-y-10">
+                <!-- Mobile View -->
+                <div v-else-if="groupedTransactions.length > 0" class="lg:hidden space-y-10">
                     <div v-for="group in groupedTransactions" :key="group.date" class="space-y-5">
                         <h2 class="text-xs font-black text-gray-400 px-1 tracking-[0.2em] uppercase">{{ group.date }}</h2>
                         
@@ -368,6 +369,64 @@ const getTransactionCategory = (tx: any) => {
                     </div>
                 </div>
 
+                <!-- Desktop Table View -->
+                <div v-else-if="filteredTransactions.length > 0" class="hidden lg:block bg-white rounded-[32px] shadow-xl shadow-gray-200/40 border border-gray-100/80 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50/50 border-b border-gray-100 text-xs font-bold text-gray-500 uppercase tracking-wider">
+                                    <th class="px-8 py-4">Transaction ID / Date</th>
+                                    <th class="px-8 py-4">Type</th>
+                                    <th class="px-8 py-4">Libellé / Description</th>
+                                    <th class="px-8 py-4">Origine / Destinataire</th>
+                                    <th class="px-8 py-4 text-center">Statut</th>
+                                    <th class="px-8 py-4 text-right">Montant</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                <tr 
+                                    v-for="tx in filteredTransactions" 
+                                    :key="tx.id" 
+                                    @click="selectedTransaction = tx"
+                                    class="hover:bg-blue-50/30 transition-colors group cursor-pointer"
+                                >
+                                    <td class="px-8 py-4">
+                                        <p class="text-[12px] text-gray-400 font-bold opacity-80 uppercase tracking-tighter break-all">
+                                            TID: {{ tx.transaction_id || tx.id }}
+                                        </p>
+                                        <p class="text-xs text-gray-500 mt-0.5">{{ formatTime(tx.created_at) }}</p>
+                                    </td>
+                                    <td class="px-8 py-4">
+                                        <span class="text-[10px] font-black px-2 py-1 rounded-md bg-blue-50 text-blue-600 uppercase tracking-tighter">
+                                            {{ getTransactionCategory(tx) }}
+                                        </span>
+                                    </td>
+                                    <td class="px-8 py-4">
+                                        <p class="font-bold text-sm text-gray-900 group-hover:text-blue-700 transition-colors">{{ getTransactionTitle(tx) }}</p>
+                                    </td>
+                                    <td class="px-8 py-4 text-sm text-gray-600 font-medium">
+                                        {{ tx.partner_name || tx.creator_name || tx.from_user?.name || 'System' }}
+                                    </td>
+                                    <td class="px-8 py-4 text-center">
+                                        <span :class="getStatusClass(tx.status)" class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold ring-1 ring-black/5">
+                                            {{ tx.status === 'successed' || tx.status === 'success' || tx.status === 'completed' ? 'Successed' : tx.status }}
+                                        </span>
+                                    </td>
+                                    <td class="px-8 py-4 text-right whitespace-nowrap">
+                                        <div v-if="tx.type === 'payment' && tx.gross_amount" class="flex flex-col items-end mb-0.5">
+                                            <span class="text-[10px] text-gray-300 line-through leading-none">{{ formatPrice(tx.gross_amount) }}</span>
+                                            <span class="text-[9px] text-red-400 font-bold bg-red-50 px-1 rounded mt-0.5">-{{ ((tx.fee / tx.gross_amount) * 100).toFixed(0) }}%</span>
+                                        </div>
+                                        <span class="text-sm font-bold font-mono" :class="tx.is_credit || tx.type === 'payment' ? 'text-green-600' : 'text-gray-900'">
+                                            {{ formatAmount(tx) }} <span class="text-[11px] opacity-60">HTG</span>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <!-- Empty State -->
                 <div v-else class="flex flex-col items-center justify-center py-24 text-center bg-white rounded-[40px] border border-dashed border-gray-200">
                     <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6 shadow-inner">
@@ -380,18 +439,23 @@ const getTransactionCategory = (tx: any) => {
         </div>
 
         <!-- TRANSACTION DETAIL OVERLAY -->
-        <div v-if="selectedTransaction" class="fixed inset-0 z-[1100] bg-gray-50 flex flex-col animate-in fade-in slide-in-from-bottom-4 duration-300">
-            <!-- Header -->
-            <div class="flex items-center px-4 py-8 justify-between bg-white/10 z-10 shrink-0">
-                <button @click="selectedTransaction = null" class="w-10 h-10 flex items-center justify-center rounded-2xl bg-white shadow-sm border border-gray-100 text-gray-900 active:scale-95 transition-all">
-                    <i class="fas fa-chevron-left text-sm"></i>
-                </button>
-                <h2 class="text-[18px] font-bold text-gray-900 tracking-tight">Détails de la transaction</h2>
-                <div class="w-10"></div> <!-- Spacer -->
-            </div>
+        <div v-if="selectedTransaction" class="fixed inset-0 z-[1100] bg-black/50 backdrop-blur-sm flex items-center justify-center p-0 md:p-4">
+            <!-- Backdrop click to close on PC -->
+            <div @click="selectedTransaction = null" class="absolute inset-0 hidden md:block"></div>
+            
+            <!-- Modal Card -->
+            <div class="relative w-full h-full md:h-auto md:max-h-[90vh] md:max-w-xl bg-gray-50 rounded-none md:rounded-[40px] flex flex-col shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-300">
+                <!-- Header -->
+                <div class="flex items-center px-6 py-6 md:py-5 justify-between bg-white border-b border-gray-100 shrink-0">
+                    <button @click="selectedTransaction = null" class="w-10 h-10 flex items-center justify-center rounded-2xl bg-gray-50 text-gray-900 active:scale-95 transition-all">
+                        <i class="fas fa-times text-sm"></i>
+                    </button>
+                    <h2 class="text-[18px] font-bold text-gray-900 tracking-tight">Détails de la transaction</h2>
+                    <div class="w-10"></div> <!-- Spacer -->
+                </div>
 
-            <!-- Scrollable Content -->
-            <div class="flex-1 overflow-y-auto px-4 pb-20 max-w-lg mx-auto w-full space-y-8 no-scrollbar scrollbar-hide">
+                <!-- Scrollable Content -->
+                <div class="flex-1 overflow-y-auto px-6 py-6 space-y-8 no-scrollbar scrollbar-hide">
                 <!-- Large Status Icon Section -->
                 <div class="flex flex-col items-center justify-center py-8">
                     <div class="w-28 h-28 rounded-full bg-green-500 flex items-center justify-center shadow-lg shadow-green-200 border-4 border-white mb-6 animate-bounce-subtle">
@@ -507,6 +571,7 @@ const getTransactionCategory = (tx: any) => {
                 </div>
             </div>
         </div>
+    </div>
 
         <!-- ADVANCED FILTER MODAL (BOTTOM SHEET) -->
         <div v-if="showAdvancedFilter" class="fixed inset-0 z-[1200] flex items-end md:items-center md:justify-center p-0 md:p-4">

@@ -5,6 +5,9 @@ export default {
     getBanners() {
         return api.get('/personalization/banners');
     },
+    getPromotions() {
+        return api.get('/promotions').then(res => res.data); // Assuming backend returns array or {data: []}
+    },
     createBanner(banner: any) {
         return api.post('/personalization/banners', banner);
     },

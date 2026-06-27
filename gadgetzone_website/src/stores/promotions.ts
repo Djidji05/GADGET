@@ -12,7 +12,11 @@ export const usePromotionsStore = defineStore('promotions', () => {
   // State
   const activeBanners = ref<Banner[]>([])
   const activePromotions = ref<Promotion[]>([])
-  const isLoading = ref(false)
+  const activeRequests = ref(0)
+  const isLoading = computed(() => activeRequests.value > 0)
+  
+  const startLoading = () => { activeRequests.value++ }
+  const stopLoading = () => { activeRequests.value = Math.max(0, activeRequests.value - 1) }
   const error = ref<string | null>(null)
   const usingFallback = ref(false)
 
@@ -25,7 +29,7 @@ export const usePromotionsStore = defineStore('promotions', () => {
   const loadActiveBanners = async () => {
     try {
       console.log('🎯 Loading banners...')
-      isLoading.value = true
+      startLoading()
       error.value = null
       usingFallback.value = false
 
@@ -51,14 +55,14 @@ export const usePromotionsStore = defineStore('promotions', () => {
       usingFallback.value = true
       console.log('✅ Fallback banners loaded:', fallbackBanners.length)
     } finally {
-      isLoading.value = false
+      stopLoading()
     }
   }
 
   const loadActivePromotions = async () => {
     try {
       console.log('🎁 Loading promotions...')
-      isLoading.value = true
+      startLoading()
       error.value = null
       usingFallback.value = false
 
@@ -84,13 +88,13 @@ export const usePromotionsStore = defineStore('promotions', () => {
       usingFallback.value = true
       console.log('✅ Fallback promotions loaded:', fallbackPromotions.length)
     } finally {
-      isLoading.value = false
+      stopLoading()
     }
   }
 
   const validatePromoCode = async (code: string, cartTotal: number) => {
     try {
-      isLoading.value = true
+      startLoading()
       error.value = null
 
       // Si on utilise déjà les fallbacks, valider localement
@@ -109,7 +113,7 @@ export const usePromotionsStore = defineStore('promotions', () => {
       // Fallback sur la validation locale
       return validateFallbackPromoCode(code, cartTotal)
     } finally {
-      isLoading.value = false
+      stopLoading()
     }
   }
 

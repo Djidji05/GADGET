@@ -40,7 +40,7 @@ export const authLimiter = rateLimit({
             if (req.rateLimit && req.rateLimit.current === options.max + 1) {
                 // Loguer l'attaque par force brute dans la base de données
                 await db.SecurityLog.create({
-                    ip_address: req.ip || req.connection.remoteAddress,
+                    ip_address: req.ip || req.socket?.remoteAddress || req.connection?.remoteAddress || '127.0.0.1',
                     event_type: 'brute_force',
                     severity: 'critical',
                     description: `Blocage de l'IP après avoir dépassé la limite de tentatives d'authentification (Max: ${options.max} en 15m)`,
@@ -52,6 +52,38 @@ export const authLimiter = rateLimit({
         }
         res.status(options.statusCode).send(options.message);
     }
+});
+
+/**
+ * Rate limiter pour l'inscription (enregistrement)
+ * Limite: 5 inscriptions par heure par IP
+ */
+export const registerLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 heure
+    max: 5, // Limite de 5 inscriptions
+    message: {
+        error: 'Trop d\'inscriptions',
+        message: 'Vous avez dépassé la limite d\'inscriptions autorisées. Veuillez réessayer dans 1 heure.',
+        retryAfter: '1 heure'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+/**
+ * Rate limiter pour la réinitialisation de mot de passe
+ * Limite: 5 demandes par 15 minutes par IP
+ */
+export const passwordResetLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // Limite de 5 demandes
+    message: {
+        error: 'Trop de demandes de réinitialisation',
+        message: 'Vous avez dépassé la limite de demandes de réinitialisation. Veuillez réessayer dans 15 minutes.',
+        retryAfter: '15 minutes'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
 });
 
 /**
@@ -136,6 +168,8 @@ export const webhookLimiter = rateLimit({
 export default {
     generalLimiter,
     authLimiter,
+    registerLimiter,
+    passwordResetLimiter,
     createLimiter,
     modifyLimiter,
     searchLimiter,

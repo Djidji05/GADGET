@@ -1,5 +1,5 @@
 <template>
-  <div class="ai-assistant-wrapper" v-if="!isSellerRoute && !isAuthRoute">
+  <div class="ai-assistant-wrapper" v-if="shouldShowAssistant">
     <!-- Floating Toggle Button -->
     <button 
       @mousedown="startDrag"
@@ -149,16 +149,48 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, onUpdated, nextTick, computed } from 'vue';
 import { useAIStore } from '@/stores/ai';
+import { useUiStore } from '@/stores/ui';
 import { useRouter, useRoute } from 'vue-router';
 import { useDevice } from '@/composables/useDevice';
 
 const aiStore = useAIStore();
+const uiStore = useUiStore();
 const router = useRouter();
 const route = useRoute();
 
 const isSellerRoute = computed(() => route.path.startsWith('/seller'));
 const isAuthRoute = computed(() => ['/login', '/register', '/forgot-password', '/reset-password', '/auth/callback'].includes(route.path));
 const { isMobile } = useDevice();
+
+// Page-specific visibility logic
+const allowedRoutes = [
+  'home',
+  'products',
+  'product-detail',
+  'cart',
+  'orders',
+  'order-detail',
+  'account',
+  'addresses',
+  'wishlist',
+  'notifications',
+  'browsing-history'
+];
+
+const shouldShowAssistant = computed(() => {
+  // Hide on unauthorized routes
+  if (isSellerRoute.value || isAuthRoute.value) return false;
+  
+  // Hide if mobile menu is open
+  if (isMobile.value && uiStore.isMobileMenuOpen) return false;
+
+  // Hide if product image lightbox/gallery is open
+  if (uiStore.isLightboxOpen) return false;
+  
+  // Only show on specific allowed routes
+  return allowedRoutes.includes(route.name as string);
+});
+
 const inputMessage = ref('');
 const messagesBox = ref<HTMLElement | null>(null);
 const unreadCount = ref(0);
@@ -204,7 +236,7 @@ const startDrag = (event: MouseEvent | TouchEvent) => {
   let clientX = 0;
   let clientY = 0;
 
-  if ('touches' in event && event.touches.length > 0) {
+  if ('touches' in event && event.touches && event.touches[0]) {
     clientX = event.touches[0].clientX;
     clientY = event.touches[0].clientY;
   } else if (event instanceof MouseEvent) {
@@ -233,7 +265,7 @@ const onDrag = (event: MouseEvent | TouchEvent) => {
   let clientX = 0;
   let clientY = 0;
 
-  if ('touches' in event && event.touches.length > 0) {
+  if ('touches' in event && event.touches && event.touches[0]) {
     clientX = event.touches[0].clientX;
     clientY = event.touches[0].clientY;
   } else if (event instanceof MouseEvent) {

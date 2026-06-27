@@ -31,7 +31,7 @@
         :key="product.id"
         class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-all group"
       >
-        <router-link :to="`/products/${product.id}`" class="block">
+        <router-link :to="`/products/${product.slug || product.id}`" class="block">
           <div class="aspect-square bg-gray-50 relative overflow-hidden">
             <img 
               :src="normalizeImageUrl(product.image_url || product.image)" 

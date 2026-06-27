@@ -1242,7 +1242,7 @@ const exportExpensesPDF = () => {
         ]],
         didDrawPage: (data) => {
             // Footer
-            const str = 'Page ' + doc.internal.getNumberOfPages();
+            const str = 'Page ' + (doc as any).internal.getNumberOfPages();
             doc.setFontSize(10);
             doc.text(str, data.settings.margin.left, doc.internal.pageSize.getHeight() - 10);
         }
@@ -1335,7 +1335,7 @@ const exportExpenseDetailsPDF = () => {
         theme: 'plain',
         styles: { fontSize: 11, cellPadding: 5 },
         columnStyles: {
-            0: { fontStyle: 'bold', width: 50 },
+            0: { fontStyle: 'bold', cellWidth: 50 },
             1: { halign: 'right' }
         }
     });

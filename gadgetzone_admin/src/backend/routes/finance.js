@@ -68,11 +68,8 @@ router.get('/overview', async (req, res) => {
             sequelize.query(`SELECT COALESCE(SUM(total_amount), 0) as total FROM orders WHERE status = 'delivered' AND created_at >= :startDate`, 
                 { replacements: { startDate }, type: sequelize.QueryTypes.SELECT }),
             // 2. Revenu Marketplace (Commissions)
-            sequelize.query(`SELECT COALESCE(SUM(oi.price * oi.quantity * s.commission_rate / 100), 0) as total
-                FROM order_items oi
-                JOIN orders o ON oi.order_id = o.id
-                JOIN products p ON oi.product_id = p.id
-                JOIN stores s ON p."storeId" = s.id
+            sequelize.query(`SELECT COALESCE(SUM(o.total_amount - o.seller_net_amount), 0) as total
+                FROM orders o
                 WHERE o.status = 'delivered' AND o.created_at >= :startDate`, 
                 { replacements: { startDate }, type: sequelize.QueryTypes.SELECT }),
             // 3. Paiements reçus (gross)
@@ -91,35 +88,23 @@ router.get('/overview', async (req, res) => {
             sequelize.query(`SELECT COALESCE(SUM(amount), 0) as total FROM payouts WHERE status = 'completed' AND created_at >= :startDate`, 
                 { replacements: { startDate }, type: sequelize.QueryTypes.SELECT }),
             // 8. Available Balance
-            sequelize.query(`SELECT COALESCE(SUM(oi.price * oi.quantity * (1 - (s.commission_rate / 100))), 0) as total
-                FROM order_items oi
-                JOIN orders o ON oi.order_id = o.id
-                JOIN products p ON oi.product_id = p.id
-                JOIN stores s ON p."storeId" = s.id
+            sequelize.query(`SELECT COALESCE(SUM(o.seller_net_amount), 0) as total
+                FROM orders o
                 WHERE o.status = 'delivered' AND o.created_at >= :startDate`, 
                 { replacements: { startDate }, type: sequelize.QueryTypes.SELECT }),
             // 9. Pending Balance
-            sequelize.query(`SELECT COALESCE(SUM(oi.price * oi.quantity * (1 - (s.commission_rate / 100))), 0) as total
-                FROM order_items oi
-                JOIN orders o ON oi.order_id = o.id
-                JOIN products p ON oi.product_id = p.id
-                JOIN stores s ON p."storeId" = s.id
+            sequelize.query(`SELECT COALESCE(SUM(o.seller_net_amount), 0) as total
+                FROM orders o
                 WHERE o.status IN ('pending', 'processing', 'shipped', 'confirmed') AND o.created_at >= :startDate`, 
                 { replacements: { startDate }, type: sequelize.QueryTypes.SELECT }),
             // 10. Current Month Revenue (Growth)
-            sequelize.query(`SELECT COALESCE(SUM(oi.price * oi.quantity * s.commission_rate / 100), 0) as total
-                FROM order_items oi
-                JOIN orders o ON oi.order_id = o.id
-                JOIN products p ON oi.product_id = p.id
-                JOIN stores s ON p."storeId" = s.id
+            sequelize.query(`SELECT COALESCE(SUM(o.total_amount - o.seller_net_amount), 0) as total
+                FROM orders o
                 WHERE o.status = 'delivered' AND o.created_at >= :currentMonthStart`, 
                 { replacements: { currentMonthStart }, type: sequelize.QueryTypes.SELECT }),
             // 11. Last Month Revenue (Growth)
-            sequelize.query(`SELECT COALESCE(SUM(oi.price * oi.quantity * s.commission_rate / 100), 0) as total
-                FROM order_items oi
-                JOIN orders o ON oi.order_id = o.id
-                JOIN products p ON oi.product_id = p.id
-                JOIN stores s ON p."storeId" = s.id
+            sequelize.query(`SELECT COALESCE(SUM(o.total_amount - o.seller_net_amount), 0) as total
+                FROM orders o
                 WHERE o.status = 'delivered' AND o.created_at >= :lastMonthStart AND o.created_at < :currentMonthStart`, 
                 { replacements: { lastMonthStart, currentMonthStart }, type: sequelize.QueryTypes.SELECT })
         ]);
@@ -530,7 +515,8 @@ router.get('/transactions', async (req, res) => {
                     description: `Vente commande #${order.id}`,
                     type: 'revenue',
                     amount: parseFloat(order.total_amount),
-                    status: order.status === 'delivered' ? 'completed' : 'pending'
+                    status: order.status === 'delivered' ? 'completed' : 'pending',
+                    timestamp: new Date(order.created_at).getTime()
                 });
             });
         }
@@ -544,17 +530,14 @@ router.get('/transactions', async (req, res) => {
                     type: 'expense',
                     amount: parseFloat(expense.amount),
                     status: expense.status,
-                    category: expense.category
+                    category: expense.category,
+                    timestamp: new Date(expense.date).getTime()
                 });
             });
         }
 
         // Trier par date (plus récent en premier)
-        transactions.sort((a, b) => {
-            const dateA = new Date(a.date.split(' ').reverse().join('-'));
-            const dateB = new Date(b.date.split(' ').reverse().join('-'));
-            return dateB - dateA;
-        });
+        transactions.sort((a, b) => b.timestamp - a.timestamp);
 
         res.json({
             transactions: transactions.slice(0, parseInt(limit))

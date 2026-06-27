@@ -31,7 +31,7 @@ const router = useRouter();
  <!-- Profile Icon / Avatar -->
  <router-link to="/seller/settings" class="relative group">
  <div class="w-10 h-10 rounded-full overflow-hidden ring-2 ring-white shadow-md group-hover:shadow-lg transition-all group-hover:scale-105">
- <img 
+ <img alt="" 
  v-if="authStore.customer?.avatar_url" 
  :src="authStore.customer.avatar_url" 
  class="w-full h-full object-cover" 

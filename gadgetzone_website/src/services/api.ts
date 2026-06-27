@@ -1,7 +1,14 @@
 import axios from 'axios'
 
-// Configuration de l'API pour se connecter au backend de HTFasil Admin
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3003/api'
+const getApiBaseUrl = () => {
+  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return `http://${window.location.hostname}:3003/api`;
+  }
+  return 'http://localhost:3003/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -31,6 +38,8 @@ export interface Address {
   country: string
   whatsapp?: string
   note?: string
+  coordinates?: { lat: number; lng: number } | string | null
+  reference_point?: string
   is_default: boolean
 }
 

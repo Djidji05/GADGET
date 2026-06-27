@@ -1,8 +1,8 @@
 <template>
 <div 
     :class="{ 
-      'relative z-[100] w-full': isMobile,
-      'relative z-[100]': !isMobile
+      'relative z-[100] w-full': isMobileOrTablet,
+      'relative z-[100]': !isMobileOrTablet
     }"
   >
     <!-- Image Search Input (Hidden) - Global -->
@@ -16,11 +16,12 @@
 
     <!-- MOBILE HEADER -->
     <div 
-      v-if="isMobile" 
+      v-if="isMobileOrTablet && route.name !== 'store-view' && !route.meta.hideMobileNav" 
+      key="mobile-header"
       class="mobile-header transition-all duration-300"
       :class="{
-        'w-full z-[90] bg-white shadow-sm': isProductPage,
-        'bg-white shadow-sm': !isProductPage && !props.transparent,
+        'w-full z-[90] bg-white dark:bg-gray-950 shadow-sm dark:shadow-gray-900/50': isProductPage,
+        'bg-white dark:bg-gray-950 shadow-sm dark:shadow-gray-900/50': !isProductPage && !props.transparent,
         'bg-transparent': !isProductPage && props.transparent
       }"
     >
@@ -28,28 +29,29 @@
 
       <!-- Product Page View -->
       <template v-if="isProductPage || route.meta.hideNavSearch">
-        <div class="fixed top-0 left-0 w-full z-[110] flex items-center gap-3 py-2 px-3 bg-white shadow-sm border-b border-gray-50 h-[56px]">
+        <div class="fixed top-0 left-0 w-full z-[110] flex items-center gap-3 py-2 px-3 bg-white dark:bg-gray-950 shadow-sm dark:shadow-gray-900/50 border-b border-gray-50 dark:border-gray-800 h-[56px]">
           <!-- Back Button -->
           <button 
             @click="handleBack" 
-            class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 hover:bg-gray-200 transition-colors"
+            class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           >
-            <i class="fas fa-arrow-left text-gray-700"></i>
+            <i class="fas fa-arrow-left text-gray-700 dark:text-gray-300"></i>
           </button>
           
           <!-- Page Title when search is hidden -->
-          <div v-if="route.meta.hideNavSearch" class="flex-1 font-bold text-gray-900 truncate">
+          <div v-if="route.meta.hideNavSearch" class="flex-1 font-bold text-gray-900 dark:text-white truncate">
             {{ (route.meta.title as string)?.split(' - ')[0] }}
           </div>
 
           <!-- Search Bar (only if not hidden by meta) -->
           <div v-else class="flex-1 relative">
             <input
-              v-model="searchQuery"
-              @keyup.enter="handleSearch"
               type="search"
+              readonly
+              @click="openMobileSearch"
+              @focus="openMobileSearch"
               :placeholder="$t('products.search')"
-              class="w-full bg-gray-100 border-none rounded-full pl-4 pr-16 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none shadow-sm"
+              class="w-full bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white border-none rounded-full pl-4 pr-16 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none shadow-sm cursor-pointer"
             />
             <button 
               @click="triggerImageSearch"
@@ -57,7 +59,7 @@
             >
                <i :class="isImageSearching ? 'fas fa-spinner fa-spin' : 'fas fa-camera'"></i>
             </button>
-            <button @click="handleSearch" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+            <button @click="openMobileSearch" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
                <i class="fas fa-search"></i>
             </button>
           </div>
@@ -71,7 +73,7 @@
 
           <!-- Mobile Categories & Filters Container with Smart Sticky Animation -->
           <div 
-            class="fixed top-[56px] left-0 w-full z-[95] bg-white transition-all duration-500 transform ease-in-out border-b border-gray-50 shadow-sm"
+            class="fixed top-[56px] left-0 w-full z-[95] bg-white dark:bg-gray-950 transition-all duration-500 transform ease-in-out border-b border-gray-50 dark:border-gray-800 shadow-sm dark:shadow-gray-900/50"
             :class="[
               isScrollingUp ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none invisible'
             ]"
@@ -138,22 +140,30 @@
         <div class="mobile-top-bar">
           <div class="flex flex-col ml-0">
             <span class="text-[10px] text-gray-500 font-medium">{{ authStore.isFirstLogin ? 'Bienvenue sur HTFasil' : 'Bon retour sur HTFasil' }}</span>
-            <span class="font-bold text-gray-900 text-sm leading-tight max-w-[150px] truncate">
+            <span class="font-bold text-gray-900 dark:text-white text-sm leading-tight max-w-[150px] truncate">
               {{ authStore.customer.firstName || authStore.customer.email }}
             </span>
           </div>
           
           <div class="flex items-center gap-2">
+            <button 
+              @click="themeStore.toggleTheme"
+              class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors p-1"
+              :title="themeStore.isDark ? 'Mode clair' : 'Mode sombre'"
+            >
+              <i :class="themeStore.isDark ? 'fas fa-sun text-xl' : 'fas fa-moon text-xl'"></i>
+            </button>
+
             <router-link 
               v-if="authStore.isAuthenticated"
               to="/notifications" 
-              class="text-gray-700 hover:text-blue-600 transition-colors relative p-1"
+              class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors relative p-1"
             >
               <i class="fas fa-bell text-xl"></i>
               <span v-if="notificationsStore.unreadCount > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full leading-none">{{ notificationsStore.unreadCount }}</span>
             </router-link>
 
-            <router-link to="/wishlist" class="text-gray-700 hover:text-red-600 transition-colors relative p-1">
+            <router-link to="/wishlist" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors relative p-1">
               <i class="fas fa-heart text-xl"></i>
               <span v-if="wishlistStore.itemCount > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full leading-none">{{ wishlistStore.itemCount }}</span>
             </router-link>
@@ -164,19 +174,20 @@
         <div 
           v-if="!isProductPage && !route.meta.hideNavSearch" 
           :class="{
-            'fixed top-0 left-0 w-full z-[100] bg-white shadow-md pt-2': isHeaderFixed,
-            'relative bg-white shadow-sm pb-1': !isHeaderFixed
+            'fixed top-0 left-0 w-full z-[100] bg-white dark:bg-gray-950 shadow-md dark:shadow-gray-900/50 pt-2': isHeaderFixed,
+            'relative bg-white dark:bg-gray-950 shadow-sm dark:shadow-gray-900/50 pb-1': !isHeaderFixed
           }"
         >
           <!-- Line 2: Search + Settings -->
           <div class="mobile-search-bar">
             <div class="relative flex-1">
               <input
-                v-model="searchQuery"
-                @keyup.enter="handleSearch"
                 type="search"
+                readonly
+                @click="openMobileSearch"
+                @focus="openMobileSearch"
                 :placeholder="$t('products.search')"
-                class="mobile-search-input w-full pr-10"
+                class="mobile-search-input w-full pr-10 cursor-pointer"
               />
               <button 
                 @click="triggerImageSearch"
@@ -186,7 +197,7 @@
               </button>
             </div>
             <Transition name="fade">
-              <button v-if="!isMobileMenuOpen" @click="isMobileMenuOpen = true" class="p-2 text-gray-600 hover:text-primary-600">
+              <button v-if="!isMobileMenuOpen" @click="isMobileMenuOpen = true" class="p-2 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path d="M4 6H21L19 9H2L4 6Z"/>
                     <path d="M4 12H16L14 15H2L4 12Z"/>
@@ -213,16 +224,24 @@
           </router-link>
           
           <div class="flex items-center gap-2">
+            <button 
+              @click="themeStore.toggleTheme"
+              class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors p-1"
+              :title="themeStore.isDark ? 'Mode clair' : 'Mode sombre'"
+            >
+              <i :class="themeStore.isDark ? 'fas fa-sun text-xl' : 'fas fa-moon text-xl'"></i>
+            </button>
+
             <router-link 
               v-if="authStore.isAuthenticated"
               to="/notifications" 
-              class="text-gray-700 hover:text-blue-600 transition-colors relative p-1"
+              class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors relative p-1"
             >
               <i class="fas fa-bell text-xl"></i>
               <span v-if="notificationsStore.unreadCount > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full leading-none">{{ notificationsStore.unreadCount }}</span>
             </router-link>
 
-            <router-link to="/wishlist" class="text-gray-700 hover:text-red-600 transition-colors relative p-1">
+            <router-link to="/wishlist" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors relative p-1">
               <i class="fas fa-heart text-xl"></i>
               <span v-if="wishlistStore.itemCount > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full leading-none">{{ wishlistStore.itemCount }}</span>
             </router-link>
@@ -233,19 +252,20 @@
         <div 
           v-if="!isProductPage && !route.meta.hideNavSearch" 
           :class="{
-            'fixed top-0 left-0 w-full z-[100] bg-white shadow-md pt-2': isHeaderFixed,
-            'relative bg-white shadow-sm pb-1': !isHeaderFixed
+            'fixed top-0 left-0 w-full z-[100] bg-white dark:bg-gray-950 shadow-md dark:shadow-gray-900/50 pt-2': isHeaderFixed,
+            'relative bg-white dark:bg-gray-950 shadow-sm dark:shadow-gray-900/50 pb-1': !isHeaderFixed
           }"
         >
           <!-- Search bar mobile -->
-          <div class="mobile-search-bar border-b border-gray-100">
+          <div class="mobile-search-bar border-b border-gray-150 dark:border-gray-800">
             <div class="relative flex-1">
               <input
-                v-model="searchQuery"
-                @keyup.enter="handleSearch"
                 type="search"
+                readonly
+                @click="openMobileSearch"
+                @focus="openMobileSearch"
                 :placeholder="$t('products.search')"
-                class="mobile-search-input w-full pr-10"
+                class="mobile-search-input w-full pr-10 cursor-pointer"
               />
               <button 
                 @click="triggerImageSearch"
@@ -255,7 +275,7 @@
               </button>
             </div>
             <Transition name="fade">
-              <button v-if="!isMobileMenuOpen" @click="isMobileMenuOpen = true" class="p-2 text-gray-600 hover:text-primary-600">
+              <button v-if="!isMobileMenuOpen" @click="isMobileMenuOpen = true" class="p-2 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path d="M4 6H21L19 9H2L4 6Z"/>
                     <path d="M4 12H16L14 15H2L4 12Z"/>
@@ -277,10 +297,10 @@
     <!-- CATEGORIES (Mobile) REMOVED - Moved inside sticky wrapper above -->
 
     <!-- DESKTOP HEADER -->
-    <div v-else-if="!isMobile">
+    <div v-else-if="!isMobileOrTablet" key="desktop-header">
     <!-- Top Bar -->
     <div
-      class="bg-gray-100 text-gray-700 text-xs border-b border-gray-300 transition-all duration-300 ease-in-out"
+      class="bg-gray-100 dark:bg-gray-950 text-gray-700 dark:text-gray-300 border-b border-gray-300 dark:border-gray-800 transition-all duration-300 ease-in-out"
       :class="{
         'transform -translate-y-full opacity-0': !props.transparent,
         'transform translate-y-0 opacity-100': props.transparent,
@@ -313,7 +333,7 @@
 
     <!-- Main Bar -->
     <div
-      class="bg-white border-b border-gray-200 py-2 transition-all duration-300 ease-in-out relative z-50"
+      class="bg-white dark:bg-gray-950 text-gray-700 dark:text-gray-250 border-b border-gray-200 dark:border-gray-800 py-2 transition-all duration-300 ease-in-out relative z-50"
       :class="{
         'transform -translate-y-full opacity-0': !props.transparent,
         'transform translate-y-0 opacity-100': props.transparent,
@@ -336,7 +356,7 @@
               @keyup.enter="handleSearch"
               type="text"
               :placeholder="$t('products.search')"
-              class="w-full border border-gray-300 pl-4 pr-24 py-2 text-sm focus:outline-none focus:border-blue-400 rounded-full"
+              class="w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-800 text-gray-900 dark:text-white pl-4 pr-24 py-2 text-sm focus:outline-none focus:border-blue-400 rounded-full"
             />
 
 
@@ -363,7 +383,7 @@
         <div class="flex items-center ml-4 relative">
           <button 
             @click="showLanguageMenu = !showLanguageMenu"
-            class="flex items-center gap-1.5 border border-gray-300 rounded-full px-2.5 py-1 text-xs cursor-pointer hover:border-blue-500 hover:bg-gray-50 transition-all bg-white shadow-sm"
+            class="flex items-center gap-1.5 border border-gray-300 dark:border-gray-800 rounded-full px-2.5 py-1 text-xs cursor-pointer hover:border-blue-500 hover:bg-gray-50 dark:hover:bg-gray-900 transition-all bg-white dark:bg-gray-900 shadow-sm text-gray-700 dark:text-gray-300"
           >
             <img :src="currentLanguage.flag" :alt="currentLanguage.name" class="w-4 h-4 rounded-full object-cover" />
             <span class="font-bold text-gray-700">{{ currentLanguage.name }}</span>
@@ -373,18 +393,18 @@
           <Transition name="dropdown">
             <div 
               v-if="showLanguageMenu"
-              class="absolute top-full left-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-xl py-2 min-w-[120px] z-[100]"
+              class="absolute top-full left-0 mt-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-xl py-2 min-w-[120px] z-[100]"
               @mouseleave="showLanguageMenu = false"
             >
               <button 
                 v-for="lang in languages" 
                 :key="lang.code"
                 @click="changeLanguage(lang.code)"
-                class="w-full flex items-center gap-3 px-4 py-2 hover:bg-blue-50 transition-colors text-left"
-                :class="{ 'bg-blue-50/50': currentLocale === lang.code }"
+                class="w-full flex items-center gap-3 px-4 py-2 hover:bg-blue-50 dark:hover:bg-blue-950/40 transition-colors text-left"
+                :class="{ 'bg-blue-50/50 dark:bg-blue-950/20': currentLocale === lang.code }"
               >
-                <img :src="lang.flag" :alt="lang.name" class="w-5 h-5 rounded-full object-cover border border-gray-100" />
-                <span class="text-xs font-semibold" :class="currentLocale === lang.code ? 'text-blue-600' : 'text-gray-700'">
+                <img :src="lang.flag" :alt="lang.name" class="w-5 h-5 rounded-full object-cover border border-gray-100 dark:border-gray-800" />
+                <span class="text-xs font-semibold" :class="currentLocale === lang.code ? 'text-blue-600' : 'text-gray-700 dark:text-gray-300'">
                   {{ lang.code === 'ht' ? 'Kreyòl Ayisyen' : 'Français' }}
                 </span>
                 <i v-if="currentLocale === lang.code" class="fas fa-check text-blue-500 text-[10px] ml-auto"></i>
@@ -402,7 +422,7 @@
             @mouseleave="showAccountMenu = false"
           >
             <div
-              class="flex flex-col cursor-pointer hover:text-blue-600 transition-colors"
+              class="flex flex-col cursor-pointer text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
             >
               <span class="text-xs">
                 {{
@@ -422,58 +442,58 @@
             <!-- Account Dropdown Menu - Dans le container Account avec z-index élevé -->
             <div
               v-if="showAccountMenu"
-              class="absolute top-full right-0 mt-0 w-64 bg-white border border-gray-300 rounded-lg shadow-xl p-4"
+              class="absolute top-full right-0 mt-0 w-64 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-800 rounded-lg shadow-xl p-4"
               style="z-index: 99999999"
               @click.stop
             >
-              <div class="border-b border-gray-200 pb-3 mb-3">
-                <div class="text-sm font-semibold mb-1">{{ $t('nav.your_account') }}</div>
+              <div class="border-b border-gray-200 dark:border-gray-800 pb-3 mb-3">
+                <div class="text-sm font-semibold mb-1 text-gray-900 dark:text-white">{{ $t('nav.your_account') }}</div>
                 <a 
                   v-if="['admin', 'gestionnaire'].includes(authStore.customer?.role || '')"
                   href="http://localhost:5174" 
                   target="_blank"
-                  class="block w-full text-left py-2 px-3 hover:bg-gray-100 rounded text-gray-700 font-semibold text-blue-600"
+                  class="block w-full text-left py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded text-gray-700 dark:text-gray-300 font-semibold text-blue-600"
                 >
                   <i class="fas fa-user-shield mr-2"></i>{{ $t('nav.admin') }}
                 </a>
-                <router-link to="/account" class="block w-full text-left py-2 px-3 hover:bg-gray-100 rounded text-gray-700">
+                <router-link to="/account" class="block w-full text-left py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded text-gray-700 dark:text-gray-300">
                   <i class="fas fa-user mr-2"></i>{{ $t('nav.your_account') }}
                 </router-link>
               </div>
 
               <div class="space-y-1">
-                <router-link to="/orders" class="block w-full text-left py-2 px-3 hover:bg-gray-100 rounded text-sm text-gray-700">
+                <router-link to="/orders" class="block w-full text-left py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded text-sm text-gray-700 dark:text-gray-300">
                   <i class="fas fa-box mr-2"></i>{{ $t('nav.your_orders') }}
                 </router-link>
-                <router-link to="/wishlist" class="block w-full text-left py-2 px-3 hover:bg-gray-100 rounded text-sm text-gray-700">
+                <router-link to="/wishlist" class="block w-full text-left py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded text-sm text-gray-700 dark:text-gray-300">
                   <i class="fas fa-heart mr-2"></i>{{ $t('nav.your_wishlist') }}
                 </router-link>
-                <router-link to="/notifications" class="block w-full text-left py-2 px-3 hover:bg-gray-100 rounded text-sm text-gray-700 flex items-center justify-between">
+                <router-link to="/notifications" class="block w-full text-left py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded text-sm text-gray-700 dark:text-gray-300 flex items-center justify-between">
                   <span><i class="fas fa-bell mr-2"></i>{{ $t('nav.your_notifications') }}</span>
                   <span v-if="notificationsStore.unreadCount > 0" class="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
                     {{ notificationsStore.unreadCount }}
                   </span>
                 </router-link>
-                <router-link to="/addresses" class="block w-full text-left py-2 px-3 hover:bg-gray-100 rounded text-sm text-gray-700">
+                <router-link to="/addresses" class="block w-full text-left py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded text-sm text-gray-700 dark:text-gray-300">
                   <i class="fas fa-cog mr-2"></i>{{ $t('nav.addresses') }}
                 </router-link>
-                <router-link v-if="isSeller" to="/seller/dashboard" target="_blank" class="block w-full text-left py-2 px-3 hover:bg-gray-100 rounded text-sm text-blue-600 font-semibold">
+                <router-link v-if="isSeller" to="/seller/dashboard" target="_blank" class="block w-full text-left py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded text-sm text-blue-600 font-semibold">
                   <i class="fas fa-store mr-2"></i>{{ $t('nav.seller_dashboard') }}
                 </router-link>
               </div>
 
-              <div class="border-t border-gray-200 mt-3 pt-3">
+              <div class="border-t border-gray-200 dark:border-gray-800 mt-3 pt-3">
                 <router-link
                   v-if="!authStore.isAuthenticated"
                   to="/login"
-                  class="block w-full text-left py-2 px-3 hover:bg-gray-100 rounded text-sm text-blue-600 font-semibold"
+                  class="block w-full text-left py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded text-sm text-blue-600 font-semibold"
                 >
                   <i class="fas fa-sign-in-alt mr-2"></i>{{ $t('nav.login') }}
                 </router-link>
                 <button
                   v-else
                   @click="handleLogout"
-                  class="w-full text-left py-2 px-3 hover:bg-gray-100 rounded text-sm text-blue-600 font-semibold"
+                  class="w-full text-left py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded text-sm text-blue-600 font-semibold"
                 >
                   <i class="fas fa-sign-out-alt mr-2"></i>{{ $t('nav.logout') }}
                 </button>
@@ -482,7 +502,7 @@
           </div>
 
           <!-- Orders -->
-          <router-link to="/orders" class="flex flex-col cursor-pointer hover:text-blue-600 transition-colors">
+          <router-link to="/orders" class="flex flex-col cursor-pointer text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
             <i class="fas fa-shopping-cart text-sm"></i>
             <span class="text-sm font-semibold">{{ $t('nav.orders') }}</span>
           </router-link>
@@ -491,7 +511,7 @@
           <router-link
             v-if="authStore.isAuthenticated"
             to="/notifications"
-            class="flex items-center cursor-pointer hover:text-blue-600 transition-colors relative px-2"
+            class="flex items-center cursor-pointer text-gray-750 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors relative px-2"
             title="Notifications"
           >
             <i class="fas fa-bell text-2xl"></i>
@@ -504,10 +524,9 @@
           </router-link>
 
           <!-- Cart -->
-          <!-- Cart -->
           <router-link
             to="/cart"
-            class="flex items-center cursor-pointer hover:text-blue-600 transition-colors relative"
+            class="flex items-center cursor-pointer text-gray-750 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors relative"
             :class="{ 'cart-animate': uiStore.isCartAnimating }"
           >
             <i class="fas fa-shopping-cart text-2xl"></i>
@@ -518,6 +537,15 @@
               {{ cartStore.itemCount }}
             </span>
           </router-link>
+
+          <!-- Theme Toggle -->
+          <button 
+            @click="themeStore.toggleTheme"
+            class="flex items-center cursor-pointer text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors relative"
+            :title="themeStore.isDark ? 'Mode clair' : 'Mode sombre'"
+          >
+            <i :class="themeStore.isDark ? 'fas fa-sun text-2xl' : 'fas fa-moon text-2xl'"></i>
+          </button>
 
           <!-- Sign In & Register Buttons -->
           <div v-if="!authStore.isAuthenticated" class="flex items-center space-x-2">
@@ -540,10 +568,10 @@
 
     <!-- Categories Menu -->
     <div
-      v-if="!isMobile && !route.meta.hideNavSearch"
-      class="bg-gray-100 border-b border-gray-200 py-2 shadow-sm"
+      v-if="!isMobileOrTablet && !route.meta.hideNavSearch"
+      class="bg-gray-100 dark:bg-gray-950 border-b border-gray-200 dark:border-gray-850 py-2 shadow-sm dark:shadow-gray-900/20"
       :class="{
-        'fixed top-0 left-0 right-0 z-40 shadow-lg bg-opacity-95 backdrop-blur-sm':
+        'fixed top-0 left-0 right-0 z-40 shadow-lg dark:shadow-gray-950 bg-opacity-95 backdrop-blur-sm':
           !props.transparent,
         relative: props.transparent,
       }"
@@ -579,28 +607,28 @@
             <Transition name="dropdown">
               <div
                 v-if="showCategoriesMenu === 'hitech'"
-                class="absolute top-full left-0 mt-1 bg-white shadow-lg rounded p-4 min-w-[280px]"
+                class="absolute top-full left-0 mt-1 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-lg dark:shadow-gray-950/50 rounded p-4 min-w-[280px]"
                 style="z-index: 99999"
               >
-                <div class="grid grid-cols-2 gap-x-6 text-sm text-gray-600">
+                <div class="grid grid-cols-2 gap-x-6 text-sm text-gray-600 dark:text-gray-400">
                   <div class="space-y-2">
-                    <div class="font-bold text-gray-800 border-b pb-1 mb-1">{{ $t('nav.cat_hitech_computing') }}</div>
+                    <div class="font-bold text-gray-800 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-1 mb-1">{{ $t('nav.cat_hitech_computing') }}</div>
                     <router-link to="/products?category=laptop" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_hitech_laptops') }}</router-link>
                     <router-link to="/products?category=composants" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_hitech_parts') }}</router-link>
                     <router-link to="/products?category=tablettes" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_hitech_tablets') }}</router-link>
                   </div>
                   <div class="space-y-2">
-                    <div class="font-bold text-gray-800 border-b pb-1 mb-1">{{ $t('nav.cat_hitech_phones') }}</div>
+                    <div class="font-bold text-gray-800 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-1 mb-1">{{ $t('nav.cat_hitech_phones') }}</div>
                     <router-link to="/products?category=smartphone" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_hitech_smartphones') }}</router-link>
                     <router-link to="/products?category=montres-connectées" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_hitech_watches') }}</router-link>
                   </div>
                   <div class="space-y-2 mt-3">
-                    <div class="font-bold text-gray-800 border-b pb-1 mb-1">{{ $t('nav.cat_hitech_audio') }}</div>
+                    <div class="font-bold text-gray-800 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-1 mb-1">{{ $t('nav.cat_hitech_audio') }}</div>
                     <router-link to="/products?category=audio" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_hitech_headphones') }}</router-link>
                     <router-link to="/products?category=photo" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_hitech_photo') }}</router-link>
                   </div>
                   <div class="space-y-2 mt-3">
-                    <div class="font-bold text-gray-800 border-b pb-1 mb-1">{{ $t('nav.cat_hitech_tv') }}</div>
+                    <div class="font-bold text-gray-800 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-1 mb-1">{{ $t('nav.cat_hitech_tv') }}</div>
                     <router-link to="/products?category=tv" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_hitech_televisions') }}</router-link>
                     <router-link to="/products?category=video" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_hitech_projectors') }}</router-link>
                   </div>
@@ -626,18 +654,18 @@
             <Transition name="dropdown">
               <div
                 v-if="showCategoriesMenu === 'maison'"
-                class="absolute top-full left-0 mt-1 bg-white shadow-lg rounded p-4 min-w-[280px]"
+                class="absolute top-full left-0 mt-1 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-lg dark:shadow-gray-950/50 rounded p-4 min-w-[280px]"
                 style="z-index: 99999"
               >
-                <div class="grid grid-cols-2 gap-x-6 text-sm text-gray-600">
+                <div class="grid grid-cols-2 gap-x-6 text-sm text-gray-600 dark:text-gray-400">
                   <div class="space-y-2">
-                    <div class="font-bold text-gray-800 border-b pb-1 mb-1">{{ $t('nav.cat_maison_habitat') }}</div>
+                    <div class="font-bold text-gray-800 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-1 mb-1">{{ $t('nav.cat_maison_habitat') }}</div>
                     <router-link to="/products?category=cuisine" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_maison_kitchen') }}</router-link>
                     <router-link to="/products?category=meubles" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_maison_furniture') }}</router-link>
                     <router-link to="/products?category=electromenager" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_maison_appliances') }}</router-link>
                   </div>
                   <div class="space-y-2">
-                    <div class="font-bold text-gray-800 border-b pb-1 mb-1">{{ $t('nav.cat_maison_diy') }}</div>
+                    <div class="font-bold text-gray-800 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-1 mb-1">{{ $t('nav.cat_maison_diy') }}</div>
                     <router-link to="/products?category=outillage" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_maison_tools') }}</router-link>
                     <router-link to="/products?category=jardin" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_maison_garden') }}</router-link>
                     <router-link to="/products?category=animalerie" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_maison_pets') }}</router-link>
@@ -664,18 +692,18 @@
             <Transition name="dropdown">
               <div
                 v-if="showCategoriesMenu === 'mode'"
-                class="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-white shadow-lg rounded p-4 min-w-[320px]"
+                class="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-lg dark:shadow-gray-950/50 rounded p-4 min-w-[320px]"
                 style="z-index: 99999"
               >
-                <div class="grid grid-cols-2 gap-x-6 text-sm text-gray-600">
+                <div class="grid grid-cols-2 gap-x-6 text-sm text-gray-600 dark:text-gray-400">
                   <div class="space-y-2">
-                    <div class="font-bold text-gray-800 border-b pb-1 mb-1">{{ $t('nav.cat_mode_clothes') }}</div>
+                    <div class="font-bold text-gray-800 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-1 mb-1">{{ $t('nav.cat_mode_clothes') }}</div>
                     <router-link to="/products?category=mode-femme" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_mode_women') }}</router-link>
                     <router-link to="/products?category=mode-homme" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_mode_men') }}</router-link>
                     <router-link to="/products?category=chaussures" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_mode_shoes') }}</router-link>
                   </div>
                   <div class="space-y-2">
-                    <div class="font-bold text-gray-800 border-b pb-1 mb-1">{{ $t('nav.cat_mode_beauty') }}</div>
+                    <div class="font-bold text-gray-800 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-1 mb-1">{{ $t('nav.cat_mode_beauty') }}</div>
                     <router-link to="/products?category=beaute" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_mode_makeup') }}</router-link>
                     <router-link to="/products?category=bijoux" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_mode_jewelry') }}</router-link>
                     <router-link to="/products?category=sante" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_mode_health') }}</router-link>
@@ -702,18 +730,18 @@
             <Transition name="dropdown">
               <div
                 v-if="showCategoriesMenu === 'jeux'"
-                class="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-white shadow-lg rounded p-4 min-w-[280px]"
+                class="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-lg dark:shadow-gray-950/50 rounded p-4 min-w-[280px]"
                 style="z-index: 99999"
               >
-                <div class="grid grid-cols-2 gap-x-6 text-sm text-gray-600">
+                <div class="grid grid-cols-2 gap-x-6 text-sm text-gray-600 dark:text-gray-400">
                   <div class="space-y-2">
-                    <div class="font-bold text-gray-800 border-b pb-1 mb-1">{{ $t('nav.cat_jeux_entertainment') }}</div>
+                    <div class="font-bold text-gray-800 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-1 mb-1">{{ $t('nav.cat_jeux_entertainment') }}</div>
                     <router-link to="/products?category=gaming" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_jeux_consoles') }}</router-link>
                     <router-link to="/products?category=jouets" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_jeux_toys') }}</router-link>
                     <router-link to="/products?category=societe" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_jeux_board') }}</router-link>
                   </div>
                   <div class="space-y-2">
-                    <div class="font-bold text-gray-800 border-b pb-1 mb-1">{{ $t('nav.cat_jeux_baby') }}</div>
+                    <div class="font-bold text-gray-800 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-1 mb-1">{{ $t('nav.cat_jeux_baby') }}</div>
                     <router-link to="/products?category=puericulture" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_jeux_nursery') }}</router-link>
                     <router-link to="/products?category=vetements-bebe" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_jeux_babyclothes') }}</router-link>
                   </div>
@@ -739,10 +767,10 @@
             <Transition name="dropdown">
               <div
                 v-if="showCategoriesMenu === 'culture'"
-                class="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-white shadow-lg rounded p-4 min-w-[240px]"
+                class="absolute top-full left-1/2 -translate-x-1/2 mt-1 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-lg dark:shadow-gray-950/50 rounded p-4 min-w-[240px]"
                 style="z-index: 99999"
               >
-                <div class="text-sm text-gray-600 space-y-2">
+                <div class="text-sm text-gray-600 dark:text-gray-400 space-y-2">
                   <router-link to="/products?category=livres" class="block hover:text-blue-600 py-1">• {{ $t('nav.cat_culture_books') }}</router-link>
                   <router-link to="/products?category=manga" class="block hover:text-blue-600 py-1">• {{ $t('nav.cat_culture_manga') }}</router-link>
                   <router-link to="/products?category=musique" class="block hover:text-blue-600 py-1">• {{ $t('nav.cat_culture_music') }}</router-link>
@@ -769,18 +797,18 @@
             <Transition name="dropdown">
               <div
                 v-if="showCategoriesMenu === 'supermarche'"
-                class="absolute top-full right-0 mt-1 bg-white shadow-lg rounded p-4 min-w-[300px]"
+                class="absolute top-full right-0 mt-1 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-lg dark:shadow-gray-950/50 rounded p-4 min-w-[300px]"
                 style="z-index: 99999"
               >
-                <div class="grid grid-cols-2 gap-x-6 text-sm text-gray-600">
+                <div class="grid grid-cols-2 gap-x-6 text-sm text-gray-600 dark:text-gray-400">
                   <div class="space-y-2">
-                    <div class="font-bold text-gray-800 border-b pb-1 mb-1">{{ $t('nav.cat_super_food') }}</div>
+                    <div class="font-bold text-gray-800 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-1 mb-1">{{ $t('nav.cat_super_food') }}</div>
                     <router-link to="/products?category=epicerie" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_super_grocery') }}</router-link>
                     <router-link to="/products?category=snacks" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_super_snacks') }}</router-link>
                     <router-link to="/products?category=bureau" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_super_office') }}</router-link>
                   </div>
                   <div class="space-y-2">
-                    <div class="font-bold text-gray-800 border-b pb-1 mb-1">{{ $t('nav.cat_super_leisure') }}</div>
+                    <div class="font-bold text-gray-800 dark:text-white border-b border-gray-100 dark:border-gray-800 pb-1 mb-1">{{ $t('nav.cat_super_leisure') }}</div>
                     <router-link to="/products?category=sports" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_super_sports') }}</router-link>
                     <router-link to="/products?category=auto" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_super_auto') }}</router-link>
                     <router-link to="/products?category=camping" class="block hover:text-blue-600 py-0.5">• {{ $t('nav.cat_super_camping') }}</router-link>
@@ -833,25 +861,25 @@
     <Transition name="slide-left">
       <div 
         v-if="isMobileMenuOpen" 
-        class="fixed inset-0 bg-white z-[101] flex flex-col font-sans"
+        class="fixed inset-0 bg-white dark:bg-gray-950 z-[101] flex flex-col font-sans dark:text-white"
       >
         <!-- Drawer Header -->
-        <div class="px-6 py-8 bg-gray-50 border-b border-gray-100 flex items-center justify-between relative overflow-hidden">
+        <div class="px-6 py-8 bg-gray-50 dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between relative overflow-hidden">
           <!-- Decorative Background Blob -->
-          <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-100 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+          <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-100 dark:bg-blue-900/10 rounded-full blur-3xl opacity-50 pointer-events-none"></div>
 
           <!-- User Info or Logo -->
           <div class="relative z-10 flex items-center gap-4 w-full">
              <div v-if="authStore.customer" class="flex-shrink-0">
-                 <div class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white text-lg font-bold shadow-lg shadow-blue-200">
+                 <div class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white text-lg font-bold shadow-lg shadow-blue-200 dark:shadow-none">
                      {{ authStore.customer.firstName ? authStore.customer.firstName.charAt(0).toUpperCase() : 'U' }}
                  </div>
              </div>
              <div v-if="authStore.customer" class="flex-1 min-w-0">
-                 <p class="font-bold text-gray-900 text-lg leading-tight truncate">
+                 <p class="font-bold text-gray-900 dark:text-white text-lg leading-tight truncate">
                    {{ authStore.customer.firstName }} {{ authStore.customer.lastName }}
                  </p>
-                 <router-link to="/account" @click="closeMobileMenu" class="text-xs text-blue-600 font-medium hover:underline flex items-center gap-1 mt-1">
+                 <router-link to="/account" @click="closeMobileMenu" class="text-xs text-blue-600 dark:text-blue-400 font-medium hover:underline flex items-center gap-1 mt-1">
                    Mon compte <i class="las la-arrow-right"></i>
                  </router-link>
              </div>
@@ -863,7 +891,7 @@
           
           <button 
              @click="closeMobileMenu" 
-             class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white text-gray-600 shadow-md flex items-center justify-center hover:text-red-500 hover:bg-gray-50 transition-colors z-50 ring-1 ring-gray-100"
+             class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 shadow-md flex items-center justify-center hover:text-red-500 dark:hover:text-red-400 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors z-50 ring-1 ring-gray-100 dark:ring-gray-700"
           >
              <i class="fas fa-times text-xl"></i>
           </button>
@@ -878,7 +906,7 @@
         </div>
         
         <!-- Drawer Footer (Socials or Info) -->
-        <div class="p-6 border-t border-gray-100 bg-gray-50 text-center text-xs text-gray-400">
+        <div class="p-6 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 text-center text-xs text-gray-400 dark:text-gray-500">
           <p>© 2024 HTFasil. Tous droits réservés.</p>
         </div>
       </div>
@@ -904,6 +932,7 @@ import { useWishlistStore } from '@/stores/wishlist'
 import { useDevice } from '@/composables/useDevice'
 import { useNotificationsStore } from '@/stores/notifications'
 import { useUiStore } from '@/stores/ui'
+import { useThemeStore } from '@/stores/theme'
 import MobileMenuLinks from './MobileMenuLinks.vue'
 import ProductFilterDrawer from '../products/ProductFilterDrawer.vue'
 import MobileCategories from './MobileCategories.vue'
@@ -911,7 +940,8 @@ import { useHistoryStore } from '@/stores/history'
 import i18n from '@/i18n'
 
 const { locale } = useI18n()
-const { isMobile } = useDevice()
+const { isMobile, isTablet } = useDevice()
+const isMobileOrTablet = computed(() => isMobile.value || isTablet.value)
 
 // Methods and Computed moved down
 
@@ -932,6 +962,11 @@ const wishlistStore = useWishlistStore()
 const notificationsStore = useNotificationsStore()
 const uiStore = useUiStore()
 const historyStore = useHistoryStore()
+const themeStore = useThemeStore()
+
+const openMobileSearch = () => {
+  uiStore.isMobileSearchOpen = true
+}
 
 // Categories visibility logic
 const shouldShowMobileCategories = computed(() => {
@@ -954,7 +989,10 @@ const isProductPage = computed(() => {
 
 // State
 const searchQuery = ref('')
-const isMobileMenuOpen = ref(false)
+const isMobileMenuOpen = computed({
+  get: () => uiStore.isMobileMenuOpen,
+  set: (val) => uiStore.isMobileMenuOpen = val
+})
 const isFilterDrawerOpen = ref(false)
 const activeFilterTab = ref('all')
 const showUserMenu = ref(false)
@@ -968,7 +1006,7 @@ const languages = [
   { code: 'ht', name: 'HT', flag: '/images/flags/ht.png' }
 ]
 
-const currentLanguage = computed(() => languages.find(l => l.code === currentLocale.value) || languages[0])
+const currentLanguage = computed(() => (languages.find(l => l.code === currentLocale.value) || languages[0])!)
 const isHeaderFixed = ref(false)
 const isScrollingUp = ref(true)
 const lastScrollY = ref(0)
@@ -988,7 +1026,7 @@ const handleHeaderScroll = () => {
         lastScrollY.value = currentScrollY
     }
 
-    if (isMobile.value && !isProductPage.value) {
+    if (isMobileOrTablet.value && !isProductPage.value) {
         isHeaderFixed.value = currentScrollY > 56
     } else {
         isHeaderFixed.value = false
@@ -998,8 +1036,8 @@ const handleHeaderScroll = () => {
 // Methods
 const changeLanguage = (code: string) => {
   currentLocale.value = code
-  locale.value = code           // locale locale du composant
-  i18n.global.locale.value = code  // locale globale de toute l'app
+  locale.value = code as any           // locale locale du composant
+  i18n.global.locale.value = code as any  // locale globale de toute l'app
   localStorage.setItem('locale', code)
   showLanguageMenu.value = false
 }
@@ -1020,15 +1058,22 @@ const handleLogout = async () => {
 }
 
 const toggleMobileMenu = () => {
-  isMobileMenuOpen.value = !isMobileMenuOpen.value
+  uiStore.isMobileMenuOpen = !uiStore.isMobileMenuOpen
 }
 
 const handleBack = () => {
   if (route.name === 'cart' && uiStore.previousRouteName === 'checkout') {
     // Si on revient du Checkout vers le Panier, un "Back" doit nous sortir du flux de commande
     router.push('/')
-  } else {
+  } else if (window.history.state && window.history.state.back) {
     router.back()
+  } else {
+    // Fallback si l'historique est vide (accès direct via lien externe ou rafraîchissement)
+    if (route.path.includes('/products')) {
+      router.push('/products')
+    } else {
+      router.push('/')
+    }
   }
 }
 
@@ -1038,8 +1083,7 @@ const openFilterDrawer = (tab: string = 'all') => {
 }
 
 const closeMobileMenu = () => {
-
-  isMobileMenuOpen.value = false
+  uiStore.isMobileMenuOpen = false
 }
 
 // Image Search
@@ -1240,6 +1284,11 @@ onUnmounted(() => {
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
 }
 
+:global(.dark) .mobile-search-input {
+  background: #1f2937;
+  color: #f3f4f6;
+}
+
 .mobile-search-input:focus {
   border-color: #fb923c;
 }
@@ -1265,5 +1314,16 @@ onUnmounted(() => {
 
 .cart-animate {
   animation: cart-shake 0.6s ease-in-out;
+}
+</style>
+
+<style>
+.dark .mobile-search-input {
+  background: #1f2937 !important;
+  color: #f3f4f6 !important;
+}
+.dark .mobile-top-bar,
+.dark .mobile-search-bar {
+  background-color: #030712 !important;
 }
 </style>

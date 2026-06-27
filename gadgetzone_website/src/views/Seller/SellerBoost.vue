@@ -49,12 +49,44 @@
           </div>
       </div>
 
+      <!-- Cost Model Selection -->
+      <h3 class="font-bold text-lg text-gray-900 mb-4">Modèle de facturation</h3>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+          <div 
+              v-for="model in costModels" 
+              :key="model.value" 
+              class="bg-white p-5 rounded-2xl border-2 transition-all cursor-pointer relative" 
+              :class="selectedCostModel === model.value ? 'border-orange-500 bg-orange-50/10' : 'border-gray-100 hover:border-gray-200'"
+              @click="selectedCostModel = model.value"
+          >
+              <div class="font-bold text-gray-900 mb-1">{{ model.label }}</div>
+              <p class="text-xs text-gray-500">{{ model.description }}</p>
+          </div>
+      </div>
+
+      <!-- Budget Capping -->
+      <div v-if="selectedCostModel !== 'flat'" class="mb-8 bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+          <h3 class="font-bold text-sm text-gray-900 mb-2">Budget maximum de la campagne (HTG)</h3>
+          <div class="flex items-center gap-3">
+              <input 
+                  v-model.number="campaignBudget" 
+                  type="number" 
+                  min="100" 
+                  step="50"
+                  class="rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all p-3 text-sm flex-1" 
+                  placeholder="Ex: 1000"
+              />
+              <span class="text-sm font-bold text-gray-500">HTG</span>
+          </div>
+          <p class="text-[10px] text-gray-400 mt-2">La campagne s'arrêtera automatiquement une fois ce budget épuisé ou après la durée du pack.</p>
+      </div>
+
       <!-- Product Selection -->
       <h3 class="font-bold text-lg text-gray-900 mb-4">Produit à booster</h3>
       <div @click="showModal = true" class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex items-center justify-between gap-4 cursor-pointer active:scale-[0.98] transition-all">
           <div class="flex items-center gap-3">
               <div v-if="selectedProduct" class="w-12 h-12 rounded-xl overflow-hidden bg-gray-50">
-                  <img :src="selectedProduct.image_url" class="w-full h-full object-cover">
+                  <img alt="" :src="selectedProduct.image_url" class="w-full h-full object-cover">
               </div>
               <div v-else class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400">
                   <i class="fas fa-shopping-bag"></i>
@@ -71,17 +103,52 @@
       <div v-if="activeBoosts.length > 0" class="mt-12">
           <h3 class="font-bold text-lg text-gray-900 mb-4">Vos Boosts Actifs</h3>
           <div class="space-y-4">
-              <div v-for="boost in activeBoosts" :key="boost.id" class="bg-white p-4 rounded-2xl border border-gray-100 flex items-center justify-between">
-                  <div class="flex items-center gap-3">
-                      <img :src="boost.product?.image_url" class="w-10 h-10 rounded-lg object-cover">
-                      <div>
-                          <p class="text-sm font-bold">{{ boost.product?.name }}</p>
-                          <p class="text-[10px] text-gray-400">Statut: <span :class="getStatusClass(boost.status)">{{ boost.status }}</span></p>
+              <div v-for="boost in activeBoosts" :key="boost.id" class="bg-white p-5 rounded-2xl border border-gray-100 flex flex-col gap-4 shadow-sm">
+                  <div class="flex items-center justify-between">
+                      <div class="flex items-center gap-3">
+                          <img alt="" :src="boost.product?.image_url" class="w-12 h-12 rounded-xl object-cover border border-gray-100">
+                          <div>
+                              <p class="text-sm font-bold text-gray-900 line-clamp-1">{{ boost.product?.name }}</p>
+                              <p class="text-[10px] text-gray-500">Mode: <span class="font-semibold uppercase">{{ boost.cost_model || 'flat' }}</span></p>
+                          </div>
+                      </div>
+                      <div class="text-right">
+                          <span :class="getStatusClass(boost.status)" class="text-xs px-2.5 py-1 rounded-full border">
+                              {{ boost.status === 'active' ? 'Actif' : boost.status === 'pending' ? 'En attente' : boost.status === 'expired' ? 'Expiré' : boost.status }}
+                          </span>
                       </div>
                   </div>
-                  <div class="text-right">
-                      <p class="text-[10px] font-bold text-orange-500 uppercase">{{ boost.package_name }}</p>
-                      <p v-if="boost.endsAt" class="text-[10px] text-gray-400">Expire le {{ new Date(boost.endsAt).toLocaleDateString() }}</p>
+
+                  <!-- Stats Row -->
+                  <div class="grid grid-cols-3 gap-2 bg-gray-50 p-3 rounded-xl text-center">
+                      <div>
+                          <p class="text-[10px] text-gray-400 font-bold uppercase">Affichages</p>
+                          <p class="text-sm font-black text-gray-800">{{ boost.impressions || 0 }}</p>
+                      </div>
+                      <div>
+                          <p class="text-[10px] text-gray-400 font-bold uppercase">Clics</p>
+                          <p class="text-sm font-black text-gray-800">{{ boost.clicks || 0 }}</p>
+                      </div>
+                      <div>
+                          <p class="text-[10px] text-gray-400 font-bold uppercase">Taux de Clic</p>
+                          <p class="text-sm font-black text-gray-800">{{ boost.impressions ? ((boost.clicks || 0) / boost.impressions * 100).toFixed(2) + '%' : '0%' }}</p>
+                      </div>
+                  </div>
+
+                  <!-- Budget Progress -->
+                  <div v-if="boost.cost_model && boost.cost_model !== 'flat'" class="space-y-1">
+                      <div class="flex justify-between text-[10px] text-gray-500 font-bold">
+                          <span>Budget dépensé</span>
+                          <span>{{ Number(boost.spent || 0).toFixed(2) }} / {{ boost.budget }} HTG</span>
+                      </div>
+                      <div class="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div class="h-full bg-orange-500 rounded-full" :style="{ width: Math.min(((boost.spent || 0) / (boost.budget || 1)) * 100, 100) + '%' }"></div>
+                      </div>
+                  </div>
+
+                  <div class="flex justify-between items-center text-[10px] text-gray-400 border-t border-gray-50 pt-3">
+                      <span>Pack: {{ boost.package_name }} ({{ boost.amount }} HTG)</span>
+                      <span v-if="boost.endsAt">Expire le {{ new Date(boost.endsAt).toLocaleDateString() }}</span>
                   </div>
               </div>
           </div>
@@ -105,7 +172,7 @@
                   <div v-else v-for="prod in myProducts" :key="prod.id" 
                       @click="selectProduct(prod)"
                       class="flex items-center gap-3 p-3 rounded-2xl border border-gray-100 hover:border-orange-500 cursor-pointer transition-all">
-                      <img :src="prod.image_url" class="w-12 h-12 rounded-xl object-cover">
+                      <img alt="" :src="prod.image_url" class="w-12 h-12 rounded-xl object-cover">
                       <div class="flex-1">
                           <p class="text-sm font-bold text-gray-900 line-clamp-1">{{ prod.name }}</p>
                           <p class="text-xs text-gray-500 font-medium">{{ prod.price }} HTG</p>
@@ -155,6 +222,15 @@ const packages = [
 const selectedPackage = ref<any>(packages[1]);
 const selectedProduct = ref<any>(null);
 
+const costModels = [
+    { value: 'flat', label: 'Forfait fixe', description: 'Affichage illimité pendant toute la durée du pack.' },
+    { value: 'cpc', label: 'Pay-per-Click (CPC)', description: '5.00 HTG par clic. Consomme le budget alloué.' },
+    { value: 'cpm', label: 'Pay-per-View (CPM)', description: '20.00 HTG pour 1000 affichages. Consomme le budget.' }
+];
+
+const selectedCostModel = ref('flat');
+const campaignBudget = ref<number | null>(500);
+
 const fetchInitialData = async () => {
     loading.value = true;
     try {
@@ -181,9 +257,17 @@ const handleBoost = async () => {
     
     processing.value = true;
     try {
+        const adData: any = {
+            costModel: selectedCostModel.value
+        };
+        if (selectedCostModel.value !== 'flat') {
+            adData.budget = campaignBudget.value;
+        }
+
         const response = await vendorService.createBoost(
             selectedProduct.value.id, 
-            selectedPackage.value.name
+            selectedPackage.value.name,
+            adData
         );
         
         if (response.redirectUrl) {

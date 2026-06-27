@@ -1,37 +1,34 @@
 import axios from 'axios';
 import dotenv from 'dotenv';
+import { Order } from '../models/index.js';
+import https from 'https';
 
 dotenv.config();
 
-// Configuration
-const MODE = process.env.MONCASH_MODE || 'sandbox';
-const CLIENT_ID = process.env.MONCASH_CLIENT_ID;
-const CLIENT_SECRET = process.env.MONCASH_CLIENT_SECRET;
-const API_URL = process.env.MONCASH_API_URL || 'https://sandbox.moncashbutton.digicelgroup.com/Api';
+const httpsAgent = new https.Agent({ rejectUnauthorized: false });
+
+const API_URL = 'https://gateway.starbee.dev';
+const MERCHANT_ID = process.env.STARBEE_MERCHANT_ID || 'dummy_merchant_id';
+const SECRET_KEY = process.env.STARBEE_SECRET_KEY || 'dummy_secret_key';
 
 const monCashService = {
   /**
-   * Obtient un token d'accès
+   * Obtient un token d'accès Starbee
    */
   getAccessToken: async () => {
     try {
-      const auth = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString('base64');
-      const params = new URLSearchParams();
-      params.append('scope', 'read,write');
-      params.append('grant_type', 'client_credentials');
+      const response = await axios.post(`${API_URL}/api/merchant/token/`, {
+        merchant_id: MERCHANT_ID,
+        secret_key: SECRET_KEY
+      }, { httpsAgent });
 
-      const response = await axios.post(`${API_URL}/oauth/token`, params, {
-        headers: {
-          'Authorization': `Basic ${auth}`,
-          'Content-Type': 'application/x-www-form-urlencoded'
-        }
-      });
-
-      return response.data.access_token;
+      if (response.data && response.data.success && response.data.data) {
+        return response.data.data.token;
+      }
+      throw new Error('No token in response');
     } catch (error) {
-      const details = error.response?.data?.error_description || error.response?.data?.error || error.message;
-      console.error('MonCash Auth Error:', error.response?.data || error.message);
-      throw new Error(`Auth Fail: ${details}`);
+      console.error('Starbee Auth Error:', error.response?.data || error.message);
+      throw new Error(`Auth Fail: ${error.message}`);
     }
   },
 
@@ -39,97 +36,100 @@ const monCashService = {
    * @param {string|number} orderId - ID de la commande
    * @param {number} amount - Montant total
    * @param {string} returnUrl - URL de retour (optionnel)
-   * @returns {Promise<string>} URL de redirection
+   * @returns {Promise<{redirectUrl: string, token: string}>} Données de redirection
    */
   createPayment: async (orderId, amount, returnUrl = null) => {
     try {
       const token = await monCashService.getAccessToken();
 
-      const paymentData = {
-        orderId: String(orderId),
-        amount: Math.floor(Number(amount)), // MonCash requires integer amount
-      };
-
-      console.log('Sending MonCash Payment:', paymentData);
-      console.log('Amount Type:', typeof paymentData.amount, 'Value:', paymentData.amount);
-
-      if (isNaN(paymentData.amount) || paymentData.amount <= 0) {
-        throw new Error(`Invalid amount: ${paymentData.amount}`);
+      // Récupération de l'email client si possible
+      let customerEmail = 'client@htfasil.com';
+      let customerName = 'Client HTFasil';
+      
+      if (!String(orderId).startsWith('BOOST_')) {
+          try {
+             const order = await Order.findByPk(orderId, { include: ['user'] });
+             if (order && order.user) {
+                 customerEmail = order.user.email || customerEmail;
+                 customerName = order.user.name || customerName;
+             }
+          } catch(e) {
+             console.warn('Could not fetch user info for payment', e.message);
+          }
       }
 
-      const response = await axios.post(`${API_URL}/v1/CreatePayment`, paymentData, {
+      const paymentData = {
+        amount: Number(amount),
+        reference_id: `${String(orderId)}_${Date.now()}`,
+        customer_email: customerEmail,
+        customer_name: customerName,
+        description: `Paiement commande ${orderId}`,
+        return_url: returnUrl
+      };
+
+      console.log('Sending Starbee Payment:', paymentData);
+
+      const response = await axios.post(`${API_URL}/api/merchant/payments/moncash/`, paymentData, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        }
+        },
+        httpsAgent
       });
 
-      // Construction de l'URL de redirection
-      // Le response.data.payment_token peut être utilisé ou redirect_uri s'il est renvoyé
-      // Si l'API retourne un payment_token, on construit l'URL manuellement si nécessaire
-      // Généralement response.data contient redirect_uri ou payment_token
-
-      const paymentToken = response.data.payment_token?.token || response.data.payment_token;
-
-      if (!paymentToken) {
-        throw new Error('No payment token in response');
+      if (response.data && response.data.success && response.data.data) {
+        return {
+           redirectUrl: response.data.data.redirect_url,
+           token: response.data.data.id // Transaction UUID generated by Starbee
+        };
       }
-
-      // URL de redirection standard pour Sandbox
-      // Note: L'URL de paiement est différente de l'URL API
-      // Sandbox Payload URL: https://sandbox.moncashbutton.digicelgroup.com/Moncash-middleware/Payment/Redirect?token=...
-
-      // On déduit l'URL de redirection à partir de l'API_URL ou on utilise une constante
-      const REDIRECT_BASE = API_URL.replace('/Api', '/Moncash-middleware/Payment/Redirect');
-      return `${REDIRECT_BASE}?token=${paymentToken}`;
+      
+      throw new Error('Invalid response from gateway');
 
     } catch (error) {
-      console.error('MonCash CreatePayment Error:', error.response?.data || error.message);
-      let msg = error.response?.data?.message || error.response?.data?.error_description || error.message;
+      console.error('Starbee CreatePayment Error:', error.response?.data || error.message);
+      let msg = error.response?.data?.message || error.message;
       throw new Error(`API Fail: ${msg}`);
     }
   },
 
   /**
-   * Vérifie le statut d'un paiement
-   * @param {string} orderId - ID de transaction ou ID de commande
+   * Vérifie le statut d'un paiement via l'UUID de transaction
+   * @param {string} transactionId - ID de transaction Starbee
    * @returns {Promise<object>} Détails du paiement
    */
-  retrieveOrder: async (orderId) => {
+  retrieveOrder: async (transactionId) => {
     try {
       const token = await monCashService.getAccessToken();
-      const response = await axios.post(`${API_URL}/v1/RetrieveOrder`, { orderId: String(orderId) }, {
+      const response = await axios.get(`${API_URL}/api/merchant/payments/moncash/verify/${transactionId}/`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        }
+        },
+        httpsAgent
       });
-      return response.data.payment;
+      
+      if (response.data && response.data.success && response.data.data) {
+          const status = response.data.data.status; // pending | completed | failed
+          return {
+             status: status === 'completed' ? 'successful' : status, // Mappé pour rétrocompatibilité
+             amount: response.data.data.amount,
+             transaction_id: response.data.data.transaction_id || transactionId,
+             reference_id: response.data.data.reference_id
+          };
+      }
+      return null;
     } catch (error) {
-      console.error('MonCash RetrieveOrder Error:', error.response?.data || error.message);
+      console.error('Starbee RetrieveOrder Error:', error.response?.data || error.message);
       return null;
     }
   },
 
   /**
-   * Vérifie le statut d'un paiement par token
-   * @param {string} transactionToken - Token de transaction
-   * @returns {Promise<object>} Détails du paiement
+   * Alias pour rétrocompatibilité
    */
   retrieveTransaction: async (transactionToken) => {
-    try {
-      const token = await monCashService.getAccessToken();
-      const response = await axios.post(`${API_URL}/v1/RetrieveTransactionPayment`, { transactionId: transactionToken }, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      return response.data.payment;
-    } catch (error) {
-      console.error('MonCash RetrieveTransaction Error:', error.response?.data || error.message);
-      return null;
-    }
+    return await monCashService.retrieveOrder(transactionToken);
   }
 };
 

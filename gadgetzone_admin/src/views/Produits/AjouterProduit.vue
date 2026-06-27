@@ -190,7 +190,7 @@
                   class="group relative aspect-square rounded-lg overflow-hidden border-2 transition-all"
                   :class="index === 0 ? 'border-primary-500 ring-2 ring-primary-200 ring-offset-2' : 'border-gray-200 dark:border-gray-700 hover:border-gray-300'"
                 >
-                  <img :src="img" class="h-full w-full object-cover" />
+                  <img alt="" :src="img" class="h-full w-full object-cover" />
                   
                   <!-- Badge Principale -->
                   <div v-if="index === 0" class="absolute top-2 left-2 bg-primary-600 text-white text-xs font-bold px-2 py-1 rounded shadow-sm">

@@ -372,7 +372,7 @@ const handleSendInfo = () => {
  <div v-for="tx in transactions" :key="tx.id" class="bg-white p-5 rounded-2xl shadow-sm border border-gray-50 active:scale-[0.98] transition-transform">
  <div class="flex items-center gap-4 mb-4">
  <div class="w-12 h-12 rounded-xl bg-gray-50 flex items-center justify-center overflow-hidden border border-gray-100">
- <img :src="tx.image || '/placeholder.png'" class="w-full h-full object-cover" />
+ <img alt="" :src="tx.image || '/placeholder.png'" class="w-full h-full object-cover" />
  </div>
  <div class="flex-1 min-w-0">
  <h4 class="font-bold text-gray-900 text-sm truncate">{{ tx.productName }}</h4>
@@ -611,7 +611,7 @@ const handleSendInfo = () => {
  <td class="px-6 py-4 whitespace-nowrap">
  <div class="flex items-center">
  <div class="h-10 w-10 rounded-lg bg-gray-50 flex items-center justify-center overflow-hidden mr-3 border border-gray-100">
- <img :src="tx.image || '/placeholder.png'" class="h-full w-full object-cover" />
+ <img alt="" :src="tx.image || '/placeholder.png'" class="h-full w-full object-cover" />
  </div>
  <div>
  <p class="text-sm font-bold text-gray-900 truncate max-w-[150px]">{{ tx.productName }}</p>

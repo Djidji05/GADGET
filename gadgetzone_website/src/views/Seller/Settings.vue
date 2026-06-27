@@ -17,7 +17,7 @@
         <div class="px-5 -mt-10 relative z-20">
             <div class="bg-white p-6 rounded-3xl shadow-xl shadow-blue-900/5 text-center relative overflow-hidden">
                 <div class="absolute top-0 left-0 w-full h-24 bg-gray-50">
-                    <img v-if="form.bannerUrl" :src="form.bannerUrl" class="w-full h-full object-cover opacity-80" />
+                    <img alt="" v-if="form.bannerUrl" :src="form.bannerUrl" class="w-full h-full object-cover opacity-80" />
                     <div v-else class="w-full h-full bg-gradient-to-r from-gray-100 to-gray-200"></div>
                     
                     <!-- Banner Upload Button -->
@@ -29,7 +29,7 @@
 
                 <div class="relative mt-8 mb-2">
                     <div class="w-24 h-24 mx-auto rounded-full border-4 border-white shadow-lg bg-gray-100 overflow-hidden relative group">
-                        <img v-if="form.logoUrl" :src="form.logoUrl" class="w-full h-full object-cover" />
+                        <img alt="" v-if="form.logoUrl" :src="form.logoUrl" class="w-full h-full object-cover" />
                         <div v-else class="w-full h-full flex items-center justify-center bg-gray-50 text-gray-300">
                              <i class="fas fa-store text-3xl"></i>
                         </div>
@@ -82,7 +82,7 @@
             <!-- Desktop Logo & Banner Upload -->
             <div class="hidden md:block bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 mb-6">
                 <div class="h-32 w-full bg-gray-50 relative group">
-                    <img v-if="form.bannerUrl" :src="form.bannerUrl" class="w-full h-full object-cover" />
+                    <img alt="" v-if="form.bannerUrl" :src="form.bannerUrl" class="w-full h-full object-cover" />
                     <div v-else class="w-full h-full bg-gradient-to-r from-gray-100 to-gray-200"></div>
                     <button @click="bannerInput?.click()" class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity font-bold text-sm">
                         <i class="fas fa-camera mr-2"></i> Changer la bannière
@@ -91,7 +91,7 @@
                 <div class="px-6 pb-6 relative flex items-end gap-6">
                     <div class="relative -mt-10">
                         <div class="w-24 h-24 rounded-2xl border-4 border-white shadow-lg bg-gray-100 overflow-hidden relative group">
-                            <img v-if="form.logoUrl" :src="form.logoUrl" class="w-full h-full object-cover" />
+                            <img alt="" v-if="form.logoUrl" :src="form.logoUrl" class="w-full h-full object-cover" />
                             <div v-else class="w-full h-full flex items-center justify-center bg-gray-50 text-gray-300">
                                 <i class="fas fa-store text-3xl"></i>
                             </div>

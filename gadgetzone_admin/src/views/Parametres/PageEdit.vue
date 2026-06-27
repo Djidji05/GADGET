@@ -1,79 +1,89 @@
 <template>
-  <div class="mx-auto max-w-screen-xl p-4 md:p-6 2xl:p-10">
+  <div class="mx-auto max-w-screen-xl p-4 md:p-6 2xl:p-10 pb-24 animate-fadeIn">
     <!-- Header -->
-    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <h2 class="text-title-md2 font-bold text-black dark:text-white">
-        Éditer la Page : {{ page.title }}
-      </h2>
+    <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+          <i class="las la-edit text-blue-600 text-3xl"></i>
+          Éditer la Page : {{ page.title }}
+        </h2>
+        <p class="text-xs text-gray-500 mt-1">Modifiez le titre et le contenu HTML de la page d'information.</p>
+      </div>
 
       <nav>
-        <ol class="flex items-center gap-2">
+        <ol class="flex items-center gap-2 text-sm text-gray-500 font-medium">
           <li>
-            <router-link class="font-medium" to="/parametres/pages">Pages /</router-link>
+            <router-link class="hover:text-blue-650" to="/parametres/pages">Pages</router-link>
           </li>
-          <li class="font-medium text-primary">Éditer</li>
+          <li class="text-gray-400">/</li>
+          <li class="text-blue-600 font-bold">Éditer</li>
         </ol>
       </nav>
     </div>
 
-    <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-      <div class="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
-        <h3 class="font-medium text-black dark:text-white">
+    <div class="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-2xl shadow-sm overflow-hidden">
+      <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/50">
+        <h3 class="font-bold text-gray-900 dark:text-white">
           Contenu de la Page
         </h3>
       </div>
       <form @submit.prevent="savePage">
-        <div class="p-6.5">
-          <div class="mb-4.5">
-            <label class="mb-2.5 block text-black dark:text-white">
-              Titre de la Page
-            </label>
-            <input
-              v-model="page.title"
-              type="text"
-              placeholder="Titre de la page"
-              required
-              class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-            />
+        <div class="p-6 space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-gray-300">
+                Titre de la Page *
+              </label>
+              <input
+                v-model="page.title"
+                type="text"
+                placeholder="Titre de la page"
+                required
+                class="w-full rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 py-3 px-5 text-sm font-semibold outline-none focus:border-blue-500 transition"
+              />
+            </div>
+
+            <div>
+              <label class="mb-2 block text-sm font-bold text-gray-500 dark:text-gray-400">
+                Slug (Identifiant URL)
+              </label>
+              <input
+                v-model="page.slug"
+                type="text"
+                disabled
+                class="w-full rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900/50 py-3 px-5 text-sm font-semibold text-gray-500 cursor-not-allowed outline-none opacity-80"
+              />
+            </div>
           </div>
 
-          <div class="mb-4.5">
-            <label class="mb-2.5 block text-black dark:text-white">
-              Slug (Identifiant URL)
-            </label>
-            <input
-              v-model="page.slug"
-              type="text"
-              disabled
-              class="w-full rounded border-[1.5px] border-stroke bg-gray-100 py-3 px-5 text-black outline-none dark:border-form-strokedark dark:bg-form-input dark:text-white opacity-70 cursor-not-allowed"
-            />
-          </div>
-
-          <div class="mb-6">
-            <label class="mb-2.5 block text-black dark:text-white">
-              Contenu (HTML autorisé)
+          <div>
+            <label class="mb-2 block text-sm font-bold text-gray-700 dark:text-gray-300 flex items-center justify-between">
+              <span>Contenu de la page (Format HTML / Texte brute) *</span>
+              <span class="text-xs text-blue-600 font-bold bg-blue-50 dark:bg-blue-950/20 px-2.5 py-1 rounded-lg">HTML Autorisée</span>
             </label>
             <textarea
               v-model="page.content"
-              rows="20"
-              placeholder="Rédigez le contenu de la page ici..."
+              rows="16"
+              placeholder="Rédigez le contenu de la page en utilisant des balises HTML (ex: <h2>, <p>)..."
               required
-              class="w-full font-mono text-sm shadow-inner rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+              class="w-full font-mono text-sm shadow-inner rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-black/40 py-4 px-5 text-gray-900 dark:text-gray-100 outline-none focus:border-blue-500 transition-all resize-y"
             ></textarea>
           </div>
 
-          <div class="flex gap-4">
+          <div class="flex items-center gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
             <button
               type="submit"
               :disabled="loading"
-              class="flex justify-center rounded bg-primary py-3 px-10 font-medium text-gray hover:bg-opacity-90 disabled:bg-opacity-50"
+              class="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-6 py-3 font-bold text-white hover:bg-blue-700 hover:scale-105 active:scale-95 transition-all shadow-sm"
             >
+              <span v-if="loading" class="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></span>
+              <i v-else class="las la-save text-lg"></i>
               {{ loading ? 'Enregistrement...' : 'Enregistrer les modifications' }}
             </button>
             <button
               type="button"
               @click="$router.push('/parametres/pages')"
-              class="flex justify-center rounded border border-stroke py-3 px-10 font-medium text-black hover:shadow-1 dark:border-strokedark dark:text-white"
+              class="px-6 py-3 border border-gray-200 dark:border-gray-800 rounded-xl font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-850 transition-all"
             >
               Annuler
             </button>

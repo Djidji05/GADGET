@@ -142,6 +142,8 @@ export default {
         email_placeholder: "Votre adresse email",
         subscribe: "S'inscrire",
         subscribing: "En cours...",
+        moncash: "MonCash",
+        natcash: "Natcash",
         description: "Votre marketplace de confiance pour tout découvrir : de la High-Tech à la Mode, en passant par la Maison et bien plus encore. Qualité garantie et service exceptionnel en Haïti.",
         shop: "Boutique",
         support: "Service Client",
@@ -150,7 +152,6 @@ export default {
         privacy: "Confidentialité",
         terms: "Conditions",
         sitemap: "Plan du site",
-        natcash: "NatCash",
         working_days: "Lun - Ven: 9h - 18h",
         weekend: "Sam: 9h - 15h",
     },
@@ -469,6 +470,10 @@ export default {
         see_more: 'Voir plus',
         about: 'À Propos',
         contact: 'Contact',
+        faq: 'FAQ',
+        cookie_text: 'Nous utilisons des cookies pour améliorer votre expérience sur HTFasil. 🍪',
+        cookie_accept: 'D\'accord !',
+        cookie_learn_more: 'En savoir plus'
     },
     account: {
         profile: 'Profil',

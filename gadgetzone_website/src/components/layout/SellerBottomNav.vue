@@ -188,8 +188,8 @@ const activeBarLeft = computed(() => {
   transform: scale(0.9) translateY(-35px);
 }
 
-/* Hide on desktop */
-@media (min-width: 768px) {
+/* Hide on desktop (lg breakpoint) */
+@media (min-width: 1024px) {
   .seller-bottom-nav {
     display: none;
   }

@@ -3,6 +3,7 @@ import sequelize from '../config/database.js';
 import { authenticateToken, requireAdmin } from '../middleware/auth.js';
 import { SecurityLog, Visit } from '../models/index.js';
 import { UAParser } from 'ua-parser-js';
+import { cacheMiddleware, clearCache } from '../middleware/cacheMiddleware.js';
 
 const router = express.Router();
 
@@ -71,7 +72,7 @@ const getStartDate = (period) => {
  * GET /api/stats/overview
  * Vue d'ensemble des statistiques avec évolution
  */
-router.get('/overview', authenticateToken, requireAdmin, async (req, res) => {
+router.get('/overview', authenticateToken, requireAdmin, cacheMiddleware(5), async (req, res) => {
   try {
     const period = req.query.period || '30j';
     const startDate = getStartDate(period);
@@ -193,7 +194,7 @@ router.get('/overview', authenticateToken, requireAdmin, async (req, res) => {
  * GET /api/stats/notifications-count
  * Badges de notifications pour la sidebar (admin)
  */
-router.get('/notifications-count', async (req, res) => {
+router.get('/notifications-count', cacheMiddleware(1), async (req, res) => {
   try {
     // 🚀 Optimisation : Exécuter toutes les requêtes en parallèle (batching)
     const results = await Promise.all([
@@ -255,7 +256,7 @@ router.get('/notifications-count', async (req, res) => {
  * GET /api/stats/top-products
  * Top produits les plus vendus
  */
-router.get('/top-products', async (req, res) => {
+router.get('/top-products', cacheMiddleware(5), async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 10;
 
@@ -302,7 +303,7 @@ router.get('/top-products', async (req, res) => {
  * GET /api/stats/top-clients
  * Top clients par chiffre d'affaires
  */
-router.get('/top-clients', async (req, res) => {
+router.get('/top-clients', cacheMiddleware(5), async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 5;
 
@@ -343,7 +344,7 @@ router.get('/top-clients', async (req, res) => {
  * GET /api/stats/traffic-sources
  * Sources de trafic (Données réelles ou vides)
  */
-router.get('/traffic-sources', async (req, res) => {
+router.get('/traffic-sources', cacheMiddleware(5), async (req, res) => {
   try {
     const period = req.query.period || '30j';
     const startDate = getStartDate(period);
@@ -381,7 +382,7 @@ router.get('/traffic-sources', async (req, res) => {
  * GET /api/stats/device-stats
  * Répartition des types d'appareils (Mobile, Desktop, Tablet, etc.)
  */
-router.get('/device-stats', async (req, res) => {
+router.get('/device-stats', cacheMiddleware(5), async (req, res) => {
   try {
     const period = req.query.period || '30j';
     const startDate = getStartDate(period);
@@ -418,7 +419,7 @@ router.get('/device-stats', async (req, res) => {
  * GET /api/stats/conversion-rate
  * Taux de conversion (Basé sur les commandes réelles vs 1 visite min pour éviter div/0)
  */
-router.get('/conversion-rate', async (req, res) => {
+router.get('/conversion-rate', cacheMiddleware(5), async (req, res) => {
   try {
     const period = req.query.period || '30j';
 
@@ -440,10 +441,49 @@ router.get('/conversion-rate', async (req, res) => {
 });
 
 /**
+ * GET /api/stats/inventory-alerts
+ * Alerte de stocks bas pour les tests
+ */
+router.get('/inventory-alerts', authenticateToken, requireAdmin, async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+    const page = parseInt(req.query.page) || 1;
+    const offset = (page - 1) * limit;
+
+    const { Product } = await import('../models/index.js');
+    const { Op } = await import('sequelize');
+
+    const { count, rows: products } = await Product.findAndCountAll({
+      where: {
+        stock: {
+          [Op.lt]: 5
+        }
+      },
+      limit,
+      offset,
+      order: [['stock', 'ASC']]
+    });
+
+    res.json({
+      products,
+      pagination: {
+        total: count,
+        page,
+        limit,
+        totalPages: Math.ceil(count / limit)
+      }
+    });
+  } catch (error) {
+    console.error('❌ Error in inventory-alerts:', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération des alertes de stock' });
+  }
+});
+
+/**
  * GET /api/stats/alerts
  * Alertes intelligentes basées sur l'analyse des données réelles
  */
-router.get('/alerts', async (req, res) => {
+router.get('/alerts', cacheMiddleware(5), async (req, res) => {
   try {
     const alerts = [];
     const actions = [];
@@ -601,7 +641,7 @@ router.get('/alerts', async (req, res) => {
  * GET /api/stats/revenue-evolution
  * Évolution du chiffre d'affaires par période
  */
-router.get('/revenue-evolution', async (req, res) => {
+router.get('/revenue-evolution', cacheMiddleware(5), async (req, res) => {
   try {
     const type = req.query.type || 'mois'; // jour, semaine, mois
 
@@ -658,7 +698,7 @@ router.get('/revenue-evolution', async (req, res) => {
  * GET /api/stats/sales-by-category
  * Répartition des ventes par catégorie
  */
-router.get('/sales-by-category', async (req, res) => {
+router.get('/sales-by-category', cacheMiddleware(5), async (req, res) => {
   try {
     const salesByCategory = await sequelize.query(`
       SELECT 
@@ -689,7 +729,7 @@ router.get('/sales-by-category', async (req, res) => {
  * GET /api/stats/monthly-target
  * Objectif mensuel et progression
  */
-router.get('/monthly-target', async (req, res) => {
+router.get('/monthly-target', cacheMiddleware(5), async (req, res) => {
   try {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -803,6 +843,7 @@ router.post('/monthly-target', async (req, res) => {
       });
     }
 
+    clearCache('stats');
     res.json({ success: true, target });
   } catch (error) {
     console.error('❌ Error updating monthly target:', error);
@@ -814,7 +855,7 @@ router.post('/monthly-target', async (req, res) => {
  * GET /api/stats/customer-demographics
  * Démographie des clients
  */
-router.get('/customer-demographics', async (req, res) => {
+router.get('/customer-demographics', cacheMiddleware(5), async (req, res) => {
   try {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -880,7 +921,7 @@ router.get('/customer-demographics', async (req, res) => {
  * GET /api/stats/monthly-sales
  * Ventes mensuelles (graphique barres simple)
  */
-router.get('/monthly-sales', async (req, res) => {
+router.get('/monthly-sales', cacheMiddleware(5), async (req, res) => {
   try {
     const { year = new Date().getFullYear() } = req.query;
     const targetYear = parseInt(year);
@@ -891,7 +932,7 @@ router.get('/monthly-sales', async (req, res) => {
  * GET /api/stats/security-alerts
  * Récupérer les 10 dernières alertes de sécurité critiques ou élevées
  */
-router.get('/security-alerts', async (req, res) => {
+router.get('/security-alerts', cacheMiddleware(1), async (req, res) => {
   try {
     const alerts = await SecurityLog.findAll({
       where: {
@@ -970,7 +1011,7 @@ router.put('/security-alerts/:id/resolve', async (req, res) => {
  * GET /api/stats/sales-data
  * Données de ventes et revenus pour le graphique (supporte monthly, quarterly, annually)
  */
-router.get('/sales-data', async (req, res) => {
+router.get('/sales-data', cacheMiddleware(5), async (req, res) => {
   try {
     const { period = 'monthly', year = new Date().getFullYear() } = req.query;
     const targetYear = parseInt(year);

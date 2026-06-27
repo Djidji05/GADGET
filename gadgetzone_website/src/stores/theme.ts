@@ -11,7 +11,9 @@ export const useThemeStore = defineStore('theme', () => {
     // Sync with DOM and localStorage
     watch(isDark, (val) => {
         if (val) {
-            document.documentElement.classList.add('dark')
+            if (!window.location.pathname.startsWith('/seller')) {
+                document.documentElement.classList.add('dark')
+            }
             localStorage.setItem('theme', 'dark')
         } else {
             document.documentElement.classList.remove('dark')

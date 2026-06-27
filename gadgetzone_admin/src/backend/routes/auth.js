@@ -11,7 +11,7 @@ import {
   validatePasswordChange,
   validateProfileUpdate
 } from '../middleware/validation.js';
-import { authLimiter } from '../middleware/rateLimiter.js';
+import { authLimiter, registerLimiter, passwordResetLimiter } from '../middleware/rateLimiter.js';
 import crypto from 'crypto';
 import { sendEmail } from '../services/emailService.js';
 
@@ -21,7 +21,7 @@ const router = express.Router();
  * POST /api/auth/register
  * Inscription d'un nouvel utilisateur
  */
-router.post('/register', authLimiter, validateRegister, async (req, res) => {
+router.post('/register', registerLimiter, validateRegister, async (req, res) => {
   try {
     const { firstName, lastName, email, password, phone } = req.body;
     // Forcer le rôle 'customer' pour l'inscription publique
@@ -136,7 +136,8 @@ router.post('/register', authLimiter, validateRegister, async (req, res) => {
     res.status(201).json({
       message: 'Utilisateur créé avec succès',
       token,
-      user: userResponse
+      user: userResponse,
+      customer: userResponse
     });
 
     // 📧 Envoi de l'email de bienvenue (en arrière-plan)
@@ -169,7 +170,7 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
     const user = await User.findOne({ where: { email } });
     if (!user) {
       await SecurityLog.create({
-        ip_address: req.ip || req.connection.remoteAddress,
+        ip_address: req.ip || req.socket?.remoteAddress || req.connection?.remoteAddress || '127.0.0.1',
         event_type: 'failed_login',
         severity: 'low',
         description: `Tentative de connexion échouée avec un email inexistant (${email})`,
@@ -186,7 +187,7 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
       await SecurityLog.create({
-        ip_address: req.ip || req.connection.remoteAddress,
+        ip_address: req.ip || req.socket?.remoteAddress || req.connection?.remoteAddress || '127.0.0.1',
         event_type: 'failed_login',
         severity: 'medium',
         description: `Tentative de connexion échouée (mot de passe incorrect pour ${email})`,
@@ -278,7 +279,8 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
     res.json({
       message: 'Connexion réussie',
       token,
-      user: userResponse
+      user: userResponse,
+      customer: userResponse
     });
 
   } catch (error) {
@@ -949,7 +951,7 @@ router.get(
  * POST /api/auth/forgot-password
  * Demander la réinitialisation du mot de passe
  */
-router.post('/forgot-password', authLimiter, async (req, res) => {
+router.post('/forgot-password', passwordResetLimiter, async (req, res) => {
   try {
     const { email } = req.body;
 
@@ -965,7 +967,7 @@ router.post('/forgot-password', authLimiter, async (req, res) => {
 
     // Générer le token
     const resetToken = crypto.randomBytes(32).toString('hex');
-    const resetTokenExpires = Date.now() + 3600000; // 1 heure
+    const resetTokenExpires = Date.now() + 900000; // 15 minutes
 
     // Sauvegarder dans la DB
     await user.update({
@@ -983,7 +985,7 @@ router.post('/forgot-password', authLimiter, async (req, res) => {
       <p>Vous avez demandé une réinitialisation de mot de passe pour votre compte htfasil.</p>
       <p>Veuillez cliquer sur le lien ci-dessous pour créer un nouveau mot de passe :</p>
       <a href="${resetUrl}" style="padding: 10px 20px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 5px;">Réinitialiser mon mot de passe</a>
-      <p>Ce lien expirera dans 1 heure.</p>
+      <p>Ce lien expirera dans 15 minutes.</p>
       <p>Si vous n'avez pas demandé cette réinitialisation, veuillez ignorer cet email.</p>
     `;
 
@@ -1007,7 +1009,7 @@ router.post('/forgot-password', authLimiter, async (req, res) => {
  * POST /api/auth/reset-password
  * Réinitialiser le mot de passe avec le token
  */
-router.post('/reset-password', authLimiter, async (req, res) => {
+router.post('/reset-password', passwordResetLimiter, async (req, res) => {
   try {
     const { token, newPassword } = req.body;
 

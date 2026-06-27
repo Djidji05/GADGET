@@ -42,6 +42,16 @@ const Address = sequelize.define('Address', {
         type: DataTypes.TEXT,
         allowNull: true
     },
+    reference_point: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        comment: 'Ex: Près de la station Total'
+    },
+    coordinates: {
+        type: DataTypes.JSON,
+        allowNull: true,
+        comment: '{lat, lng}'
+    },
     is_default: {
         type: DataTypes.BOOLEAN,
         defaultValue: false

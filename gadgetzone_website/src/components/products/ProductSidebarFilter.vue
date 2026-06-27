@@ -1,5 +1,5 @@
 <template>
-<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden sticky top-24">
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-y-auto max-h-[calc(100vh-120px)] custom-scrollbar">
     <!-- Header -->
     <div class="px-6 py-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
       <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">

@@ -1,7 +1,7 @@
- <template>
-  <div class="w-full md:pt-4 pb-12">
+<template>
+  <div class="w-full">
  <!-- MOBILE DASHBOARD (Natcash inspired Blue Theme) -->
- <div class="md:hidden bg-gray-50 min-h-screen pb-20 -mt-2 font-sans">
+ <div class="lg:hidden bg-gray-50 min-h-screen pb-20 -mt-2 font-sans">
  <!-- Top Section (Header + Balance) -->
  <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white px-6 pt-10 pb-20 relative">
  <!-- User Info Row -->
@@ -9,7 +9,7 @@
  <div @click="router.push('/seller/settings')" class="flex items-center gap-4 active:scale-95 transition-transform cursor-pointer">
  <div class="relative">
  <div class="w-14 h-14 rounded-full border-2 border-white/30 overflow-hidden bg-white/20 flex items-center justify-center p-0.5">
- <img v-if="store.logoUrl" :src="store.logoUrl" class="w-full h-full rounded-full object-cover" />
+ <img alt="" v-if="store.logoUrl" :src="store.logoUrl" class="w-full h-full rounded-full object-cover" />
  <i v-else class="fas fa-store text-xl text-blue-100"></i>
  </div>
  <div class="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-green-500 border-2 border-blue-700 rounded-full flex items-center justify-center">
@@ -93,6 +93,28 @@
     </div>
   </div>
 
+  <!-- SHIPPING RATE ALERT -->
+  <div v-if="!loading && store.status === 'active' && !store.settings?.shipping?.setupCompleted" class="mt-4 mx-2">
+    <div class="bg-blue-50 border border-blue-200 rounded-2xl p-4 flex items-start gap-3 shadow-sm">
+      <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0">
+        <i class="fas fa-truck"></i>
+      </div>
+      <div class="flex-1">
+        <h4 class="text-sm font-bold text-blue-900">Configurez vos tarifs de livraison</h4>
+        <p class="text-[11px] text-blue-800 mt-1 leading-relaxed">
+          Définissez où vous livrez et vos tarifs pour chaque ville afin que vos clients puissent finaliser leurs commandes.
+        </p>
+        <button 
+          @click="router.push('/seller/shipping')" 
+          class="mt-3 bg-blue-600 text-white text-[11px] font-bold py-2 px-4 rounded-xl active:scale-95 transition-all flex items-center gap-2"
+        >
+          <i class="fas fa-cog"></i>
+          Configurer les tarifs
+        </button>
+      </div>
+    </div>
+  </div>
+
  <!-- Abstract Background Element (Simulating the '14th' banner in screenshot) -->
  <div class="absolute right-0 bottom-4 opacity-20 pointer-events-none">
  <i class="fas fa-shield-alt text-[140px] rotate-12"></i>
@@ -163,6 +185,12 @@
  <i class="fas fa-store-alt text-blue-600 text-xl"></i>
  </div>
  <span class="text-[10px] font-bold text-gray-600 text-center leading-tight">Paramètres<br>Boutique</span>
+ </button>
+ <button @click="router.push('/seller/shipping')" class="flex flex-col items-center gap-3">
+ <div class="w-14 h-14 rounded-full bg-blue-50/50 flex items-center justify-center shadow-sm active:bg-blue-100 transition-colors">
+ <i class="fas fa-truck text-blue-600 text-xl"></i>
+ </div>
+ <span class="text-[10px] font-bold text-gray-600 text-center leading-tight">Zones de<br>Livraison</span>
  </button>
  <button @click="router.push('/seller/promotions')" class="flex flex-col items-center gap-3 snap-center">
  <div class="w-14 h-14 rounded-full bg-violet-50 flex items-center justify-center shadow-sm active:bg-violet-100 transition-colors">
@@ -240,312 +268,285 @@
  </div>
  </div>
  </div>
-
- <div class="hidden md:flex flex-col md:flex-row gap-8 md:items-start bg-slate-50/50 min-h-screen p-8 rounded-[40px] shadow-inner font-sans">
-  <!-- Sidebar (Desktop Only) - Integrated more smoothly -->
-  <div class="w-64 flex-shrink-0 sticky top-8">
-  <SellerSidebar />
   </div>
 
-  <!-- Main Content -->
-  <div class="flex-1 w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+  <div class="hidden lg:block w-full font-sans">
+    <div class="w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
   
-  <!-- Header: Welcome & Quick Stats -->
-  <div class="flex justify-between items-end mb-4">
-  <div>
-  <h1 class="text-4xl font-black text-slate-800 tracking-tight mb-2">Dashboard</h1>
-  <p class="text-slate-500 font-medium">Bon retour, <span class="text-blue-600">{{ store.name || 'Vendeur' }}</span> 👋</p>
-  </div>
-  <div class="flex gap-3">
-  <!-- Bouton Assistant IA -->
-  <button 
-    @click="showAiChat = !showAiChat"
-    :class="showAiChat ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-200' : 'bg-white text-slate-700 border border-slate-200 hover:border-indigo-300 hover:text-indigo-600'"
-    class="px-5 py-3 font-bold rounded-2xl transition-all flex items-center gap-2 group"
-  >
-    <i class="fas fa-headset" :class="showAiChat ? 'text-white' : 'text-indigo-500'"></i>
-    <span class="hidden sm:inline text-sm">Assistant IA</span>
-    <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse" :class="showAiChat ? 'bg-white' : 'bg-green-400'"></span>
-  </button>
-  <button @click="navigateToAddProduct" class="px-6 py-3 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200 transition-all flex items-center gap-2">
-  <i class="fas fa-plus"></i> Nouveau Produit
-  </button>
-  </div>
-  </div>
-
-    <!-- LOCATION ALERT (Desktop) -->
-    <div v-if="store.id && store.status === 'active' && (!store.latitude || !store.longitude)" class="bg-white p-6 rounded-[32px] border-2 border-dashed border-blue-100 flex items-center justify-between shadow-sm lg:col-span-4 mt-2">
-      <div class="flex items-center gap-6">
-        <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl shadow-sm">
-          <i class="fas fa-map-marker-alt"></i>
-        </div>
+      <!-- Header: Welcome & Quick Stats -->
+      <div class="flex justify-between items-end mb-4">
         <div>
-          <h3 class="text-lg font-black text-slate-800 tracking-tight">Optimisez votre visibilité locale ! 🚀</h3>
-          <p class="text-sm text-slate-500 font-medium">Les clients verront vos produits en priorité s'ils sont proches de votre boutique.</p>
+          <h1 class="text-3xl font-bold text-slate-800 tracking-tight mb-1">Dashboard</h1>
+          <p class="text-sm text-slate-500">Bon retour, <span class="font-semibold text-slate-800">{{ store.name || 'Vendeur' }}</span> 👋</p>
+        </div>
+        <div class="flex gap-3">
+          <!-- Bouton Assistant IA (Sober Design) -->
+          <button 
+            @click="showAiChat = !showAiChat"
+            class="px-4 py-2 text-xs font-semibold rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 hover:text-slate-900 transition-colors flex items-center gap-2 group shadow-sm"
+          >
+            <i class="fas fa-headset text-slate-400 group-hover:text-slate-600"></i>
+            <span class="hidden sm:inline text-xs">Assistant</span>
+          </button>
+          <button @click="navigateToAddProduct" class="px-4 py-2 bg-slate-900 hover:bg-black text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-2 shadow-sm">
+            <i class="fas fa-plus"></i> Nouveau Produit
+          </button>
         </div>
       </div>
-      <button 
-        @click="updateLocation" 
-        :disabled="updatingLocation"
-        class="px-8 py-3 bg-blue-600 text-white font-bold rounded-2xl hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-200 transition-all flex items-center gap-3"
-      >
-        <i v-if="updatingLocation" class="fas fa-circle-notch animate-spin text-sm"></i>
-        <i v-else class="fas fa-crosshairs text-sm"></i>
-        {{ updatingLocation ? 'Localisation en cours...' : 'Définir ma position actuelle' }}
-      </button>
-    </div>
 
-  <!-- Row 1: KPI Cards (Glassmorphism inspired) -->
-  <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-  <!-- Card 1: Today's Orders -->
-  <div class="group bg-white p-6 rounded-[32px] border border-white shadow-xl shadow-slate-200/50 hover:shadow-blue-600/10 hover:border-blue-100 transition-all duration-300 relative overflow-hidden">
-  <div class="relative z-10">
-  <div class="flex items-center gap-3 mb-4">
-  <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-white transition-all duration-500">
-  <i class="fas fa-shopping-bag text-xl"></i>
-  </div>
-  <span class="text-slate-400 font-bold text-xs uppercase tracking-wider">Commandes du jour</span>
-  </div>
-  <div class="flex items-end justify-between">
-  <div class="text-4xl font-black text-slate-800">{{ stats.todayOrders || 0 }}</div>
-  <div class="flex items-center text-xs font-bold text-emerald-500 bg-emerald-50 px-2 py-1 rounded-lg">
-  <i class="fas fa-caret-up mr-1 text-[10px]"></i> 12%
-  </div>
-  </div>
-  </div>
-  <!-- Glow effect -->
-  <div class="absolute -right-8 -bottom-8 w-24 h-24 bg-amber-500/5 rounded-full blur-3xl group-hover:bg-amber-500/10 transition-all"></div>
-  </div>
-
-   <!-- Card 2: Revenue in System (Confidence Card) -->
-   <div class="group bg-white p-6 rounded-[32px] border border-white shadow-xl shadow-slate-200/50 hover:shadow-emerald-600/10 hover:border-emerald-100 transition-all duration-300 relative overflow-hidden">
-   <div class="relative z-10">
-   <div class="flex items-center gap-3 mb-4">
-   <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center group-hover:bg-emerald-500 group-hover:text-white transition-all duration-500">
-   <i class="fas fa-hand-holding-usd text-xl"></i>
-   </div>
-   <span class="text-slate-400 font-bold text-xs uppercase tracking-wider">Argent en cours</span>
-   </div>
-   <div class="flex items-end justify-between">
-   <div class="text-2xl font-black text-slate-800">{{ formatPrice(activeRevenue) }} <span class="text-sm font-bold text-slate-400">HTG</span></div>
-   <div class="flex items-center text-xs font-bold text-emerald-500 bg-emerald-50 px-2 py-1 rounded-lg">
-   <i class="fas fa-check-circle mr-1 text-[10px]"></i> Vérifié
-   </div>
-   </div>
-   </div>
-   <div class="absolute -right-8 -bottom-8 w-24 h-24 bg-emerald-500/5 rounded-full blur-3xl group-hover:bg-emerald-500/10 transition-all"></div>
-   </div>
-
-  <!-- Card 3: Main Balance (Glowing) -->
-  <div class="group bg-gradient-to-br from-blue-600 to-indigo-700 p-6 rounded-[32px] shadow-2xl shadow-blue-600/20 hover:shadow-indigo-600/30 transition-all duration-500 relative overflow-hidden text-white">
-  <div class="relative z-10">
-  <div class="flex items-center justify-between mb-4">
-  <div class="flex items-center gap-3">
-  <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center">
-  <i class="fas fa-wallet text-xl"></i>
-  </div>
-  <span class="text-blue-100/80 font-bold text-xs uppercase tracking-wider">Porte-monnaie</span>
-  </div>
-  <button @click="showWithdrawModal = true" class="w-8 h-8 rounded-full bg-white/10 hover:bg-white text-white hover:text-blue-600 flex items-center justify-center transition-all">
-  <i class="fas fa-arrow-right text-xs"></i>
-  </button>
-  </div>
-  
-  <div v-if="loading" class="h-10 w-32 bg-white/20 animate-pulse rounded-xl mb-1"></div>
-  <div v-else class="text-3xl font-black">{{ formatPrice(availableBalance) }} <span class="text-sm text-blue-200/60 font-medium">HTG</span></div>
-  
-  <div class="mt-4 flex items-center gap-2">
-  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-  <span class="text-[10px] font-bold text-blue-100/60 uppercase tracking-widest">Retrait Instantané Disponible</span>
-  </div>
-  </div>
-  <!-- Animated glow flare -->
-  <div class="absolute w-40 h-40 -top-10 -right-10 bg-white/10 blur-[60px] rounded-full group-hover:scale-150 transition-transform duration-1000"></div>
-  </div>
-
-  <!-- Card 4: Store Health -->
-  <div class="group bg-white p-6 rounded-[32px] border border-white shadow-xl shadow-slate-200/50 hover:shadow-indigo-600/10 transition-all duration-300 relative overflow-hidden">
-  <div class="relative z-10">
-  <div class="flex items-center gap-3 mb-4">
-  <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center group-hover:bg-indigo-500 group-hover:text-white transition-all duration-500">
-  <i class="fas fa-star text-xl"></i>
-  </div>
-  <span class="text-slate-400 font-bold text-xs uppercase tracking-wider">Santé Boutique</span>
-  </div>
-  <div class="flex flex-col gap-2">
-  <div class="flex justify-between items-baseline">
-  <div class="text-3xl font-black text-slate-800">{{ loading ? '---' : (stats.healthScore >= 90 ? 'Excellent' : (stats.healthScore >= 70 ? 'Bon' : 'À améliorer')) }}</div>
-  <div class="text-indigo-600 font-black text-sm">{{ loading ? '--%' : stats.healthScore + '%' }}</div>
-  </div>
-  <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-  <div class="h-full bg-indigo-500 rounded-full transition-all duration-1000" :style="{ width: (loading ? 0 : stats.healthScore) + '%' }"></div>
-  </div>
-  </div>
-  </div>
-  </div>
-  </div>
-
-  <!-- Row 2: Graph & Mini Widgets -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-  <!-- Interactive Chart -->
-  <div class="lg:col-span-2 bg-white p-8 rounded-[40px] shadow-xl shadow-slate-200/50 border border-white">
-  <div class="flex justify-between items-center mb-8">
-  <div>
-  <h3 class="text-xl font-black text-slate-800 tracking-tight">Performance Analytique</h3>
-  <p class="text-sm text-slate-400 font-medium">Evolution de votre chiffre d'affaires</p>
-  </div>
-  <div class="flex bg-slate-50 p-1.5 rounded-2xl gap-2">
-  <button class="px-4 py-1.5 rounded-xl text-xs font-bold bg-white text-blue-600 shadow-sm border border-slate-100">Hebdomadaire</button>
-  <button class="px-4 py-1.5 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-800 transition-colors">Mensuel</button>
-  </div>
-  </div>
-  
-  <div class="relative h-64 w-full">
-  <svg viewBox="0 0 100 50" class="w-full h-full overflow-visible" preserveAspectRatio="none">
-  <defs>
-  <linearGradient id="gradient-area" x1="0" x2="0" y1="0" y2="1">
-  <stop offset="0%" stop-color="#3B82F6" stop-opacity="0.3"/>
-  <stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/>
-  </linearGradient>
-  </defs>
-  <path :d="areaPath" fill="url(#gradient-area)" class="transition-all duration-1000" />
-  <path :d="linePath" fill="none" stroke="#2563EB" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" />
-  <circle v-for="(point, index) in points" :key="index" :cx="point.x" :cy="point.y" r="1.2" fill="white" stroke="#2563EB" stroke-width="0.5" class="hover:r-2 transition-all cursor-pointer" />
-  </svg>
-  
-  <div class="flex justify-between mt-6 px-2">
-  <div v-for="(point, i) in points" :key="'lbl-'+i" v-show="i % 2 === 0" class="flex flex-col items-center">
-  <span class="text-[10px] font-bold text-slate-300 uppercase tracking-tighter">{{ point.date }}</span>
-  </div>
-  </div>
-  </div>
-  </div>
-
-  <!-- Fast Actions & Small Stats -->
-  <div class="space-y-6 flex flex-col justify-between">
-  <!-- Quick Nav -->
-  <div class="grid grid-cols-2 gap-4">
-  <button @click="router.push('/seller/messages')" class="bg-white p-6 rounded-[32px] shadow-lg shadow-slate-200/50 border border-white hover:border-blue-100 hover:scale-[1.02] transition-all group">
-  <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-all">
-  <i class="fas fa-envelope"></i>
-  </div>
-  <div class="text-2xl font-black text-slate-800">{{ loading ? '-' : stats.unreadMessagesCount }}</div>
-  <div class="text-xs font-bold text-slate-400 uppercase tracking-wide">Messages</div>
-  </button>
-  
-  <button @click="router.push('/seller/reports')" class="bg-white p-6 rounded-[32px] shadow-lg shadow-slate-200/50 border border-white hover:border-violet-100 hover:scale-[1.02] transition-all group">
-  <div class="w-10 h-10 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center mb-4 group-hover:bg-violet-600 group-hover:text-white transition-all">
-  <i class="fas fa-scroll"></i>
-  </div>
-  <div class="text-2xl font-black text-slate-800">{{ loading ? '--%' : stats.conversionRate + '%' }}</div>
-  <div class="text-xs font-bold text-slate-400 uppercase tracking-wide">Conversion</div>
-  </button>
-  </div>
-
-  <!-- Low Stock Warning (Re-styled) -->
-  <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-[32px] text-white flex-1 flex flex-col justify-between relative overflow-hidden group">
-  <div class="relative z-10">
-  <div class="flex items-center gap-3 mb-4">
-  <div class="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-red-400">
-  <i class="fas fa-exclamation-triangle"></i>
-  </div>
-  <span class="text-slate-400 font-bold text-xs uppercase tracking-wider">Alerte Stock</span>
-  </div>
-  
-  <div v-if="lowStockProducts.length > 0" class="flex items-center gap-4 bg-white/5 p-3 rounded-2xl border border-white/5">
-  <img :src="currentStockItem.image_url || '/placeholder.png'" class="w-14 h-14 object-cover rounded-xl bg-white" />
-  <div>
-  <h4 class="font-bold text-sm truncate max-w-[120px]">{{ currentStockItem.name }}</h4>
-  <p class="text-red-400 font-black text-xs">{{ currentStockItem.stock }} unités restantes</p>
-  </div>
-  </div>
-  <div v-else class="text-center py-4">
-  <p class="text-slate-500 font-bold italic text-sm">Tout est en ordre !</p>
-  </div>
-  
-  <button @click="router.push('/seller/products')" class="w-full mt-4 py-3 bg-white text-slate-900 font-black text-xs uppercase tracking-widest rounded-2xl group-hover:bg-blue-500 group-hover:text-white transition-all">
-  Réapprovisionner
-  </button>
-  </div>
-  <!-- Topographic pattern opacity -->
-  <div class="absolute inset-0 opacity-10 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
-  </div>
-  </div>
-  </div>
-
-  <!-- Row 3: Orders List -->
-  <div class="bg-white p-8 rounded-[40px] shadow-2xl shadow-slate-200/50 border border-white overflow-hidden">
-  <div class="flex justify-between items-center mb-8">
-  <div>
-  <h3 class="text-2xl font-black text-slate-800 tracking-tight">Flux de Commandes</h3>
-  <p class="text-sm text-slate-400 font-medium font-sans">Suivi des dernières activités en temps réel</p>
-  </div>
-  <router-link to="/seller/orders" class="px-5 py-2.5 bg-slate-50 text-slate-600 font-bold text-xs uppercase tracking-widest rounded-xl hover:bg-slate-100 transition-all">
-  Consulter tout
-  </router-link>
-  </div>
-  
-  <div class="overflow-x-auto">
-  <table class="w-full text-left">
-  <thead>
-  <tr class="text-slate-300 font-black text-[10px] uppercase tracking-[0.2em] border-b border-slate-50">
-  <th class="pb-5 font-black">Référence</th>
-  <th class="pb-5 font-black">Article Principal</th>
-  <th class="pb-5 font-black text-center">Quantité</th>
-  <th class="pb-5 font-black">Heure/Date</th>
-  <th class="pb-5 font-black text-right pr-4">Détails/Prix</th>
-  <th class="pb-5 font-black text-right">Statut</th>
-  </tr>
-  </thead>
-  <tbody class="divide-y divide-slate-50">
-  <tr v-for="order in recentOrders" :key="order.id" class="group hover:bg-blue-50/30 transition-all duration-300 cursor-pointer" @click="router.push(`/seller/orders/${order.id}`)">
-  <td class="py-6">
-  <span class="font-mono text-xs font-bold text-slate-400 p-2 bg-slate-50 rounded-lg">{{ formatOrderId(order.order_number || order.id) }}</span>
-  </td>
-  <td class="py-6">
-  <div class="flex items-center gap-4">
-  <div class="w-12 h-12 rounded-xl border border-slate-100 p-1 group-hover:border-blue-200 transition-colors bg-white">
-  <img :src="order.items[0]?.product?.image_url || '/placeholder.png'" class="w-full h-full rounded-lg object-cover"/>
-  </div>
-  <div>
-  <div class="font-black text-slate-800 text-sm">{{ order.items[0]?.product?.name }}</div>
-  <div class="text-[10px] text-slate-400">Client: {{ order.user?.firstName || 'Particulier' }}</div>
-  </div>
-  </div>
-  </td>
-  <td class="py-6 text-center font-black text-slate-600">01</td>
-  <td class="py-6">
-  <div class="text-xs font-bold text-slate-800">{{ new Date(order.created_at).toLocaleDateString() }}</div>
-  <div class="text-[10px] font-medium text-slate-400">{{ new Date(order.created_at).toLocaleTimeString().slice(0,5) }}</div>
-  </td>
-  <td class="py-6 text-right pr-4">
-    <div class="flex flex-col items-end">
-      <div class="text-[10px] text-slate-300 line-through">{{ formatPrice(order.items.reduce((acc: any, i: any) => acc + (i.price * i.quantity), 0)) }}</div>
-      <div class="text-[11px] font-bold text-slate-800">
-        {{ formatPrice(order.items.reduce((acc: any, i: any) => acc + ( (i.price * i.quantity) * (1 - (i.product?.category?.commission_rate || store.commission_rate || 3) / 100) ), 0)) }} 
-        <span class="text-[9px] text-red-400 bg-red-50 px-1 rounded ml-1">-{{ order.items[0]?.product?.category?.commission_rate || store.commission_rate || 3 }}%</span>
+      <!-- LOCATION ALERT (Desktop) -->
+      <div v-if="store.id && store.status === 'active' && (!store.latitude || !store.longitude)" class="bg-amber-50 p-5 rounded-xl border border-amber-200 flex items-center justify-between shadow-sm mt-2">
+        <div class="flex items-center gap-4">
+          <div class="w-10 h-10 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-lg shadow-sm">
+            <i class="fas fa-map-marker-alt"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-amber-900 tracking-tight">Optimisez votre visibilité locale ! 🚀</h3>
+            <p class="text-xs text-amber-700">Les clients verront vos produits en priorité s'ils sont proches de votre boutique.</p>
+          </div>
+        </div>
+        <button 
+          @click="updateLocation" 
+          :disabled="updatingLocation"
+          class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-2 shadow-sm"
+        >
+          <i v-if="updatingLocation" class="fas fa-circle-notch animate-spin text-xs"></i>
+          <i v-else class="fas fa-crosshairs text-xs"></i>
+          {{ updatingLocation ? 'Localisation...' : 'Définir ma position' }}
+        </button>
       </div>
-    </div>
-  </td>
-  <td class="py-6 text-right">
-  <span :class="{
-  'bg-amber-50 text-amber-600 border-amber-100': order.status === 'pending',
-  'bg-emerald-50 text-emerald-600 border-emerald-100': order.status === 'completed' || order.status === 'delivered',
-  'bg-blue-50 text-blue-600 border-blue-100': order.status === 'shipped',
-  'bg-rose-50 text-rose-600 border-rose-100': order.status === 'cancelled'
-  }" class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-tighter border-2">
-  {{ order.status }}
-  </span>
-  </td>
-  </tr>
-  </tbody>
-  </table>
-  </div>
-  </div>
 
+      <!-- SHIPPING RATE ALERT (Desktop) -->
+      <div v-if="store.id && store.status === 'active' && !store.settings?.shipping?.setupCompleted" class="bg-blue-50 p-5 rounded-xl border border-blue-200 flex items-center justify-between shadow-sm mt-2">
+        <div class="flex items-center gap-4">
+          <div class="w-10 h-10 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-lg shadow-sm">
+            <i class="fas fa-truck"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-blue-900 tracking-tight">Configurez vos zones de livraison ! 🚚</h3>
+            <p class="text-xs text-blue-700">Définissez vos zones et tarifs pour commencer à recevoir des commandes.</p>
+          </div>
+        </div>
+        <button 
+          @click="router.push('/seller/shipping')" 
+          class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-lg transition-colors flex items-center gap-2 shadow-sm"
+        >
+          <i class="fas fa-cog text-xs"></i>
+          Configurer
+        </button>
+      </div>
+
+      <!-- Row 1: KPI Cards (Flat minimal design) -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <!-- Card 1: Today's Orders -->
+        <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm transition-all duration-200">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-slate-400 font-medium text-xs uppercase tracking-wider">Commandes du jour</span>
+            <i class="fas fa-shopping-bag text-slate-300"></i>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <span class="text-3xl font-bold text-slate-800">{{ stats.todayOrders || 0 }}</span>
+            <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">+12%</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Revenue in System -->
+        <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm transition-all duration-200">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-slate-400 font-medium text-xs uppercase tracking-wider">Argent en cours</span>
+            <i class="fas fa-hand-holding-usd text-slate-300"></i>
+          </div>
+          <div class="flex items-baseline gap-1">
+            <span class="text-2xl font-bold text-slate-800">{{ formatPrice(activeRevenue) }}</span>
+            <span class="text-xs font-medium text-slate-400">HTG</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Main Balance (SaaS Style) -->
+        <div class="bg-slate-900 p-6 rounded-xl border border-slate-950 shadow-sm transition-all duration-200 text-white flex flex-col justify-between h-[120px]">
+          <div class="flex items-center justify-between">
+            <span class="text-slate-300 font-medium text-xs uppercase tracking-wider">Porte-monnaie</span>
+            <i class="fas fa-wallet text-slate-400"></i>
+          </div>
+          <div class="flex items-baseline justify-between">
+            <div class="flex items-baseline gap-1">
+              <span class="text-3xl font-bold text-white">{{ formatPrice(availableBalance) }}</span>
+              <span class="text-xs font-medium text-slate-300">HTG</span>
+            </div>
+            <button @click="showWithdrawModal = true" class="px-2.5 py-1 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold rounded-md transition-colors flex items-center gap-1">
+              Retirer <i class="fas fa-arrow-right text-[10px]"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Card 4: Store Health -->
+        <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm transition-all duration-200">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-slate-400 font-medium text-xs uppercase tracking-wider">Santé Boutique</span>
+            <i class="fas fa-star text-slate-300"></i>
+          </div>
+          <div class="flex flex-col gap-2">
+            <div class="flex justify-between items-baseline">
+              <span class="text-xl font-bold text-slate-800">{{ loading ? '---' : (stats.healthScore >= 90 ? 'Excellent' : (stats.healthScore >= 70 ? 'Bon' : 'À améliorer')) }}</span>
+              <span class="text-xs font-semibold text-slate-500">{{ loading ? '--%' : stats.healthScore + '%' }}</span>
+            </div>
+            <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+              <div class="h-full bg-slate-800 rounded-full transition-all duration-1000" :style="{ width: (loading ? 0 : stats.healthScore) + '%' }"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Graph & Mini Widgets -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Interactive Chart -->
+        <div class="lg:col-span-2 bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+          <div class="flex justify-between items-center mb-6">
+            <div>
+              <h3 class="text-base font-bold text-slate-800 tracking-tight">Performance Analytique</h3>
+              <p class="text-xs text-slate-400 font-medium">Évolution de votre chiffre d'affaires</p>
+            </div>
+            <div class="flex bg-slate-50 p-1 rounded-lg gap-1 border border-slate-100">
+              <button class="px-3 py-1 rounded-md text-xs font-semibold bg-white text-slate-800 shadow-sm border border-slate-200/50">Hebdomadaire</button>
+              <button class="px-3 py-1 rounded-md text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors">Mensuel</button>
+            </div>
+          </div>
+          
+          <div class="relative h-60 w-full">
+            <LineChart v-if="!loading && stats.chartData && stats.chartData.length > 0" :data="chartDataComputed" :options="chartOptions" />
+            <div v-else-if="loading" class="w-full h-full flex items-center justify-center">
+              <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-800"></div>
+            </div>
+            <div v-else class="w-full h-full flex items-center justify-center text-slate-400 text-xs italic">
+              Aucune donnée disponible pour le graphique
+            </div>
+          </div>
+        </div>
+
+        <!-- Fast Actions & Small Stats -->
+        <div class="space-y-6 flex flex-col justify-between">
+          <!-- Quick Nav -->
+          <div class="grid grid-cols-2 gap-4">
+            <button @click="router.push('/seller/messages')" class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm hover:border-slate-200 transition-all flex flex-col justify-between text-left group">
+              <div class="w-8 h-8 rounded-lg bg-slate-50 text-slate-700 flex items-center justify-center mb-4 group-hover:bg-slate-900 group-hover:text-white transition-all">
+                <i class="fas fa-envelope text-sm"></i>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-slate-800">{{ loading ? '-' : stats.unreadMessagesCount }}</div>
+                <div class="text-xs font-medium text-slate-400 uppercase tracking-wide">Messages</div>
+              </div>
+            </button>
+            
+            <button @click="router.push('/seller/reports')" class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm hover:border-slate-200 transition-all flex flex-col justify-between text-left group">
+              <div class="w-8 h-8 rounded-lg bg-slate-50 text-slate-700 flex items-center justify-center mb-4 group-hover:bg-slate-900 group-hover:text-white transition-all">
+                <i class="fas fa-scroll text-sm"></i>
+              </div>
+              <div>
+                <div class="text-2xl font-bold text-slate-800">{{ loading ? '--%' : stats.conversionRate + '%' }}</div>
+                <div class="text-xs font-medium text-slate-400 uppercase tracking-wide">Conversion</div>
+              </div>
+            </button>
+          </div>
+
+          <!-- Low Stock Warning (Re-styled) -->
+          <div class="bg-white p-5 rounded-xl border border-slate-100 shadow-sm flex-1 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-slate-400 font-semibold text-xs uppercase tracking-wider">Alerte Stock</span>
+                <i class="fas fa-exclamation-triangle text-amber-500 text-sm"></i>
+              </div>
+              
+              <div v-if="lowStockProducts.length > 0" class="flex items-center gap-3 bg-slate-50 p-3 rounded-lg border border-slate-100">
+                <img alt="" :src="currentStockItem.image_url || '/placeholder.png'" class="w-10 h-10 object-cover rounded-md bg-white border border-slate-200" />
+                <div class="min-w-0 flex-1">
+                  <h4 class="font-semibold text-xs text-slate-800 truncate">{{ currentStockItem.name }}</h4>
+                  <p class="text-red-500 font-bold text-xs">{{ currentStockItem.stock }} unités restantes</p>
+                </div>
+              </div>
+              <div v-else class="text-center py-4">
+                <p class="text-slate-400 font-medium italic text-xs">Tout est en ordre !</p>
+              </div>
+            </div>
+            
+            <button @click="router.push('/seller/products')" class="w-full mt-4 py-2 bg-slate-900 hover:bg-black text-white font-semibold text-xs uppercase tracking-wider rounded-lg transition-colors">
+              Réapprovisionner
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 3: Orders List -->
+      <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+        <div class="flex justify-between items-center mb-6">
+          <div>
+            <h3 class="text-base font-bold text-slate-800 tracking-tight">Flux de Commandes</h3>
+            <p class="text-xs text-slate-400 font-medium">Suivi des dernières activités en temps réel</p>
+          </div>
+          <router-link to="/seller/orders" class="px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-600 font-semibold text-xs rounded-lg transition-colors border border-slate-200/50">
+            Consulter tout
+          </router-link>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead>
+              <tr class="text-slate-400 font-semibold text-xs uppercase tracking-wider border-b border-slate-100">
+                <th class="pb-3 font-semibold">Référence</th>
+                <th class="pb-3 font-semibold">Article Principal</th>
+                <th class="pb-3 font-semibold text-center">Quantité</th>
+                <th class="pb-3 font-semibold">Heure/Date</th>
+                <th class="pb-3 font-semibold text-right pr-4">Détails/Prix</th>
+                <th class="pb-3 font-semibold text-right">Statut</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <tr v-for="order in recentOrders" :key="order.id" class="hover:bg-slate-50/50 transition-colors cursor-pointer" @click="router.push(`/seller/orders/${order.id}`)">
+                <td class="py-4">
+                  <span class="font-mono text-xs font-semibold text-slate-500 px-2 py-1 bg-slate-50 border border-slate-100 rounded-md">#{{ formatOrderId(order.order_number || order.id) }}</span>
+                </td>
+                <td class="py-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg border border-slate-100 p-0.5 bg-white flex-shrink-0">
+                      <img alt="" :src="order.items[0]?.product?.image_url || '/placeholder.png'" class="w-full h-full rounded-md object-cover"/>
+                    </div>
+                    <div class="min-w-0">
+                      <div class="font-semibold text-slate-800 text-sm truncate max-w-[200px]">{{ order.items[0]?.product?.name }}</div>
+                      <div class="text-xs text-slate-400">Client: {{ order.user?.firstName || 'Particulier' }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-4 text-center font-semibold text-slate-600">01</td>
+                <td class="py-4 text-xs">
+                  <div class="font-semibold text-slate-700">{{ new Date(order.created_at).toLocaleDateString() }}</div>
+                  <div class="text-slate-400">{{ new Date(order.created_at).toLocaleTimeString().slice(0,5) }}</div>
+                </td>
+                <td class="py-4 text-right pr-4">
+                  <div class="flex flex-col items-end">
+                    <div class="text-xs text-slate-300 line-through">{{ formatPrice(order.items.reduce((acc: any, i: any) => acc + (i.price * i.quantity), 0)) }}</div>
+                    <div class="text-xs font-bold text-slate-800">
+                      {{ formatPrice(order.items.reduce((acc: any, i: any) => acc + ( (i.price * i.quantity) * (1 - (i.product?.category?.commission_rate || store.commission_rate || 3) / 100) ), 0)) }} 
+                      <span class="text-[9px] font-bold text-red-500 bg-red-50 px-1 rounded-md ml-1">-{{ order.items[0]?.product?.category?.commission_rate || store.commission_rate || 3 }}%</span>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-4 text-right">
+                  <span :class="{
+                    'bg-amber-50 text-amber-600 border-amber-100': order.status === 'pending',
+                    'bg-emerald-50 text-emerald-600 border-emerald-100': order.status === 'completed' || order.status === 'delivered',
+                    'bg-blue-50 text-blue-600 border-blue-100': order.status === 'shipped',
+                    'bg-rose-50 text-rose-600 border-rose-100': order.status === 'cancelled'
+                    }" class="px-2.5 py-1 rounded-md text-[10px] font-semibold uppercase border">
+                    {{ order.status }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
   </div>
-  </div>
- </div>
 
  <!-- Withdrawal Modal -->
  <div v-if="showWithdrawModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -597,7 +598,7 @@
  withdrawForm.method === 'MonCash' ? 'border-blue-600 bg-blue-50 text-blue-600' : 'border-gray-100 text-gray-400'
  ]"
  >
- <img src="https://moncash.digicelgroup.com/images/moncash_logo.png" class="h-6 object-contain" v-if="false" />
+ <img alt="" src="https://moncash.digicelgroup.com/images/moncash_logo.png" class="h-6 object-contain" v-if="false" />
  <i class="fas fa-mobile-alt text-xl" v-else></i>
  <span class="text-xs font-bold">MonCash</span>
  </button>
@@ -658,6 +659,36 @@
  </div>
  </div>
  </div>
+
+ <!-- Shipping Onboarding Modal -->
+ <div v-if="showShippingOnboardingModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+   <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" @click="showShippingOnboardingModal = false"></div>
+   <div class="bg-white rounded-3xl w-full max-w-md relative z-10 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+     <div class="p-6 text-center">
+       <div class="w-16 h-16 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-2xl mx-auto mb-4 animate-bounce">
+         <i class="fas fa-truck"></i>
+       </div>
+       <h3 class="text-xl font-bold text-gray-900 mb-2">Configurez vos zones de livraison</h3>
+       <p class="text-sm text-gray-500 mb-6 leading-relaxed">
+         Pour commencer à vendre sur HTFasil, vous devez configurer vos zones de livraison et vos tarifs. Les clients verront les frais de livraison correspondants lors du paiement.
+       </p>
+       <div class="flex flex-col gap-3">
+         <button 
+           @click="router.push('/seller/shipping'); showShippingOnboardingModal = false"
+           class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-2xl transition-all shadow-lg shadow-blue-200"
+         >
+           Configurer maintenant
+         </button>
+         <button 
+           @click="showShippingOnboardingModal = false"
+           class="w-full bg-gray-50 hover:bg-gray-100 text-gray-600 font-semibold py-3 rounded-2xl transition-colors border border-gray-100"
+         >
+           Plus tard
+         </button>
+       </div>
+     </div>
+   </div>
+ </div>
  
  <AiChatWidget v-model:isOpen="showAiChat" />
 </template>
@@ -669,10 +700,22 @@ import { useAuthStore } from '@/stores/auth';
 import api from '@/services/api';
 import { useNotificationsStore } from '@/stores/notifications';
 import { useUiStore } from '@/stores/ui';
-import SellerSidebar from '@/components/seller/SellerSidebar.vue';
-import SellerMobileHeader from '@/components/layout/SellerMobileHeader.vue';
 import AiChatWidget from '@/components/seller/AiChatWidget.vue';
 import { formatOrderId } from '@/utils/formatters';
+import { Line as LineChart } from 'vue-chartjs';
+import { 
+  Chart as ChartJS, 
+  Title, 
+  Tooltip, 
+  Legend, 
+  LineElement, 
+  PointElement, 
+  LinearScale, 
+  CategoryScale, 
+  Filler 
+} from 'chart.js';
+
+ChartJS.register(Title, Tooltip, Legend, LineElement, PointElement, LinearScale, CategoryScale, Filler);
 
 const authStore = useAuthStore();
 const route = useRoute();
@@ -742,11 +785,14 @@ const stats = reactive({
  todayOrders: 0,
  netSales: 0,
  pendingNetSales: 0,
+ lifetimeNetSales: 0,
+ lifetimePendingSales: 0,
  totalDeposits: 0,
  healthScore: 100,
  unreadMessagesCount: 0,
  conversionRate: 0,
- chartData: [] as { date: string, amount: number }[]
+ chartData: [] as { date: string, amount: number }[],
+ recentSales: []
 });
 
 const payoutSummary = ref({ totalPaid: 0, pendingValue: 0 });
@@ -786,6 +832,17 @@ watch(showWithdrawModal, (val) => {
  }
 });
 
+const showShippingOnboardingModal = ref(false);
+
+watch(showShippingOnboardingModal, (val) => {
+  uiStore.isSellerNavVisible = !val;
+  if (val) {
+    document.body.style.overflow = 'hidden';
+  } else {
+    document.body.style.overflow = '';
+  }
+});
+
 watch(showAiChat, (val) => {
  uiStore.isSellerNavVisible = !val;
  if (val) {
@@ -812,13 +869,13 @@ const handleRequestNumberChange = () => {
 };
 
 const availableBalance = computed(() => {
- const val = (stats.netSales || 0) + (stats.totalDeposits || 0) - (payoutSummary.value.totalPaid + payoutSummary.value.pendingValue);
+ const val = (stats.lifetimeNetSales || 0) + (stats.totalDeposits || 0) - (payoutSummary.value.totalPaid + payoutSummary.value.pendingValue);
  return Number(Math.max(0, val).toFixed(2));
 });
 
 // Total money currently held in the system for the seller (Active + Available - Paid)
 const activeRevenue = computed(() => {
- const val = (stats.netSales || 0) + (stats.pendingNetSales || 0) + (stats.totalDeposits || 0) - (payoutSummary.value.totalPaid);
+ const val = (stats.lifetimeNetSales || 0) + (stats.lifetimePendingSales || 0) + (stats.totalDeposits || 0) - (payoutSummary.value.totalPaid);
  return Number(Math.max(0, val).toFixed(2));
 });
 
@@ -858,6 +915,102 @@ const prevStockItem = () => {
 };
 
 // Chart Logic
+const chartDataComputed = computed(() => {
+  const labels = stats.chartData.map(d => {
+    const date = new Date(d.date);
+    return date.getDate() + '/' + (date.getMonth() + 1);
+  });
+  
+  const data = stats.chartData.map(d => d.amount);
+
+  return {
+    labels: labels.length > 0 ? labels : ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+    datasets: [
+      {
+        label: "Chiffre d'affaires (HTG)",
+        backgroundColor: 'rgba(37, 99, 235, 0.04)',
+        borderColor: '#2563eb',
+        pointBackgroundColor: '#ffffff',
+        pointBorderColor: '#2563eb',
+        pointHoverBackgroundColor: '#2563eb',
+        pointHoverBorderColor: '#ffffff',
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 2,
+        fill: true,
+        tension: 0.35,
+        data: data.length > 0 ? data : [0, 0, 0, 0, 0, 0, 0]
+      }
+    ]
+  };
+});
+
+const chartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      display: false
+    },
+    tooltip: {
+      mode: 'index' as const,
+      intersect: false,
+      backgroundColor: '#1e293b',
+      titleColor: '#ffffff',
+      bodyColor: '#ffffff',
+      borderColor: '#e2e8f0',
+      borderWidth: 1,
+      padding: 10,
+      borderRadius: 8,
+      displayColors: false,
+      callbacks: {
+        label: function(context: any) {
+          let label = context.dataset.label || '';
+          if (label) {
+            label = '';
+          }
+          if (context.parsed.y !== null) {
+            label += new Intl.NumberFormat('fr-HT', { style: 'currency', currency: 'HTG', maximumFractionDigits: 0 }).format(context.parsed.y);
+          }
+          return label;
+        }
+      }
+    }
+  },
+  scales: {
+    x: {
+      grid: {
+        display: false
+      },
+      ticks: {
+        color: '#94a3b8',
+        font: {
+          size: 10,
+          family: 'Inter'
+        }
+      }
+    },
+    y: {
+      grid: {
+        color: '#f1f5f9'
+      },
+      ticks: {
+        color: '#94a3b8',
+        font: {
+          size: 10,
+          family: 'Inter'
+        },
+        callback: function(value: any) {
+          if (value >= 1000) {
+            return (value / 1000) + 'k';
+          }
+          return value;
+        }
+      }
+    }
+  }
+};
+
 const points = computed(() => {
  if (!stats.chartData || stats.chartData.length === 0) return [];
 
@@ -943,6 +1096,10 @@ const fetchData = async () => {
                 productPagination.value = productsRes.data.pagination;
             } else {
                 products.value = productsRes.data;
+            }
+            
+            if (!store.settings?.shipping?.setupCompleted) {
+                showShippingOnboardingModal.value = true;
             }
         }
         

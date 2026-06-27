@@ -6,9 +6,9 @@
       <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent"></div>
       
       <div class="container mx-auto px-4 text-center relative z-10">
-        <h1 class="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight">À Propos de <span class="text-indigo-400">HTFasil</span></h1>
+        <h1 class="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight">L'Excellence du Commerce en <span class="text-indigo-400">Haïti</span></h1>
         <p class="text-xl md:text-2xl opacity-80 max-w-3xl mx-auto leading-relaxed">
-          Votre marketplace d'excellence pour tous vos désirs, livrée avec passion partout en Haïti.
+          HTFasil redéfinit les standards de la distribution et du service client pour bâtir une marketplace de confiance, accessible à tous.
         </p>
       </div>
     </section>
@@ -18,22 +18,16 @@
       <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div class="order-2 lg:order-1">
-            <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-8">Notre Histoire</h2>
+            <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-8">Notre Engagement</h2>
             <div class="space-y-6 text-lg text-slate-600 leading-relaxed">
               <p>
-                Fondée en 2020, HTFasil est née d'une vision audacieuse : transformer l'expérience 
-                d'achat en Haïti. Ce qui a commencé comme une volonté d'apporter le meilleur de la 
-                qualité locale et internationale est devenu aujourd'hui une référence incontournable.
+                Fondée avec la volonté de digitaliser le commerce haïtien, **HTFasil** est devenue bien plus qu'une simple boutique en ligne. Nous sommes une plateforme technologique dédiée à connecter les meilleurs vendeurs locaux et internationaux avec une clientèle exigeante, en quête de fiabilité et de qualité.
               </p>
               <p>
-                D'une offre spécialisée, nous avons évolué vers un marketplace universel. 
-                Aujourd'hui, HTFasil connecte des milliers de clients à un catalogue infini : 
-                de l'élégance de la mode à la chaleur d'un foyer bien équipé, sans jamais 
-                oublier les outils qui façonnent notre futur.
+                Notre approche repose sur trois piliers fondamentaux : **Transparence, Rapidité et Proximité**. En intégrant des solutions de paiement adaptées comme MonCash et Natcash, nous facilitons l'accès aux produits essentiels et aux dernières innovations technologiques, du cœur de Port-au-Prince jusqu'aux zones les plus reculées du pays.
               </p>
               <p>
-                Notre socle ? Une confiance inébranlable, une sécurité exemplaire et une 
-                obsession pour la satisfaction de notre communauté grandissante.
+                Chaque jour, nos équipes travaillent à sécuriser vos transactions et à optimiser nos chaînes logistiques pour garantir que "Fasil" (Facile) ne soit pas seulement un nom, mais une promesse tenue à chaque commande.
               </p>
             </div>
           </div>

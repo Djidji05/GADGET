@@ -5,11 +5,9 @@
 
       <div class="bg-white rounded-lg shadow-sm p-8 space-y-8">
         <div>
-          <h2 class="text-2xl font-semibold text-gray-900 mb-4">Introduction</h2>
+          <h2 class="text-2xl font-semibold text-gray-900 mb-4">Engagement de Confidentialité</h2>
           <p class="text-gray-600 leading-relaxed">
-            Chez HTFasil, nous nous engageons à protéger la vie privée de nos clients. Cette
-            politique de confidentialité explique comment nous collectons, utilisons, partageons et
-            protégeons vos informations personnelles lorsque vous utilisez notre site web.
+            La protection de votre vie privée est une priorité absolue pour **HTFasil**. Dans le cadre de nos activités de marketplace en Haïti, nous sommes amenés à traiter des données à caractère personnel vous concernant. Cette politique détaille nos engagements en matière de transparence, de sécurité et de respect de vos droits, conformément aux standards internationaux de protection des données (RGPD et législations locales).
           </p>
         </div>
 

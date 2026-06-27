@@ -1,8 +1,20 @@
 import reviewRepository from '../repositories/ReviewRepository.js';
 import ProductRepository from '../repositories/ProductRepository.js';
+import TrustScoreService from './TrustScoreService.js';
+import { OrderItem, Order } from '../models/index.js';
 
 class ReviewService {
-    async getProductReviews(productId) {
+    async getProductReviews(productIdOrSlug) {
+        let productId = productIdOrSlug;
+        
+        // Si c'est un slug (non numérique), on doit trouver l'ID du produit d'abord
+        if (isNaN(Number(productIdOrSlug))) {
+            const productRepo = new ProductRepository();
+            const product = await productRepo.findBySlug(productIdOrSlug);
+            if (!product) return [];
+            productId = product.id;
+        }
+        
         return await reviewRepository.findByProduct(productId);
     }
 
@@ -21,14 +33,36 @@ class ReviewService {
             throw new Error('Produit non trouvé');
         }
 
+        // 🛡️ ACHAT VÉRIFIÉ : Vérifier si l'utilisateur a commandé ce produit
+        const verifiedPurchase = await OrderItem.findOne({
+            where: { product_id: productId },
+            include: [{
+                model: Order,
+                where: { user_id: userId, status: 'delivered' },
+                required: true
+            }]
+        });
+        const is_verified_purchase = !!verifiedPurchase;
+
         const review = await reviewRepository.create({
             product_id: productId,
             user_id: userId,
             rating,
             comment,
             images: images || [],
-            status: 'pending'
+            status: reviewData.status || 'approved',
+            is_verified_purchase
         });
+
+        // 📊 TRUST SCORE : Recalculer le score de confiance du vendeur
+        // si l'avis est directement approuvé et que le produit appartient à une boutique
+        if ((reviewData.status || 'approved') === 'approved' && product.storeId) {
+            setImmediate(() =>
+                TrustScoreService.calculateStoreScore(product.storeId).catch(
+                    (err) => console.error(`❌ TrustScore [addReview] Store:${product.storeId}:`, err.message)
+                )
+            );
+        }
 
         return await reviewRepository.findFullReview(review.id);
     }
@@ -44,7 +78,28 @@ class ReviewService {
             throw new Error('Non autorisé');
         }
 
-        return await reviewRepository.delete(reviewId);
+        // 📊 Récupérer le storeId AVANT la suppression pour le recalcul
+        let storeIdToRecalculate = null;
+        if (review.status === 'approved') {
+            const productRepo = new ProductRepository();
+            const product = await productRepo.findById(review.product_id);
+            if (product && product.storeId) {
+                storeIdToRecalculate = product.storeId;
+            }
+        }
+
+        const result = await reviewRepository.delete(reviewId);
+
+        // 📊 TRUST SCORE : Recalculer après suppression d'un avis approuvé
+        if (storeIdToRecalculate) {
+            setImmediate(() =>
+                TrustScoreService.calculateStoreScore(storeIdToRecalculate).catch(
+                    (err) => console.error(`❌ TrustScore [deleteReview] Store:${storeIdToRecalculate}:`, err.message)
+                )
+            );
+        }
+
+        return result;
     }
 
     async getPendingReviews() {
@@ -61,8 +116,28 @@ class ReviewService {
             throw new Error('Avis non trouvé');
         }
 
-        return await reviewRepository.update(reviewId, { status });
+        const updated = await reviewRepository.update(reviewId, { status });
+
+        // 📊 TRUST SCORE : Recalculer si le statut impacte les avis comptabilisés
+        // Un changement approved <-> rejected/pending modifie la moyenne du vendeur
+        const impactsScore = review.status !== status &&
+            (review.status === 'approved' || status === 'approved');
+
+        if (impactsScore) {
+            const productRepo = new ProductRepository();
+            const product = await productRepo.findById(review.product_id);
+            if (product && product.storeId) {
+                setImmediate(() =>
+                    TrustScoreService.calculateStoreScore(product.storeId).catch(
+                        (err) => console.error(`❌ TrustScore [updateStatus] Store:${product.storeId}:`, err.message)
+                    )
+                );
+            }
+        }
+
+        return updated;
     }
 }
 
 export default new ReviewService();
+

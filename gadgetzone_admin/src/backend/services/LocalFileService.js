@@ -56,14 +56,16 @@ class LocalFileService {
             const imageData = Buffer.from(matches[2], 'base64');
             
             const hash = crypto.randomBytes(8).toString('hex');
-            const fileName = `${fileNamePrefix}_${Date.now()}_${hash}.${extension}`;
+            // Force WebP extension if Sharp is available
+            const finalExtension = sharp ? 'webp' : extension;
+            const fileName = `${fileNamePrefix}_${Date.now()}_${hash}.${finalExtension}`;
             const filePath = path.join(uploadDir, fileName);
 
             // Tenter l'optimisation avec les moteurs disponibles
             if (sharp) {
                 await sharp(imageData)
                     .resize(1200, null, { withoutEnlargement: true, fit: 'inside' })
-                    .toFormat(extension === 'png' ? 'png' : 'jpeg', { quality: 75, progressive: true })
+                    .webp({ quality: 80 })
                     .toFile(filePath);
             } else if (Jimp) {
                 const image = await Jimp.read(imageData);

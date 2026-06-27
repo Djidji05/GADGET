@@ -16,7 +16,8 @@ const DEFAULTS = {
         timezone: 'America/Port-au-Prince',
         language: 'fr',
         maintenance_mode: 'false',
-        whatsapp_vip_link: 'https://chat.whatsapp.com/votre_code_ici'
+        whatsapp_vip_link: 'https://chat.whatsapp.com/votre_code_ici',
+        usd_exchange_rate: '135.00'
     },
     security: {
         two_factor_enabled: 'false',
@@ -45,7 +46,10 @@ const DEFAULTS = {
         moncash_sandbox: 'true',
         natcash_enabled: 'false',
         bank_transfer_enabled: 'false',
-        cod_enabled: 'true'
+        cod_enabled: 'true',
+        stripe_enabled: 'false',
+        stripe_publishable_key: '',
+        stripe_secret_key: ''
     }
 };
 

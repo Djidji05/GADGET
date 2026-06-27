@@ -3,67 +3,58 @@
     <h2 class="mb-6 text-title-md2 font-bold text-black dark:text-white">Support — Tickets</h2>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3 mb-6">
-      <div class="rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div class="flex items-center justify-between">
-          <div>
-            <h4 class="text-title-md font-bold text-black dark:text-white">
-              {{ isLoading ? '—' : stats.open }}
-            </h4>
-            <span class="text-sm text-gray-500 dark:text-gray-400">Tickets ouverts</span>
-          </div>
-          <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2">
-            <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
-            </svg>
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-8">
+      <!-- Tickets Ouverts Card -->
+      <div class="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 border border-amber-100 dark:border-amber-900/40 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all group">
+        <div class="flex items-center justify-between mb-3">
+          <div class="p-2 bg-amber-100/50 dark:bg-amber-900/30 rounded-xl text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-transform">
+            <i class="las la-envelope-open-text text-2xl"></i>
           </div>
         </div>
+        <h4 class="text-2xl font-black text-gray-900 dark:text-white">
+          {{ isLoading ? '—' : stats.open }}
+        </h4>
+        <span class="text-xs text-gray-500 font-bold uppercase tracking-wider block mt-1">Tickets ouverts</span>
       </div>
 
-      <div class="rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div class="flex items-center justify-between">
-          <div>
-            <h4 class="text-title-md font-bold text-black dark:text-white">
-              {{ isLoading ? '—' : (stats.avgResponseHours > 0 ? stats.avgResponseHours + 'h' : 'N/A') }}
-            </h4>
-            <span class="text-sm text-gray-500 dark:text-gray-400">Temps de réponse moyen</span>
-          </div>
-          <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2">
-            <svg class="w-6 h-6 text-success" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
+      <!-- Temps de Réponse Moyen Card -->
+      <div class="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border border-blue-100 dark:border-blue-900/40 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all group">
+        <div class="flex items-center justify-between mb-3">
+          <div class="p-2 bg-blue-100/50 dark:bg-blue-900/30 rounded-xl text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
+            <i class="las la-clock text-2xl"></i>
           </div>
         </div>
+        <h4 class="text-2xl font-black text-gray-900 dark:text-white">
+          {{ isLoading ? '—' : (stats.avgResponseHours > 0 ? stats.avgResponseHours + 'h' : 'N/A') }}
+        </h4>
+        <span class="text-xs text-gray-500 font-bold uppercase tracking-wider block mt-1">Temps de réponse moyen</span>
       </div>
 
-      <div class="rounded-sm border border-stroke bg-white p-6 shadow-default dark:border-strokedark dark:bg-boxdark">
-        <div class="flex items-center justify-between">
-          <div>
-            <h4 class="text-title-md font-bold text-black dark:text-white">
-              {{ isLoading ? '—' : (stats.total > 0 ? Math.round((stats.closed / stats.total) * 100) + '%' : 'N/A') }}
-            </h4>
-            <span class="text-sm text-gray-500 dark:text-gray-400">Taux de résolution</span>
-          </div>
-          <div class="flex h-11.5 w-11.5 items-center justify-center rounded-full bg-meta-2">
-            <svg class="w-6 h-6 text-warning" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
+      <!-- Taux de Résolution Card -->
+      <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 border border-green-100 dark:border-green-900/40 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all group">
+        <div class="flex items-center justify-between mb-3">
+          <div class="p-2 bg-green-100/50 dark:bg-green-900/30 rounded-xl text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform">
+            <i class="las la-check-circle text-2xl"></i>
           </div>
         </div>
+        <h4 class="text-2xl font-black text-gray-900 dark:text-white">
+          {{ isLoading ? '—' : (stats.total > 0 ? Math.round((stats.closed / stats.total) * 100) + '%' : 'N/A') }}
+        </h4>
+        <span class="text-xs text-gray-500 font-bold uppercase tracking-wider block mt-1">Taux de résolution</span>
       </div>
     </div>
 
     <!-- Filters -->
-    <div class="mb-4 flex flex-wrap items-center gap-2">
+    <div class="mb-6 flex flex-wrap items-center gap-2.5">
       <button
         v-for="f in statusFilters"
         :key="f.value"
         @click="selectedStatus = f.value; loadTickets()"
         :class="[
-          'px-4 py-2 rounded-lg text-sm font-medium transition-all',
+          'px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all hover:scale-102 active:scale-98 shadow-sm',
           selectedStatus === f.value
-            ? 'bg-primary text-white'
-            : 'bg-white dark:bg-boxdark border border-stroke dark:border-strokedark text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+            ? 'bg-blue-600 text-white'
+            : 'bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-850'
         ]"
       >
         {{ f.label }}
@@ -71,86 +62,87 @@
     </div>
 
     <!-- Tickets Table -->
-    <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-      <div class="px-4 py-6 md:px-6 xl:px-7.5 flex justify-between items-center">
-        <h4 class="text-xl font-bold text-black dark:text-white">Tickets récents</h4>
-        <span class="text-sm text-gray-500 dark:text-gray-400">{{ total }} ticket(s)</span>
+    <div class="bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 rounded-2xl shadow-sm overflow-hidden">
+      <div class="px-6 py-5 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/50">
+        <div>
+          <h4 class="text-lg font-bold text-gray-900 dark:text-white">Tickets récents</h4>
+          <p class="text-xs text-gray-500 font-medium mt-1">Gérer et répondre aux demandes de support des utilisateurs</p>
+        </div>
+        <span class="text-xs font-bold bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-450 px-3 py-1.5 rounded-xl border border-blue-100 dark:border-blue-900/30">{{ total }} ticket(s)</span>
       </div>
 
       <!-- Loading -->
       <div v-if="isLoading" class="flex justify-center py-16">
-        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
       </div>
 
       <!-- Empty -->
-      <div v-else-if="tickets.length === 0" class="p-10 text-center text-gray-500 dark:text-gray-400">
-        <svg class="mx-auto h-16 w-16 text-gray-300 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
-        </svg>
-        <p>Aucun ticket pour le moment</p>
+      <div v-else-if="tickets.length === 0" class="p-16 text-center">
+        <i class="las la-comment-slash text-5xl text-gray-350 dark:text-gray-650 mb-3 block"></i>
+        <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Aucun ticket pour le moment</p>
       </div>
 
       <!-- Table -->
       <div v-else class="overflow-x-auto">
-        <table class="w-full table-auto">
+        <table class="w-full text-sm">
           <thead>
-            <tr class="bg-gray-2 text-left dark:bg-meta-4">
-              <th class="px-4 py-4 font-medium text-black dark:text-white">#</th>
-              <th class="px-4 py-4 font-medium text-black dark:text-white">Sujet</th>
-              <th class="px-4 py-4 font-medium text-black dark:text-white">Client</th>
-              <th class="px-4 py-4 font-medium text-black dark:text-white">Priorité</th>
-              <th class="px-4 py-4 font-medium text-black dark:text-white">Statut</th>
-              <th class="px-4 py-4 font-medium text-black dark:text-white">Date</th>
-              <th class="px-4 py-4 font-medium text-black dark:text-white">Actions</th>
+            <tr class="bg-gray-50/80 dark:bg-gray-900/80 border-b border-gray-150 dark:border-gray-800 text-left text-gray-500 font-black uppercase text-[10px] tracking-wider">
+              <th class="py-3.5 px-6">ID</th>
+              <th class="py-3.5 px-6">Sujet du ticket</th>
+              <th class="py-3.5 px-6">Client / Utilisateur</th>
+              <th class="py-3.5 px-6">Priorité</th>
+              <th class="py-3.5 px-6">Statut</th>
+              <th class="py-3.5 px-6">Date de création</th>
+              <th class="py-3.5 px-6">Actions administratives</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
             <tr
               v-for="ticket in tickets"
               :key="ticket.id"
-              class="border-b border-stroke dark:border-strokedark hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"
+              class="hover:bg-gray-50/50 dark:hover:bg-gray-850/50 transition-colors font-medium text-gray-700 dark:text-gray-300"
             >
-              <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">#{{ ticket.id }}</td>
-              <td class="px-4 py-4">
-                <p class="font-medium text-black dark:text-white">{{ ticket.subject }}</p>
+              <td class="py-4 px-6 text-gray-400 font-bold">#{{ ticket.id }}</td>
+              <td class="py-4 px-6">
+                <p class="font-bold text-gray-900 dark:text-white text-sm">{{ ticket.subject }}</p>
               </td>
-              <td class="px-4 py-4">
-                <p class="text-sm text-black dark:text-white">{{ ticket.user_name || 'Inconnu' }}</p>
-                <p class="text-xs text-gray-500 dark:text-gray-400">{{ ticket.user_email }}</p>
+              <td class="py-4 px-6">
+                <p class="font-bold text-gray-900 dark:text-white">{{ ticket.user_name || 'Inconnu' }}</p>
+                <p class="text-xs text-gray-400">{{ ticket.user_email }}</p>
               </td>
-              <td class="px-4 py-4">
+              <td class="py-4 px-6">
                 <span
-                  class="inline-flex rounded-full px-3 py-1 text-xs font-medium"
+                  class="inline-flex rounded-xl px-2.5 py-1 text-[10px] font-black uppercase tracking-wider"
                   :class="priorityClass(ticket.priority)"
                 >
                   {{ ticket.priority || 'normal' }}
                 </span>
               </td>
-              <td class="px-4 py-4">
+              <td class="py-4 px-6">
                 <span
-                  class="inline-flex rounded-full px-3 py-1 text-xs font-medium"
+                  class="inline-flex rounded-xl px-2.5 py-1 text-[10px] font-black uppercase tracking-wider"
                   :class="statusClass(ticket.status)"
                 >
                   {{ statusLabel(ticket.status) }}
                 </span>
               </td>
-              <td class="px-4 py-4 text-sm text-gray-500 dark:text-gray-400">
+              <td class="py-4 px-6 text-xs text-gray-400">
                 {{ formatDate(ticket.created_at) }}
               </td>
-              <td class="px-4 py-4">
+              <td class="py-4 px-6">
                 <div class="flex items-center gap-2">
                   <button
                     v-if="ticket.status === 'open'"
                     @click="changeStatus(ticket, 'in_progress')"
-                    class="text-xs px-2 py-1 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded transition-colors"
+                    class="text-xs font-bold px-3 py-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition-colors border border-blue-100 dark:bg-blue-950/20 dark:text-blue-450 dark:border-blue-900/30"
                     title="Prendre en charge"
                   >
-                    En cours
+                    Prendre en charge
                   </button>
                   <button
                     v-if="ticket.status !== 'closed'"
                     @click="changeStatus(ticket, 'closed')"
-                    class="text-xs px-2 py-1 bg-green-50 text-green-600 hover:bg-green-100 rounded transition-colors"
+                    class="text-xs font-bold px-3 py-1.5 bg-green-50 text-green-600 hover:bg-green-100 rounded-lg transition-colors border border-green-100 dark:bg-green-950/20 dark:text-green-450 dark:border-green-900/30"
                     title="Fermer le ticket"
                   >
                     Fermer
@@ -158,7 +150,7 @@
                   <button
                     v-if="ticket.status === 'closed'"
                     @click="changeStatus(ticket, 'open')"
-                    class="text-xs px-2 py-1 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded transition-colors"
+                    class="text-xs font-bold px-3 py-1.5 bg-gray-50 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors border border-gray-150 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700"
                     title="Réouvrir"
                   >
                     Réouvrir

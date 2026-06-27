@@ -12,6 +12,11 @@ const Store = sequelize.define('Store', {
         allowNull: false,
         unique: true
     },
+    slug: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        unique: true
+    },
     description: {
         type: DataTypes.TEXT,
         allowNull: true

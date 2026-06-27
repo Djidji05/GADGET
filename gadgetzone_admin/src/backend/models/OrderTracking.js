@@ -34,6 +34,18 @@ const OrderTracking = sequelize.define('OrderTracking', {
         allowNull: true,
         comment: 'Ville ou coordonnées GPS de l\'événement'
     },
+    latitude: {
+        type: DataTypes.FLOAT,
+        allowNull: true
+    },
+    longitude: {
+        type: DataTypes.FLOAT,
+        allowNull: true
+    },
+    carrier_phone: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
     created_at: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW

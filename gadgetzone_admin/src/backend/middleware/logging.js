@@ -17,7 +17,7 @@ export const advancedLogger = (req, res, next) => {
     timestamp,
     method: req.method,
     url: req.url,
-    ip: req.ip || req.connection.remoteAddress,
+    ip: req.ip || req.socket?.remoteAddress || req.connection?.remoteAddress || '127.0.0.1',
     userAgent: req.get('User-Agent'),
     contentType: req.get('Content-Type'),
     contentLength: req.get('Content-Length') || 0
@@ -69,7 +69,7 @@ export const logError = (error, req = null, additionalContext = {}) => {
     ...(req && {
       method: req.method,
       url: req.url,
-      ip: req.ip || req.connection.remoteAddress,
+      ip: req.ip || req.socket?.remoteAddress || req.connection?.remoteAddress || '127.0.0.1',
       userAgent: req.get('User-Agent'),
       body: req.body,
       params: req.params,
@@ -100,7 +100,7 @@ export const logSecurity = (event, req, details = {}) => {
     timestamp: new Date().toISOString(),
     level: 'SECURITY',
     event,
-    ip: req.ip || req.connection.remoteAddress,
+    ip: req.ip || req.socket?.remoteAddress || req.connection?.remoteAddress || '127.0.0.1',
     userAgent: req.get('User-Agent'),
     url: req.url,
     method: req.method,

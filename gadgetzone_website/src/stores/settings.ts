@@ -7,6 +7,7 @@ export const useSettingsStore = defineStore('settings', () => {
         site_name: 'HTFasil',
         site_logo: '',
         maintenance_mode: 'false',
+        usd_exchange_rate: '135.00',
         isLoaded: false
     })
 
@@ -17,6 +18,7 @@ export const useSettingsStore = defineStore('settings', () => {
                 site_name: data.site_name || 'HTFasil',
                 site_logo: data.site_logo || '',
                 maintenance_mode: String(data.maintenance_mode || 'false'),
+                usd_exchange_rate: String(data.usd_exchange_rate || '135.00'),
                 isLoaded: true
             }
         } catch (error) {

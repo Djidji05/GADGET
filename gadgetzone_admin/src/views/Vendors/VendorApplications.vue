@@ -337,7 +337,6 @@ const approveApplication = async (id: number) => {
   try {
     await api.put(`/admin/vendors/applications/${id}/approve`)
     uiStore.addToast('Vendeur approuvé avec succès', 'success')
-    selectedApplication.value = null
     await fetchApplications()
   } catch (error) {
     console.error('Erreur lors de l\'approbation:', error)
@@ -358,7 +357,6 @@ const rejectApplication = async (id: number) => {
   try {
     await api.put(`/admin/vendors/applications/${id}/reject`, { reason })
     uiStore.addToast('Candidature rejetée', 'info')
-    selectedApplication.value = null
     await fetchApplications()
   } catch (error) {
     console.error('Erreur lors du rejet:', error)
@@ -379,7 +377,6 @@ const suspendVendor = async (id: number) => {
   try {
     await api.put(`/admin/vendors/applications/${id}/suspend`, { reason })
     uiStore.addToast('Partenaire suspendu', 'warning')
-    selectedApplication.value = null
     await fetchApplications()
   } catch (error) {
     console.error('Erreur lors de la suspension:', error)
@@ -399,7 +396,6 @@ const reactivateVendor = async (id: number) => {
   try {
     await api.put(`/admin/vendors/applications/${id}/reactivate`)
     uiStore.addToast('Boutique réactivée', 'success')
-    selectedApplication.value = null
     await fetchApplications()
   } catch (error) {
     console.error('Erreur lors de la réactivation:', error)

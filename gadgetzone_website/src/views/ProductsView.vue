@@ -2,7 +2,7 @@
   <div class="container mx-auto px-4 lg:pt-4 pt-2 pb-32">
     <div class="flex flex-col lg:flex-row gap-8">
       <!-- Sidebar Filter (PC only) -->
-      <aside class="hidden lg:block w-72 flex-shrink-0">
+      <aside class="hidden lg:block w-72 flex-shrink-0 sticky top-24 self-start">
         <ProductSidebarFilter />
       </aside>
 
@@ -327,8 +327,10 @@ onMounted(async () => {
   if (!lastCoords) {
     try {
       const coords = await getPosition();
-      saveCoords(coords.latitude, coords.longitude);
-      productsStore.setCoordinates(coords.latitude, coords.longitude);
+      if (coords) {
+        saveCoords(coords.latitude, coords.longitude);
+        productsStore.setCoordinates(coords.latitude, coords.longitude);
+      }
     } catch (err) {
       console.log('Location access declined or error:', err);
     }

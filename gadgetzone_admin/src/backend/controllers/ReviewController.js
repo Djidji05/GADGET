@@ -17,16 +17,36 @@ class ReviewController {
             const userId = req.user?.userId || req.user?.id;
             
             // 🛡️ SÉCURISATION MASS ASSIGNMENT : Filtrer les champs
-            const { productId, rating, comment, images } = req.body;
+            const { productId, product_id, rating, comment, images } = req.body;
             const reviewData = {
-                productId,
+                productId: productId || product_id,   // Accepter les deux formes (camelCase et snake_case)
                 rating,
                 comment,
                 images: Array.isArray(images) ? images : [],
-                status: 'pending' // Forcer la modération par défaut
+                status: 'approved' // Approuvé directement sans modération
             };
 
             const review = await reviewService.addReview(userId, reviewData);
+
+            // 🏆 GAMIFICATION : Débloquer les achievements d'avis
+            setImmediate(async () => {
+                try {
+                    const { default: loyaltyService } = await import('../services/loyaltyService.js');
+                    const { Review } = await import('../models/index.js');
+                    
+                    // Débloquer le badge premier avis
+                    await loyaltyService.unlockAchievement(userId, 'reviewer');
+                    
+                    // Vérifier si l'utilisateur a 10 avis
+                    const reviewCount = await Review.count({ where: { user_id: userId } });
+                    if (reviewCount >= 10) {
+                        await loyaltyService.unlockAchievement(userId, 'influencer');
+                    }
+                } catch (err) {
+                    console.error('❌ Gamification reviews error:', err.message);
+                }
+            });
+
             res.status(201).json(review);
         } catch (error) {
             console.error("❌ CREATE REVIEW ERROR DETAILS:", error.message);

@@ -13,6 +13,11 @@ export interface Customer {
   createdAt: string
   role?: string
   avatar_url?: string
+  two_factor_enabled?: boolean
+  notif_email?: boolean
+  notif_push?: boolean
+  notif_sms?: boolean
+  storeId?: number
 }
 
 export interface LoginCredentials {

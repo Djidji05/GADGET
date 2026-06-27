@@ -1,24 +1,17 @@
 <template>
-<div class="h-screen bg-white relative overflow-hidden !pb-0">
+<div class="h-screen bg-white dark:bg-gray-950 relative overflow-hidden !pb-0">
     <!-- LOGIN FORM -->
-    <div class="h-screen flex items-center justify-center bg-gray-50 px-4 py-8 relative z-10 overflow-y-auto !pb-0">
-        <div class="absolute top-8 left-8">
-            <button @click="goBack" class="text-gray-500 hover:text-gray-900 transition-colors">
-                <i class="fas fa-arrow-left text-2xl"></i>
-            </button>
-        </div>
+    <div class="h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950 px-4 py-8 relative z-10 overflow-y-auto !pb-0">
 
-      <div class="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 md:p-10 animate-fade-in-up">
+
+      <div class="w-full max-w-md bg-white dark:bg-gray-900 rounded-3xl shadow-xl p-8 md:p-10 animate-fade-in-up border dark:border-gray-800">
         
         <!-- Logo/Brand -->
         <div class="mb-8">
-          <div class="w-12 h-12 bg-[#0A1A2F] rounded-full flex items-center justify-center text-white font-bold text-xl mb-6">
-            G
-          </div>
-          <h1 class="text-3xl font-bold text-gray-900 mb-2">
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             {{ is2FAPending ? 'Vérification' : 'Bon retour sur HTFasil !' }}
           </h1>
-          <p class="text-gray-500">
+          <p class="text-gray-500 dark:text-gray-400">
             {{ is2FAPending ? `Un code a été envoyé à ${form.email}` : 'Veuillez entrer vos identifiants.' }}
           </p>
         </div>
@@ -36,7 +29,7 @@
                   type="text"
                   required
                   maxlength="6"
-                  class="w-full text-center py-4 bg-white border border-gray-200 rounded-2xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all text-2xl tracking-[0.5em] font-bold"
+                  class="w-full text-center py-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/40 focus:border-blue-500 transition-all text-2xl tracking-[0.5em] font-bold"
                   placeholder="000000"
                 />
              </div>
@@ -51,8 +44,8 @@
             <span v-else>Continuer</span>
           </button>
 
-          <button type="button" @click="is2FAPending = false" class="w-full text-sm text-gray-500 hover:underline">
-             Annuler
+          <button type="button" @click="is2FAPending = false" class="w-full text-sm text-gray-500 dark:text-gray-400 hover:underline">
+              Annuler
           </button>
         </form>
 
@@ -71,7 +64,7 @@
                   v-model="form.email"
                   type="email"
                   required
-                  class="w-full pl-5 pr-4 py-4 bg-white border border-gray-200 rounded-2xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all placeholder-gray-400"
+                  class="w-full pl-5 pr-4 py-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/40 focus:border-blue-500 transition-all placeholder-gray-400 dark:placeholder-gray-500"
                   placeholder="Email"
                 />
                 <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400">
@@ -88,10 +81,10 @@
                   v-model="form.password"
                   :type="showPassword ? 'text' : 'password'"
                   required
-                  class="w-full pl-5 pr-12 py-4 bg-white border border-gray-200 rounded-2xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition-all placeholder-gray-400 text-lg tracking-widest"
+                  class="w-full pl-5 pr-12 py-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900/40 focus:border-blue-500 transition-all placeholder-gray-400 dark:placeholder-gray-500 text-lg tracking-widest"
                   placeholder="Mot de passe"
                 />
-                 <button type="button" @click="showPassword = !showPassword" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 focus:outline-none">
+                 <button type="button" @click="showPassword = !showPassword" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none">
                    <i :class="['far', showPassword ? 'fa-eye' : 'fa-eye-slash']"></i>
                 </button>
               </div>
@@ -102,7 +95,7 @@
           <div class="flex justify-end">
             <router-link 
               to="/forgot-password" 
-              class="text-sm font-semibold text-blue-600 hover:text-blue-700"
+              class="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300"
             >
               Mot de passe oublié ?
             </router-link>
@@ -122,28 +115,28 @@
   
           <!-- Or Divider -->
           <div class="relative flex py-2 items-center">
-              <div class="flex-grow border-t border-gray-200"></div>
-              <span class="flex-shrink-0 mx-4 text-gray-400 text-sm">Ou connectez-vous avec</span>
-              <div class="flex-grow border-t border-gray-200"></div>
+              <div class="flex-grow border-t border-gray-200 dark:border-gray-800"></div>
+              <span class="flex-shrink-0 mx-4 text-gray-400 dark:text-gray-500 text-sm">Ou connectez-vous avec</span>
+              <div class="flex-grow border-t border-gray-200 dark:border-gray-800"></div>
           </div>
   
           <!-- Social Login -->
           <div class="grid grid-cols-2 gap-4">
-             <a href="http://localhost:3003/api/auth/google" class="flex items-center justify-center gap-2 py-3 px-4 border border-gray-200 rounded-2xl hover:bg-gray-50 transition-colors">
+             <a href="http://localhost:3003/api/auth/google" class="flex items-center justify-center gap-2 py-3 px-4 border border-gray-200 dark:border-gray-700 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                 <i class="fab fa-google text-xl text-red-500"></i>
-                <span class="font-medium text-gray-700">Google</span>
+                <span class="font-medium text-gray-700 dark:text-gray-300">Google</span>
              </a>
-             <a href="http://localhost:3003/api/auth/facebook" class="flex items-center justify-center gap-2 py-3 px-4 border border-gray-200 rounded-2xl hover:bg-gray-50 transition-colors">
+             <a href="http://localhost:3003/api/auth/facebook" class="flex items-center justify-center gap-2 py-3 px-4 border border-gray-200 dark:border-gray-700 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                 <i class="fab fa-facebook text-xl text-blue-600"></i>
-                <span class="font-medium text-gray-700">Facebook</span>
+                <span class="font-medium text-gray-700 dark:text-gray-300">Facebook</span>
              </a>
           </div>
   
           <!-- Sign Up Link -->
           <div class="text-center mt-6">
-             <p class="text-gray-500 text-sm">
+             <p class="text-gray-500 dark:text-gray-400 text-sm">
                 Pas encore de compte ? 
-                <router-link to="/register" class="font-semibold text-[#0A1A2F] hover:underline">
+                <router-link to="/register" class="font-semibold text-[#0A1A2F] dark:text-white hover:underline">
                    S'inscrire
                 </router-link>
              </p>
@@ -151,7 +144,7 @@
         </form>
       </div>
     </div>
-  </div>
+</div>
 </template>
 
 <script setup lang="ts">
@@ -210,13 +203,7 @@ const handle2FAVerify = async () => {
   }
 }
 
-const goBack = () => {
-  if (window.history.state.back) {
-    router.back()
-  } else {
-    router.push('/')
-  }
-}
+
 </script>
 
 <style scoped>

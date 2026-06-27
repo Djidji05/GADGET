@@ -3,9 +3,9 @@
     <div class="container mx-auto px-4 max-w-6xl">
       <!-- Header -->
       <div class="text-center mb-12">
-        <h1 class="text-3xl md:text-4xl font-black text-gray-900 mb-4">Plan du site</h1>
+        <h1 class="text-3xl md:text-4xl font-black text-gray-900 mb-4">Architecture de la Plateforme</h1>
         <p class="text-gray-500 max-w-2xl mx-auto">
-          Trouvez facilement ce que vous cherchez sur HTFasil. Voici un aperçu de toutes les sections de notre plateforme.
+          Explorez l'écosystème HTFasil à travers notre plan détaillé. Accédez rapidement à votre espace personnel, nos boutiques partenaires ou notre centre d'assistance.
         </p>
       </div>
 

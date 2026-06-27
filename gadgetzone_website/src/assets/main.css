@@ -4,10 +4,13 @@
 @tailwind utilities;
 
 @layer base {
-
-  html,
-  body {
+  html {
     font-family: 'Inter', system-ui, sans-serif;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  body {
     overflow-x: hidden;
     width: 100%;
     margin: 0;
@@ -39,5 +42,108 @@
     /* IE and Edge */
     scrollbar-width: none;
     /* Firefox */
+  }
+}
+
+/* ==========================================
+   DESKTOP SELLER PORTAL — GLOBAL OVERRIDES
+   Only applies at md breakpoint (768px+).
+   Mobile is NEVER touched by these rules.
+   ========================================== */
+@media (min-width: 768px) {
+
+  /* ─── 1. Root wrapper: remove built-in padding ─── */
+  .w-full.md\:pt-4.pb-12 {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    background: transparent !important;
+  }
+
+  /* ─── 2. Flex row container: collapse to full-width block ─── */
+  .flex.flex-col.md\:flex-row.gap-6.md\:items-start,
+  .flex.flex-col.md\:flex-row.gap-6 {
+    display: block !important;
+    gap: 0 !important;
+  }
+
+  /* ─── 3. The "main content area" card inside the flex row:
+      strip its background, shadow, rounding — SellerLayout's
+      bg-slate-50 / p-8 already handles all visual wrapping ─── */
+  .flex.flex-col.md\:flex-row.gap-6.md\:items-start > div.flex-1,
+  .flex.flex-col.md\:flex-row.gap-6 > div.flex-1 {
+    background: transparent !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: unset !important;
+  }
+
+  /* ─── 4. Old local desktop page-header bars: make them invisible
+      so our global SellerNavbar is the only header visible ─── */
+  .hidden.md\:block.bg-white.sticky.top-0.z-30.px-4.pt-2.pb-2.shadow-sm.mb-4.rounded-xl {
+    display: none !important;
+  }
+
+  /* ─── 5. Settings-style "flex items-center justify-between mb-8" header:
+      strip any background / shadow — keep its layout for the Save button ─── */
+  .hidden.md\:flex.items-center.justify-between.mb-8 {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding-top: 0 !important;
+    position: static !important;
+  }
+
+  /* ─── 6. Inline main-content wrappers that add rounding + shadow
+      on desktop (bg-gray-50 rounded-3xl etc.) ─── */
+  .flex-1.min-h-screen.bg-gray-50.rounded-3xl.overflow-hidden,
+  .flex-1.min-h-screen.bg-gray-50.rounded-3xl {
+    background: transparent !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    min-height: unset !important;
+  }
+
+  /* ─── 7. Inner content container px-4 padding: remove on desktop
+      (SellerLayout's p-8 already provides the gutters) ─── */
+  .relative.z-20.px-4.pb-24.md\:pb-0.md\:mt-0.md\:px-0,
+  div.relative.z-20.px-4.pb-24 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* ─── 8. Messages / full-height containers ─── */
+  .bg-gray-50.h-screen.flex.flex-col.font-sans.overflow-hidden {
+    height: calc(100vh - 64px) !important;
+    background: transparent !important;
+  }
+
+  /* ─── 9. Harmonise card borders across all pages ─── */
+  .bg-white.rounded-3xl.p-6.shadow-sm.border.border-gray-100,
+  .bg-white.rounded-2xl.p-6.shadow-sm.border.border-gray-100 {
+    border: 1px solid #f1f5f9 !important;
+    box-shadow: 0 1px 3px 0 rgba(0,0,0,0.05), 0 1px 2px -1px rgba(0,0,0,0.05) !important;
+  }
+
+  /* ─── 10. Settings desktop form "mt-6 md:mt-0" offset reset ─── */
+  .flex.flex-col.md\:flex-row.gap-6.md\:items-start.mt-6.md\:mt-0 {
+    margin-top: 0 !important;
+  }
+
+  /* ─── 11. Remove extra top padding from .w-full.md:pt-4 sub-containers ─── */
+  .w-full.md\:pt-4.pb-12 > div.md\:hidden + div.flex,
+  .w-full.md\:pt-4.pb-12 > div.hidden.md\:block {
+    padding-top: 0 !important;
+  }
+
+  /* ─── 12. Ensure the desktop section of Dashboard uses full width ─── */
+  .hidden.md\:block.w-full.font-sans {
+    width: 100% !important;
+  }
+  .hidden.md\:block.w-full.font-sans > .w-full.space-y-8 {
+    width: 100% !important;
   }
 }

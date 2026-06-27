@@ -1,14 +1,14 @@
 <template>
-  <div class="w-full md:pt-4 pb-12">
-    <div class="flex flex-col md:flex-row gap-6 md:items-start">
+  <div class="w-full lg:pt-4 pb-12">
+    <div class="flex flex-col lg:flex-row gap-6 lg:items-start">
       <!-- Sidebar (Desktop Only) -->
       <SellerSidebar />
 
       <!-- Main Content Area -->
-      <div class="flex-1 min-h-screen bg-gray-50 rounded-3xl overflow-hidden shadow-sm md:shadow-md md:mx-0">
+      <div class="flex-1 min-h-screen bg-gray-50 rounded-3xl overflow-hidden shadow-sm lg:shadow-md lg:mx-0">
         
         <!-- MOBILE HEADER (Clean & Minimalist) -->
-        <div class="md:hidden bg-white font-sans relative border-b border-gray-100">
+        <div class="lg:hidden bg-white font-sans relative border-b border-gray-100">
             <div class="px-5 pt-8 pb-6 relative">
                 <div class="flex justify-between items-center mb-4 relative z-10">
                     <button @click="router.back()" class="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-50 text-gray-600 border border-gray-100">
@@ -29,9 +29,9 @@
         </div>
 
         <!-- MAIN CONTENT CONTAINER -->
-        <div class="relative z-20 px-4 pb-24 md:pb-0 md:mt-0 md:px-0">
+        <div class="relative z-20 px-4 pb-24 lg:pb-0 lg:mt-0 lg:px-0">
             <!-- Desktop Header -->
-            <div class="hidden md:block bg-white sticky top-0 z-30 px-4 pt-2 pb-2 shadow-sm mb-4 rounded-xl">
+            <div class="hidden lg:block bg-white sticky top-0 z-30 px-4 pt-2 pb-2 shadow-sm mb-4 rounded-xl">
                 <div class="flex items-center gap-3">
                     <h1 class="text-xl font-bold text-gray-900">Promotions Marketing</h1>
                     <div class="flex-1"></div>
@@ -70,7 +70,7 @@
             <!-- CONTENT -->
             <div v-else class="space-y-4">
                 <div v-if="filteredPromotions.length > 0" class="animate-in fade-in duration-500">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
                         <div v-for="promo in filteredPromotions" :key="promo.id" class="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm relative overflow-hidden group">
                             <div class="flex items-center gap-4 mb-4">
                                 <div class="w-12 h-12 rounded-2xl bg-violet-50 flex items-center justify-center text-violet-600 text-xl font-black">
@@ -127,7 +127,7 @@
         </div>
 
         <!-- Floating Action Button (Mobile) -->
-        <button @click="openCreateModal" class="md:hidden fixed bottom-24 right-4 w-14 h-14 bg-gradient-to-br from-violet-600 to-indigo-800 text-white rounded-full shadow-xl shadow-violet-500/30 flex items-center justify-center z-40 active:scale-95 transition-transform border-4 border-white/20 backdrop-blur-sm">
+        <button @click="openCreateModal" class="lg:hidden fixed bottom-24 right-4 w-14 h-14 bg-gradient-to-br from-violet-600 to-indigo-800 text-white rounded-full shadow-xl shadow-violet-500/30 flex items-center justify-center z-40 active:scale-95 transition-transform border-4 border-white/20 backdrop-blur-sm">
             <i class="fas fa-plus text-xl"></i>
         </button>
 
@@ -222,7 +222,7 @@
                                         class="flex items-center gap-3 p-2 rounded-2xl border-2 transition-all cursor-pointer hover:bg-white"
                                     >
                                         <div class="w-10 h-10 rounded-xl bg-gray-200 overflow-hidden flex-shrink-0">
-                                            <img v-if="product.image" :src="product.image" class="w-full h-full object-cover" />
+                                            <img alt="" v-if="product.image" :src="product.image" class="w-full h-full object-cover" />
                                             <div v-else class="w-full h-full flex items-center justify-center bg-violet-100 text-violet-400">
                                                 <i class="fas fa-image text-xs"></i>
                                             </div>

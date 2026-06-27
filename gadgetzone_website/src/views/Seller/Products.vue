@@ -1,14 +1,14 @@
 <template>
-  <div class="w-full md:pt-4 pb-12">
-    <div class="flex flex-col md:flex-row gap-6 md:items-start">
+  <div class="w-full lg:pt-4 pb-12">
+    <div class="flex flex-col lg:flex-row gap-6 lg:items-start">
       <!-- Sidebar (Desktop Only) -->
       <SellerSidebar />
 
       <!-- Main Content Area -->
-      <div class="flex-1 min-h-screen bg-gray-50 rounded-3xl overflow-hidden shadow-sm md:shadow-md md:mx-0">
+      <div class="flex-1 min-h-screen bg-gray-50 rounded-3xl overflow-hidden shadow-sm lg:shadow-md lg:mx-0">
 
     <!-- MOBILE HEADER (Clean & Minimalist) -->
-    <div class="md:hidden bg-white font-sans relative border-b border-gray-100">
+    <div class="lg:hidden bg-white font-sans relative border-b border-gray-100">
         <div class="px-5 pt-8 pb-6 relative">
             <div class="flex justify-between items-center mb-4 relative z-10">
                 <button @click="router.back()" class="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-50 text-gray-600 border border-gray-100">
@@ -41,10 +41,10 @@
     </div>
 
     <!-- MAIN CONTENT CONTAINER -->
-    <div class="relative z-20 px-4 pb-24 md:pb-0 md:mt-0 md:px-0">
+    <div class="relative z-20 px-4 pb-24 lg:pb-0 lg:mt-0 lg:px-0">
     
     <!-- Desktop Header -->
-    <div class="hidden md:block bg-white sticky top-0 z-30 px-4 pt-2 pb-2 shadow-sm mb-4 rounded-xl">
+    <div class="hidden lg:block bg-white sticky top-0 z-30 px-4 pt-2 pb-2 shadow-sm mb-4 rounded-xl">
         <div class="flex items-center gap-3">
             <h1 class="text-xl font-bold text-gray-900">Mes Produits</h1>
             <div class="flex-1"></div>
@@ -78,7 +78,7 @@
             
             <!-- Product Image -->
             <div class="w-24 h-24 rounded-xl overflow-hidden bg-gray-50 flex-shrink-0 border border-gray-100 relative">
-                <img :src="product.image_url || 'https://via.placeholder.com/100'" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
+                <img alt="" :src="product.image_url || 'https://via.placeholder.com/100'" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" />
                 <div v-if="product.status === 'deleted'" class="absolute inset-0 bg-gray-900/50 flex items-center justify-center backdrop-blur-[1px]">
                     <i class="fas fa-ban text-white text-xl"></i>
                 </div>
@@ -184,7 +184,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '@/services/api';
 import SellerSidebar from '@/components/seller/SellerSidebar.vue';
@@ -267,6 +267,12 @@ const handleProductSearch = () => {
         fetchProducts(1);
     }, 500);
 };
+
+// React to global navbar search on desktop PC
+watch(() => uiStore.globalSearchQuery, (newVal) => {
+    productSearch.value = newVal;
+    handleProductSearch();
+});
 
 const clearProductSearch = () => {
     productSearch.value = '';

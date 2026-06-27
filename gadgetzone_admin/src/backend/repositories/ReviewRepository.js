@@ -25,12 +25,11 @@ class ReviewRepository extends BaseRepository {
 
     async findPending() {
         return await this.model.findAll({
-            where: { status: 'pending' },
             include: [
                 { model: User, as: 'user', attributes: ['id', 'name', 'email'] },
                 { model: Product, as: 'product', attributes: ['id', 'name'] }
             ],
-            order: [['created_at', 'ASC']]
+            order: [['created_at', 'DESC']]
         });
     }
 

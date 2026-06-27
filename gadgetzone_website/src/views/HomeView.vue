@@ -5,8 +5,8 @@
     <!-- Mobile Banner Carousel (Infinite Loop) -->
     <!-- Unified Banner Section (Mobile & Desktop) -->
     <section class="relative">
-      <div v-if="promotionsStore.isLoading" class="relative h-[300px] md:h-[500px] bg-gray-200 mx-4 rounded-2xl md:mx-0 md:rounded-none animate-pulse"></div>
-      <div v-else class="relative h-[300px] md:h-[500px] bg-gray-900 mx-4 rounded-2xl overflow-hidden shadow-md md:mx-0 md:mt-0 md:rounded-none md:shadow-none md:w-full">
+      <div v-if="promotionsStore.isLoading" key="banner-skeleton" class="relative h-[300px] md:h-[500px] bg-gray-200 mx-4 rounded-2xl md:mx-0 md:rounded-none animate-pulse"></div>
+      <div v-else key="banner-content" class="relative h-[300px] md:h-[500px] bg-gray-900 mx-4 rounded-2xl overflow-hidden shadow-md md:mx-0 md:mt-0 md:rounded-none md:shadow-none md:w-full">
         <!-- Carousel Container -->
         <div class="relative w-full h-full overflow-hidden">
           <!-- Carousel Slides -->
@@ -22,6 +22,7 @@
               :alt="banner.title"
               width="1920"
               height="600"
+              :loading="index === 0 ? 'eager' : 'lazy'"
               class="absolute inset-0 w-full h-full object-cover"
               @error="handleImageError"
             />
@@ -99,6 +100,9 @@
     <!-- Top Discovery Sections (Amazon Style) -->
     <DiscoverySlider :cards="mainDiscoveryCards as any" :is-loading="personalizationStore.isLoading" />
 
+    <!-- Flash Sales Section -->
+    <FlashSalesSection />
+
     <!-- Picking Up Where You Left Off (Browsing History) -->
     <DiscoverySlider 
       v-if="browsingHistoryCards.length > 0"
@@ -113,15 +117,15 @@
     <!-- Featured Products -->
     <section class="container mx-auto px-4 pt-4">
       <div class="text-center mb-8">
-        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{{ $t('home.featured_title') }}</h2>
-        <p class="text-sm md:text-base text-gray-600">{{ $t('home.featured_subtitle') }}</p>
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">{{ $t('home.featured_title') }}</h2>
+        <p class="text-sm md:text-base text-gray-600 dark:text-gray-400">{{ $t('home.featured_subtitle') }}</p>
       </div>
 
       <!-- Loading State -->
-      <div v-if="isLoadingFeatured" class="flex overflow-x-auto pb-6 gap-4 no-scrollbar px-2">
+      <div v-if="isLoadingFeatured" key="featured-skeleton" class="flex overflow-x-auto pb-6 gap-4 no-scrollbar -mx-4 px-4">
         <div
           v-for="n in 3"
-          :key="n"
+          :key="'f-skeleton-' + n"
           class="flex-shrink-0 w-[calc(50%-8px)] min-w-[calc(50%-8px)] md:min-w-[280px] md:w-[280px] lg:min-w-[calc(25%-12px)] lg:w-[calc(25%-12px)] rounded-2xl shadow-xl overflow-hidden bg-white border border-[#EDEDED] animate-pulse"
         >
           <div class="p-2">
@@ -134,7 +138,7 @@
       </div>
 
       <!-- Featured Products Horizontal Slide -->
-      <div v-else class="space-y-4">
+      <div v-else key="featured-content" class="space-y-4">
         <!-- Row 1 Wrapper -->
         <div class="relative group px-2">
           <!-- Left Button -->
@@ -157,7 +161,7 @@
 
           <div 
             ref="featuredProductsContainer"
-            class="flex overflow-x-auto pb-6 gap-4 no-scrollbar scroll-smooth"
+            class="flex overflow-x-auto pb-6 gap-4 no-scrollbar scroll-smooth -mx-4 px-4"
           >
             <div 
               v-for="product in featuredProductsRow1"
@@ -191,7 +195,7 @@
 
           <div 
             ref="featuredProductsContainer2"
-            class="flex overflow-x-auto pb-6 gap-4 no-scrollbar scroll-smooth"
+            class="flex overflow-x-auto pb-6 gap-4 no-scrollbar scroll-smooth -mx-4 px-4"
           >
             <div 
               v-for="product in featuredProductsRow2"
@@ -245,18 +249,18 @@
 
     <section class="container mx-auto px-4 py-4">
       <div class="text-center mb-4">
-        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{{ $t('home.vendors_title') }}</h2>
-        <p class="text-sm md:text-base text-gray-600">{{ $t('home.vendors_subtitle') }}</p>
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">{{ $t('home.vendors_title') }}</h2>
+        <p class="text-sm md:text-base text-gray-600 dark:text-gray-400">{{ $t('home.vendors_subtitle') }}</p>
       </div>
 
-      <div v-if="productsStore.isLoading" class="flex overflow-x-auto pb-4 gap-4 px-2 no-scrollbar">
-        <div v-for="n in 6" :key="n" class="flex-shrink-0 w-[80px] h-[50px] md:w-[120px] md:h-[70px] bg-gray-100 rounded-lg animate-pulse"></div>
+      <div v-if="productsStore.isLoading" key="vendors-skeleton" class="flex overflow-x-auto pb-4 gap-4 no-scrollbar -mx-4 px-4">
+        <div v-for="n in 6" :key="'v-skeleton-' + n" class="flex-shrink-0 w-[80px] h-[50px] md:w-[120px] md:h-[70px] bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse"></div>
       </div>
-      <div v-else class="flex overflow-x-auto pb-4 gap-4 px-2 no-scrollbar">
+      <div v-else key="vendors-content" class="flex overflow-x-auto pb-4 gap-4 no-scrollbar -mx-4 px-4">
         <router-link
           v-for="vendor in activeVendors"
           :key="vendor.id"
-          :to="`/store/${vendor.id}`"
+          :to="`/store/${vendor.slug || vendor.id}`"
           class="flex-shrink-0 w-[80px] h-[50px] md:w-[120px] md:h-[70px] group relative flex items-center justify-center cursor-pointer transition-transform hover:scale-110"
         >
           <div class="w-full h-full flex items-center justify-center group-hover:scale-110 opacity-100 transition-all duration-300">
@@ -266,7 +270,7 @@
               :alt="vendor.name"
               class="max-w-full max-h-full object-contain"
             />
-            <div v-else class="text-sm md:text-base font-bold text-gray-400 group-hover:text-blue-600 text-center line-clamp-2 px-1">{{ vendor.name }}</div>
+            <div v-else class="text-sm md:text-base font-bold text-gray-400 dark:text-gray-500 group-hover:text-blue-600 text-center line-clamp-2 px-1">{{ vendor.name }}</div>
           </div>
         </router-link>
       </div>
@@ -275,14 +279,14 @@
     <!-- 40 Produits Supplémentaires -->
     <section class="container mx-auto px-4 py-4">
       <div class="text-center mb-8">
-        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">{{ $t('home.new_products_title') }}</h2>
-        <p class="text-sm md:text-base text-gray-600">{{ $t('home.new_products_subtitle') }}</p>
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">{{ $t('home.new_products_title') }}</h2>
+        <p class="text-sm md:text-base text-gray-600 dark:text-gray-400">{{ $t('home.new_products_subtitle') }}</p>
       </div>
 
-      <div v-if="productsStore.isLoading" class="product-grid">
-        <div v-for="n in 8" :key="n" class="bg-gray-100 rounded-2xl aspect-[4/5] animate-pulse"></div>
+      <div v-if="productsStore.isLoading" key="new-products-skeleton" class="product-grid">
+        <div v-for="n in 8" :key="'np-skeleton-' + n" class="bg-gray-100 dark:bg-gray-850 rounded-2xl aspect-[4/5] animate-pulse"></div>
       </div>
-      <div v-else class="product-grid">
+      <div v-else key="new-products-content" class="product-grid">
         <ProductCard
           v-for="product in newProducts"
           :key="product.id"
@@ -327,6 +331,7 @@ import { useWishlistStore } from '@/stores/wishlist'
 import DiscoverySlider from '@/components/home/DiscoverySlider.vue'
 import PersonalizedSlider from '@/components/home/PersonalizedSlider.vue'
 import AdBanner from '@/components/home/AdBanner.vue'
+import FlashSalesSection from '@/components/home/FlashSalesSection.vue'
 import { usePersonalizationStore } from '@/stores/personalization'
 import { useGeolocation } from '@/composables/useGeolocation'
 
@@ -680,8 +685,10 @@ onMounted(async () => {
       // First time: try to get position
       try {
         const coords = await getPosition();
-        saveCoords(coords.latitude, coords.longitude);
-        productsStore.setCoordinates(coords.latitude, coords.longitude);
+        if (coords) {
+          saveCoords(coords.latitude, coords.longitude);
+          productsStore.setCoordinates(coords.latitude, coords.longitude);
+        }
       } catch (err) {
         console.log('Location access declined or error:', err);
       }

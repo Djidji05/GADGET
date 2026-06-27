@@ -157,6 +157,12 @@
                 {{ $t('common.contact') || 'Contact' }}
               </router-link>
             </li>
+            <li>
+              <router-link to="/faq" class="hover:text-blue-400 transition-colors flex items-center gap-2 group">
+                <i class="fas fa-chevron-right text-xs text-gray-600 group-hover:text-blue-500 transition-colors"></i>
+                {{ $t('common.faq') || 'FAQ' }}
+              </router-link>
+            </li>
           </ul>
         </div>
 
@@ -208,12 +214,12 @@
           </p>
           
           <!-- Payment Icons -->
-          <div class="flex items-center gap-3">
-            <div class="bg-white px-2 py-1 rounded h-8 flex items-center">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png" alt="Visa" class="h-3 w-auto">
+          <div class="flex items-center gap-3 text-2xl">
+            <div class="bg-white px-2 py-1 rounded h-8 flex items-center text-[#1A1F71]">
+              <i class="fab fa-cc-visa"></i>
             </div>
-            <div class="bg-white px-2 py-1 rounded h-8 flex items-center">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/1280px-Mastercard-logo.svg.png" alt="Mastercard" class="h-4 w-auto">
+            <div class="bg-white px-2 py-1 rounded h-8 flex items-center text-[#EB001B]">
+              <i class="fab fa-cc-mastercard"></i>
             </div>
             <div class="bg-white px-2 py-1 rounded h-8 flex items-center">
               <span class="text-xs font-bold text-gray-800">{{ $t('footer.moncash') }}</span>
@@ -226,6 +232,7 @@
           <div class="flex gap-6 text-sm">
             <router-link to="/privacy" class="text-gray-500 hover:text-white transition-colors">{{ $t('footer.privacy') }}</router-link>
             <router-link to="/terms" class="text-gray-500 hover:text-white transition-colors">{{ $t('footer.terms') }}</router-link>
+            <router-link to="/faq" class="text-gray-500 hover:text-white transition-colors">{{ $t('common.faq') || 'FAQ' }}</router-link>
             <router-link to="/sitemap" class="text-gray-500 hover:text-white transition-colors">{{ $t('footer.sitemap') }}</router-link>
           </div>
         </div>
