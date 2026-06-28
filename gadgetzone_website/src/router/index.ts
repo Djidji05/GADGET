@@ -135,6 +135,7 @@ const router = createRouter({
         title: 'Mes Points HTF - HTFasil',
         requiresAuth: true,
         hideNavSearch: true,
+        hideMobileNav: true,
       },
     },
     {
