@@ -97,6 +97,16 @@
               <span>{{ $t('account.payment_history_title') }}</span>
               <i class="fas fa-chevron-right text-gray-300 dark:text-gray-600 text-xs"></i>
            </button>
+           <router-link to="/account/loyalty" class="w-full flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors text-left text-gray-700 dark:text-gray-300">
+              <span>Mes points de fidélité & Récompenses</span>
+              <div class="flex items-center gap-1.5">
+                <span class="text-[9px] bg-amber-500 text-white font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <i class="fas fa-crown text-[8px]"></i>
+                  Points
+                </span>
+                <i class="fas fa-chevron-right text-gray-300 dark:text-gray-600 text-xs"></i>
+              </div>
+           </router-link>
         </div>
       </div>
 
