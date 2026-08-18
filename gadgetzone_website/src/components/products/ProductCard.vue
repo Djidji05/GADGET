@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="group relative bg-white dark:bg-gray-900 rounded-2xl p-2 md:p-3 shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-gray-800 cursor-pointer h-full flex" 
+    class="group relative bg-transparent rounded-2xl p-1 md:p-2 transition-all duration-300 cursor-pointer h-full flex" 
     :class="[
       viewMode === 'list' ? 'flex-row gap-4 md:gap-6 items-center' : 'flex-col hover:-translate-y-1',
       viewMode === 'list' ? 'w-full' : ''
@@ -193,6 +193,8 @@ const isOwnProduct = computed(() => {
   if (!userStoreId) return false
   return userStoreId === props.product.storeId
 })
+
+
 
 const currentImageUrl = ref(props.product.image_url)
 

@@ -5,8 +5,43 @@
         <h2 class="text-2xl md:text-3xl font-bold text-gray-900">{{ adsConfig.sliderTitle }}</h2>
     </div>
 
-    <!-- Slider Track -->
-    <div class="relative overflow-hidden rounded-3xl shadow-xl bg-gray-100">
+    <!-- Desktop Dual/Triple Banner Grid (PC Only when 2+ banners available) -->
+    <div v-if="activeBanners.length >= 2" class="hidden lg:grid lg:grid-cols-2 gap-6">
+      <div 
+        v-for="(banner, index) in activeBanners.slice(0, 2)" 
+        :key="'pc-grid-' + index"
+        class="relative overflow-hidden rounded-3xl shadow-xl bg-gray-900 group h-[220px] transition-all hover:-translate-y-1 hover:shadow-2xl"
+      >
+        <img 
+          :src="banner.image" 
+          width="800"
+          height="300"
+          loading="lazy"
+          class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          :alt="banner.title || 'Promotion'"
+        >
+        <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
+        <div class="absolute inset-0 z-10 flex flex-col justify-center p-8 text-white">
+          <h3 class="text-xl md:text-2xl font-extrabold mb-2" :style="{ color: banner.titleColor || '#ffffff' }">
+            {{ banner.title }}
+          </h3>
+          <p class="text-xs md:text-sm mb-4 opacity-90 line-clamp-2" :style="{ color: banner.subtitleColor || '#ffffff' }">
+            {{ banner.subtitle }}
+          </p>
+          <router-link 
+            v-if="banner.link" 
+            :to="banner.link" 
+            class="inline-flex items-center gap-2 bg-white text-gray-900 hover:bg-blue-600 hover:text-white px-5 py-2 rounded-full text-xs font-bold transition-all shadow-md w-max"
+          >
+            {{ banner.buttonText || 'Profiter de l\'offre' }}
+            <i class="fas fa-arrow-right text-[9px]"></i>
+          </router-link>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile & Single Banner Slider Track -->
+    <div :class="{ 'lg:hidden': activeBanners.length >= 2 }" class="relative overflow-hidden rounded-3xl shadow-xl bg-gray-100">
       <div 
         class="flex transition-transform duration-700 ease-in-out" 
         :style="{ transform: `translateX(-${currentIndex * 100}%)` }"

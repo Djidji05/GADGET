@@ -72,19 +72,19 @@
               v-for="card in cards" 
               :key="card.id"
               :class="[
-                'bg-white dark:bg-gray-900 rounded-3xl shadow-lg border border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col hover:shadow-xl transition-shadow duration-300',
+                'bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-3xl shadow-xl border border-gray-100/90 dark:border-gray-800 overflow-hidden flex flex-col hover:shadow-2xl transition-all duration-300 hover:-translate-y-1',
                 layout === 'slider'
-                  ? `flex-shrink-0 w-[290px] sm:w-[320px] md:w-[calc(50%-12px)] snap-center first:ml-4 last:mr-4 ${getLgWidthClass()}`
+                  ? `flex-shrink-0 w-[280px] sm:w-[310px] md:w-[calc(50%-12px)] snap-center first:ml-4 last:mr-4 ${getLgWidthClass()}`
                   : 'flex-shrink-0 w-[240px] sm:w-[280px] snap-center md:w-full md:flex-shrink-1'
               ]"
             >
               <!-- Grid Card Type -->
               <template v-if="getCardType(card) === 'grid'">
-                <div class="p-5 flex flex-col h-full">
-                  <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-4 line-clamp-1">{{ translateIfPossible(card.title) || card.title }}</h3>
+                <div class="p-4 md:p-5 flex flex-col h-full">
+                  <h3 class="text-base md:text-lg font-extrabold text-gray-900 dark:text-white mb-3 line-clamp-1">{{ translateIfPossible(card.title) || card.title }}</h3>
                   
                   <div 
-                    class="grid gap-3 mb-4 flex-1"
+                    class="grid gap-2.5 mb-3 flex-1"
                     :class="[
                       card.cols === 4 ? 'grid-cols-4' : 
                       card.cols === 3 ? 'grid-cols-3' : 
@@ -98,7 +98,7 @@
                       @click="navigateTo(item.link || '#')"
                     >
                       <div 
-                        class="aspect-square bg-white dark:bg-gray-950 rounded-2xl p-2 mb-2 flex items-center justify-center border border-gray-100 dark:border-gray-800 group-hover:border-blue-100 dark:group-hover:border-blue-900 group-hover:bg-blue-50 dark:group-hover:bg-blue-950/20 transition-all overflow-hidden"
+                        class="aspect-square bg-gray-50 dark:bg-gray-950/80 rounded-2xl p-2 mb-1.5 flex items-center justify-center border border-gray-100 dark:border-gray-800/80 group-hover:border-blue-200 dark:group-hover:border-blue-900 group-hover:bg-blue-50/50 dark:group-hover:bg-blue-950/30 transition-all overflow-hidden"
                         style="aspect-ratio: 1 / 1;"
                       >
                         <img 
@@ -110,31 +110,31 @@
                           loading="lazy"
                           class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" 
                         />
-                        <div v-else class="text-gray-300"><i class="fas fa-image text-2xl"></i></div>
+                        <div v-else class="text-gray-300"><i class="fas fa-image text-xl"></i></div>
                       </div>
                       <p class="text-[10px] md:text-xs font-semibold text-gray-700 dark:text-gray-300 truncate mb-0.5">{{ item.name }}</p>
                       <p v-if="item.subtext" class="text-[9px] md:text-[10px] text-gray-500 dark:text-gray-400">{{ item.subtext }}</p>
                     </div>
                   </div>
                   
-                  <router-link v-if="card.link" :to="card.link" class="text-blue-600 text-sm font-bold hover:underline inline-flex items-center gap-1 mt-2">
-                    {{ card.linkText || $t('common.see_more') }} <i class="fas fa-chevron-right text-[10px]"></i>
+                  <router-link v-if="card.link" :to="card.link" class="text-blue-600 dark:text-blue-400 text-xs md:text-sm font-bold hover:underline inline-flex items-center gap-1 mt-auto pt-2">
+                    {{ card.linkText || $t('common.see_more') }} <i class="fas fa-chevron-right text-[9px]"></i>
                   </router-link>
                 </div>
               </template>
   
               <!-- Promo/Banner Card Type -->
               <template v-else>
-                <div class="p-5 flex flex-col h-full bg-white dark:bg-gray-900 relative">
+                <div class="p-4 md:p-5 flex flex-col h-full bg-white dark:bg-gray-900 relative">
                   <!-- Header -->
-                  <div class="mb-4">
-                    <h3 class="text-xl font-bold text-gray-900 dark:text-white line-clamp-1">{{ translateIfPossible(card.title) || card.title }}</h3>
-                    <p v-if="card.subtitle" class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ translateIfPossible(card.subtitle) || card.subtitle }}</p>
+                  <div class="mb-3">
+                    <h3 class="text-base md:text-lg font-extrabold text-gray-900 dark:text-white line-clamp-1">{{ translateIfPossible(card.title) || card.title }}</h3>
+                    <p v-if="card.subtitle" class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-1">{{ translateIfPossible(card.subtitle) || card.subtitle }}</p>
                   </div>
   
                   <!-- Content (Image) -->
                   <div 
-                    class="flex-1 min-h-[160px] md:min-h-[200px] rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center transition-colors mb-4"
+                    class="flex-1 min-h-[140px] md:min-h-[170px] rounded-2xl overflow-hidden relative group cursor-pointer shadow-sm border border-gray-100 dark:border-gray-800 flex flex-col items-center justify-center text-center transition-colors mb-3"
                     :style="card.promoStyle === 'color' ? { backgroundColor: card.backgroundColor || '#2563eb' } : { backgroundColor: '#f3f4f6' }"
                     style="aspect-ratio: 16 / 9;"
                     @click="navigateTo(card.link || '#')"
@@ -150,13 +150,13 @@
                       >
                       
                       <!-- Overlay Content inside image -->
-                      <div class="relative z-10 flex flex-col items-center justify-center h-full w-full p-4">
+                      <div class="relative z-10 flex flex-col items-center justify-center h-full w-full p-3">
                         <h3 
-                            class="mb-2 drop-shadow-md"
+                            class="mb-1 drop-shadow-md text-center leading-snug"
                             :class="[
                                 card.promoStyle === 'color' ? 'text-white' : 'text-white',
-                                card.promoTextSize || 'text-2xl',
-                                card.promoTextWeight || 'font-bold'
+                                card.promoTextSize || 'text-lg md:text-xl',
+                                card.promoTextWeight || 'font-extrabold'
                             ]"
                             :style="{ color: card.promoTextColor }"
                         >
@@ -169,8 +169,8 @@
                   </div>
   
                    <!-- Footer -->
-                  <router-link v-if="card.linkText || card.link" :to="card.link || '#'" class="text-blue-600 text-sm font-bold hover:underline inline-flex items-center gap-1 mt-2">
-                    {{ card.linkText || $t('common.see_more') }} <i class="fas fa-chevron-right text-[10px]"></i>
+                  <router-link v-if="card.linkText || card.link" :to="card.link || '#'" class="text-blue-600 dark:text-blue-400 text-xs md:text-sm font-bold hover:underline inline-flex items-center gap-1 mt-auto pt-1">
+                    {{ card.linkText || $t('common.see_more') }} <i class="fas fa-chevron-right text-[9px]"></i>
                   </router-link>
                 </div>
               </template>

@@ -5,8 +5,8 @@
     <!-- Mobile Banner Carousel (Infinite Loop) -->
     <!-- Unified Banner Section (Mobile & Desktop) -->
     <section class="relative">
-      <div v-if="promotionsStore.isLoading" key="banner-skeleton" class="relative h-[300px] md:h-[500px] bg-gray-200 mx-4 rounded-2xl md:mx-0 md:rounded-none animate-pulse"></div>
-      <div v-else key="banner-content" class="relative h-[300px] md:h-[500px] bg-gray-900 mx-4 rounded-2xl overflow-hidden shadow-md md:mx-0 md:mt-0 md:rounded-none md:shadow-none md:w-full">
+      <div v-if="promotionsStore.isLoading" key="banner-skeleton" class="relative h-[300px] md:h-[500px] lg:h-[580px] xl:h-[620px] bg-gray-200 mx-4 rounded-2xl md:mx-0 md:rounded-none animate-pulse"></div>
+      <div v-else key="banner-content" class="relative h-[300px] md:h-[500px] lg:h-[580px] xl:h-[620px] bg-gray-900 mx-4 rounded-2xl overflow-hidden shadow-md md:mx-0 md:mt-0 md:rounded-none md:shadow-none md:w-full">
         <!-- Carousel Container -->
         <div class="relative w-full h-full overflow-hidden">
           <!-- Carousel Slides -->
@@ -14,7 +14,7 @@
             v-for="(banner, index) in banners"
             :key="banner.id"
             v-show="currentBannerIndex === index"
-            class="absolute inset-0 transition-opacity duration-1000 flex items-center justify-center"
+            class="absolute inset-0 transition-opacity duration-1000 flex items-start justify-center"
           >
             <!-- Image Background -->
             <img
@@ -27,16 +27,16 @@
               @error="handleImageError"
             />
             
-            <!-- Overlay for better text readability -->
-            <div class="absolute inset-0 bg-black/30"></div>
+            <!-- Overlay with smooth bottom fade for overlapping cards -->
+            <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-gray-950/80"></div>
 
             <!-- Content -->
             <div 
               class="absolute inset-0 z-10 flex flex-col px-4 text-white transition-all duration-300"
               :class="[
-                banner.verticalAlign === 'items-start' ? 'justify-start pt-16 md:pt-24' : 
-                banner.verticalAlign === 'items-end' ? 'justify-end pb-16 md:pb-24' : 
-                'justify-center',
+                banner.verticalAlign === 'items-start' ? 'justify-start pt-6 md:pt-16 lg:pt-20' : 
+                banner.verticalAlign === 'items-end' ? 'justify-end pb-8 lg:justify-start lg:pt-28' : 
+                'justify-center lg:justify-start lg:pt-24',
                 banner.textAlign === 'text-left' ? 'items-start text-left' : 
                 banner.textAlign === 'text-right' ? 'items-end text-right' : 
                 'items-center text-center'
@@ -52,15 +52,15 @@
                 <h1 
                   class="mb-2 md:mb-4 drop-shadow-lg leading-tight"
                   :class="[
-                    banner.titleSize || 'text-3xl md:text-5xl', 
-                    banner.titleWeight || 'font-bold'
+                    banner.titleSize || 'text-2xl sm:text-4xl md:text-5xl lg:text-6xl', 
+                    banner.titleWeight || 'font-extrabold'
                   ]"
                   :style="{ color: banner.titleColor || '#ffffff' }"
                 >
                   {{ banner.title }}
                 </h1>
                 <p 
-                  class="text-base md:text-2xl mb-4 md:mb-8 opacity-90 drop-shadow-md max-w-2xl"
+                  class="text-sm sm:text-base md:text-xl lg:text-2xl mb-4 md:mb-8 opacity-95 drop-shadow-md max-w-2xl font-medium"
                   :style="{ color: banner.subtitleColor || '#ffffff' }"
                 >
                   {{ banner.subtitle }}
@@ -69,9 +69,9 @@
                   <router-link
                     v-if="banner.link"
                     :to="banner.link"
-                    class="bg-white text-gray-900 hover:bg-gray-100 px-6 py-2 md:px-8 md:py-3 text-sm md:text-base font-bold rounded-full shadow-lg transition-transform hover:scale-105 uppercase tracking-wide"
+                    class="bg-white text-gray-900 hover:bg-blue-600 hover:text-white px-6 py-2 md:px-8 md:py-3 text-sm md:text-base font-bold rounded-full shadow-xl transition-all hover:scale-105 uppercase tracking-wide flex items-center gap-2"
                   >
-                    <i class="fas fa-shopping-bag mr-2"></i>
+                    <i class="fas fa-shopping-bag"></i>
                     {{ banner.buttonText || $t('common.discover') }}
                   </router-link>
                 </div>
@@ -80,7 +80,7 @@
           </div>
 
           <!-- Carousel Indicators -->
-          <div class="absolute bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
+          <div class="absolute bottom-4 md:bottom-8 lg:bottom-56 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
             <button
               v-for="(banner, index) in banners"
               :key="index"
@@ -97,8 +97,52 @@
       </div>
     </section>
 
-    <!-- Top Discovery Sections (Amazon Style) -->
-    <DiscoverySlider :cards="mainDiscoveryCards as any" :is-loading="personalizationStore.isLoading" />
+    <!-- Top Discovery Sections (PC Desktop Overlapping Style ONLY) -->
+    <div class="relative z-20 mt-4 md:mt-6 lg:-mt-48 xl:-mt-52 max-w-7xl mx-auto px-4">
+      <DiscoverySlider :cards="mainDiscoveryCards as any" :cards-per-view="4" :is-loading="personalizationStore.isLoading" />
+    </div>
+
+    <!-- Commercial Trust & Services Bar (PC Desktop ONLY) -->
+    <section class="hidden lg:block max-w-7xl mx-auto px-4 my-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 bg-white dark:bg-gray-900 rounded-3xl p-4 md:p-6 shadow-md border border-gray-100 dark:border-gray-800">
+        <div class="flex items-center gap-3.5 p-2">
+          <div class="w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-lg md:text-xl flex-shrink-0">
+            <i class="fas fa-shipping-fast"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-xs md:text-sm text-gray-900 dark:text-white">Livraison Express</h4>
+            <p class="text-[10px] md:text-xs text-gray-500 dark:text-gray-400">Expédition rapide 24h-48h</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3.5 p-2">
+          <div class="w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-green-50 dark:bg-green-950/40 text-green-600 dark:text-green-400 flex items-center justify-center text-lg md:text-xl flex-shrink-0">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-xs md:text-sm text-gray-900 dark:text-white">Produits Certifiés</h4>
+            <p class="text-[10px] md:text-xs text-gray-500 dark:text-gray-400">100% Vérifiés & Garantis</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3.5 p-2">
+          <div class="w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 flex items-center justify-center text-lg md:text-xl flex-shrink-0">
+            <i class="fas fa-lock"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-xs md:text-sm text-gray-900 dark:text-white">Paiement Sécurisé</h4>
+            <p class="text-[10px] md:text-xs text-gray-500 dark:text-gray-400">MonCash, QR, Carte bancaire</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3.5 p-2">
+          <div class="w-11 h-11 md:w-12 md:h-12 rounded-2xl bg-orange-50 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 flex items-center justify-center text-lg md:text-xl flex-shrink-0">
+            <i class="fas fa-headset"></i>
+          </div>
+          <div>
+            <h4 class="font-bold text-xs md:text-sm text-gray-900 dark:text-white">Support Local 24/7</h4>
+            <p class="text-[10px] md:text-xs text-gray-500 dark:text-gray-400">Assistance rapide à votre service</p>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- Flash Sales Section -->
     <FlashSalesSection />
@@ -166,7 +210,7 @@
             <div 
               v-for="product in featuredProductsRow1"
               :key="product.id"
-              class="flex-shrink-0 w-[calc(50%-8px)] min-w-[calc(50%-8px)] md:min-w-[280px] md:w-[280px] lg:min-w-[calc(25%-12px)] lg:w-[calc(25%-12px)]"
+              class="flex-shrink-0 w-[calc(50%-8px)] min-w-[calc(50%-8px)] md:min-w-[220px] md:w-[220px] lg:min-w-[calc(20%-13px)] lg:w-[calc(20%-13px)] xl:min-w-[calc(16.66%-14px)] xl:w-[calc(16.66%-14px)]"
             >
               <ProductCard :product="product" />
             </div>
@@ -200,7 +244,7 @@
             <div 
               v-for="product in featuredProductsRow2"
               :key="product.id"
-              class="flex-shrink-0 w-[calc(50%-8px)] min-w-[calc(50%-8px)] md:min-w-[280px] md:w-[280px] lg:min-w-[calc(25%-12px)] lg:w-[calc(25%-12px)]"
+              class="flex-shrink-0 w-[calc(50%-8px)] min-w-[calc(50%-8px)] md:min-w-[220px] md:w-[220px] lg:min-w-[calc(20%-13px)] lg:w-[calc(20%-13px)] xl:min-w-[calc(16.66%-14px)] xl:w-[calc(16.66%-14px)]"
             >
               <ProductCard :product="product" />
             </div>
@@ -455,8 +499,76 @@ const keepShoppingCards = computed(() => {
 // --- Discovery Data ---
 
 // --- Discovery Data ---
-// Top Discovery (Mix of grid and banners)
-const mainDiscoveryCards = computed(() => personalizationStore.topDiscoveryCards)
+// Top Discovery (Mix of grid and banners) with fallback to guarantee 4 cards on PC
+const mainDiscoveryCards = computed(() => {
+  const storeCards = personalizationStore.topDiscoveryCards || []
+  if (storeCards.length >= 4) return storeCards
+
+  const fallbackCards: any[] = [
+    {
+      id: 'top-tech-categories',
+      type: 'grid',
+      title: 'Smartphones & High-Tech',
+      cols: 2,
+      items: [
+        { name: 'Smartphones', image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300', link: '/products?search=phone' },
+        { name: 'Écouteurs', image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300', link: '/products?search=audio' },
+        { name: 'Smartwatches', image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300', link: '/products?search=watch' },
+        { name: 'Accessoires', image: 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=300', link: '/products?search=accessories' }
+      ],
+      link: '/products',
+      linkText: 'Découvrir la catégorie'
+    },
+    {
+      id: 'promo-flash-deals',
+      type: 'promo',
+      title: '⚡ Offres Spéciales du Jour',
+      subtitle: 'Réductions exclusives sur la sélection Tech',
+      promoText: 'Jusqu\'à -45% de Réduction',
+      promoStyle: 'color',
+      backgroundColor: '#dc2626',
+      promoTextColor: '#ffffff',
+      link: '/promotions',
+      linkText: 'Voir les Ventes Flash'
+    },
+    {
+      id: 'top-vendors-card',
+      type: 'grid',
+      title: 'Boutiques & Marques Officielles',
+      cols: 2,
+      items: (productsStore.activeVendors || []).slice(0, 4).map((v: any) => ({
+        name: v.name,
+        image: v.logoUrl || 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=300',
+        link: `/store/${v.slug || v.id}`
+      })),
+      link: '/products',
+      linkText: 'Explorer les boutiques'
+    },
+    {
+      id: 'become-seller-banner',
+      type: 'promo',
+      title: '🚀 Vendez vos Produits',
+      subtitle: 'Rejoignez la marketplace n°1 en Haïti',
+      promoText: 'Devenir Vendeur Gratuitement',
+      promoStyle: 'color',
+      backgroundColor: '#2563eb',
+      promoTextColor: '#ffffff',
+      link: '/become-seller',
+      linkText: 'Créer votre boutique'
+    }
+  ]
+
+  if (storeCards.length === 0) return fallbackCards
+
+  const combined = [...storeCards]
+  for (const fb of fallbackCards) {
+    if (combined.length >= 4) break
+    if (!combined.some(c => c.id === fb.id)) {
+      combined.push(fb)
+    }
+  }
+  return combined
+})
 
 // Weather Picks
 const weatherPicksCards = computed(() => personalizationStore.weatherPicksCards)
@@ -805,7 +917,23 @@ html {
 @media (min-width: 1024px) {
   .product-grid {
     grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
+    gap: 1.25rem;
+  }
+}
+
+/* PC Large: 5 colonnes */
+@media (min-width: 1280px) {
+  .product-grid {
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.25rem;
+  }
+}
+
+/* PC Extra Large: 6 colonnes */
+@media (min-width: 1536px) {
+  .product-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1.25rem;
   }
 }
 </style>

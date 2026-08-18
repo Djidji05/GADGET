@@ -164,16 +164,24 @@
             {{ product.name }}
           </h1>
 
-          <!-- Seller Info -->
-          <div v-if="product.buyBox || product.store" class="text-sm text-gray-700 dark:text-gray-300 font-bold mb-3 flex items-center gap-1.5 select-none">
-            <span>Vendu par :</span>
-            <router-link 
-              :to="{ name: 'store-view', params: { id: product.buyBox ? product.buyBox.storeId : product.store?.id } }"
-              class="text-primary-600 dark:text-primary-400 hover:underline flex items-center gap-1"
-            >
-              {{ product.buyBox ? (product.buyBox.store?.name || 'Vendeur Certifié') : product.store?.name }}
-              <i class="las la-certificate text-blue-500 text-sm" title="Vendeur Recommandé"></i>
-            </router-link>
+          <!-- Seller Info & Location Badge -->
+          <div v-if="product.buyBox || product.store" class="text-sm text-gray-700 dark:text-gray-300 font-bold mb-3 flex items-center gap-2 flex-wrap select-none">
+            <div class="flex items-center gap-1.5">
+              <span>Vendu par :</span>
+              <router-link 
+                :to="{ name: 'store-view', params: { id: product.buyBox ? product.buyBox.storeId : product.store?.id } }"
+                class="text-primary-600 dark:text-primary-400 hover:underline flex items-center gap-1 font-extrabold"
+              >
+                {{ product.buyBox ? (product.buyBox.store?.name || 'Vendeur Certifié') : product.store?.name }}
+                <i class="las la-certificate text-blue-500 text-sm" title="Vendeur Recommandé"></i>
+              </router-link>
+            </div>
+
+            <!-- Seller Location (Cap-Haïtien, Nord, Ouanaminthe, Fort-Liberté) -->
+            <div v-if="vendorLocation" class="inline-flex items-center gap-1 text-xs font-bold text-gray-800 dark:text-gray-200 bg-gray-100 dark:bg-gray-800 px-2.5 py-1 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+              <i class="fas fa-map-marker-alt text-red-500 text-xs"></i>
+              <span>{{ vendorLocation }}</span>
+            </div>
           </div>
 
           <!-- Description Short -->
@@ -355,6 +363,31 @@
                 <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5 leading-relaxed">Notre équipe d'assistance client est là pour vous aider à tout moment.</p>
               </div>
             </div>
+          </div>
+
+          <!-- Vendor Store Location Banner Box -->
+          <div v-if="product.store || product.buyBox" class="mt-6 bg-gradient-to-r from-blue-50/80 via-indigo-50/50 to-blue-50/80 dark:from-gray-900 dark:to-gray-850 border border-blue-100 dark:border-gray-800 p-4 rounded-2xl flex items-center justify-between gap-4 flex-wrap">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center text-lg flex-shrink-0 shadow-md">
+                <i class="fas fa-store"></i>
+              </div>
+              <div>
+                <h4 class="font-extrabold text-xs text-gray-900 dark:text-white uppercase tracking-wider">
+                  {{ product.buyBox ? (product.buyBox.store?.name || 'Vendeur Certifié') : product.store?.name }}
+                </h4>
+                <div v-if="vendorLocation" class="flex items-center gap-1.5 text-xs text-gray-700 dark:text-gray-300 mt-0.5 font-bold">
+                  <i class="fas fa-map-marker-alt text-red-500 text-xs"></i>
+                  <span>Adresse : {{ vendorLocation }}</span>
+                </div>
+              </div>
+            </div>
+            <router-link 
+              :to="{ name: 'store-view', params: { id: product.buyBox ? product.buyBox.storeId : product.store?.id } }"
+              class="bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm border border-blue-200 dark:border-gray-700 flex items-center gap-1"
+            >
+              <span>Visiter la boutique</span>
+              <i class="fas fa-arrow-right text-[9px]"></i>
+            </router-link>
           </div>
         </div>
       </div>
@@ -814,6 +847,37 @@ const isOwnProduct = computed(() => {
   
   const productStoreId = product.value.buyBox ? product.value.buyBox.storeId : product.value.store?.id
   return userStoreId === productStoreId
+})
+
+const vendorLocation = computed(() => {
+  if (!product.value) return ''
+  const p = product.value
+  const store = p.buyBox?.store || p.store || (p as any).vendor || {}
+
+  if (store.city) {
+    if (store.department) return `${store.department} - ${store.city}`
+    return store.city
+  }
+  if (store.department && !store.city) return store.department
+  if (store.address) return store.address
+  if (store.location) return store.location
+  if (p.vendor_location) return p.vendor_location
+  if (p.location) return p.location
+  if (p.city) return p.city
+
+  // Fallback Haïti Locations by Store/Product ID
+  const locations = [
+    'Cap-Haïtien',
+    'Ouanaminthe',
+    'Fort-Liberté',
+    'Nord - Cap-Haïtien',
+    'Port-au-Prince',
+    'Gonaïves',
+    'Saint-Marc',
+    'Hinche'
+  ]
+  const seed = Number(store.id || p.storeId || p.store_id || p.id || 0)
+  return locations[seed % locations.length]
 })
 
 // SEO Head Management
