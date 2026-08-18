@@ -25,7 +25,7 @@ export const useProductsStore = defineStore('products', () => {
 
   // Pagination
   const currentPage = ref(1)
-  const itemsPerPage = ref(1000) // Changed from 12 to 1000 to load all products
+  const itemsPerPage = ref(20)
   const totalItems = ref(0)
 
   // Filters
@@ -54,9 +54,9 @@ export const useProductsStore = defineStore('products', () => {
   })
 
   // Actions
-  const loadProducts = async (page = 1, filters?: { search?: string; category?: number; brand?: number; minPrice?: number; maxPrice?: number }) => {
+  const loadProducts = async (page = 1, append = false, filters?: { search?: string; category?: number; brand?: number; minPrice?: number; maxPrice?: number }) => {
     try {
-      console.log('📦 Loading products...')
+      console.log('📦 Loading products... page:', page, 'append:', append)
       startLoading()
       error.value = null
       usingFallback.value = false
@@ -74,12 +74,9 @@ export const useProductsStore = defineStore('products', () => {
         lat: userLat.value || undefined,
         lng: userLng.value || undefined,
       })
-      console.log('📦 Products response:', response)
 
       // Vérifier si la réponse est valide
       if (isValidApiResponse(response) && response.products && Array.isArray(response.products)) {
-        // Si aucun filtre n'est appliqué et que l'API ne renvoie rien, on suppose que la DB est vide
-        // et on utilise les données de fallback pour la démo
         const hasFilters = (filters?.search || searchQuery.value) ||
           (filters?.category || selectedCategory.value) ||
           (filters?.brand || selectedBrand.value) ||
@@ -87,15 +84,22 @@ export const useProductsStore = defineStore('products', () => {
           minPrice.value !== null ||
           maxPrice.value !== null
 
-        if (response.products.length === 0 && !hasFilters) {
+        if (response.products.length === 0 && !hasFilters && !append) {
           console.warn('⚠️ Empty database detected, switching to fallback data')
           throw new Error('Empty database')
         }
 
-        products.value = response.products
+        if (append) {
+          const existingIds = new Set(products.value.map(p => p.id))
+          const newUnique = response.products.filter((p: Product) => !existingIds.has(p.id))
+          products.value = [...products.value, ...newUnique]
+        } else {
+          products.value = response.products
+        }
+
         totalItems.value = response.pagination?.total || response.products.length
         currentPage.value = page
-        console.log('✅ Products loaded from API:', response.products.length)
+        console.log('✅ Products loaded from API:', response.products.length, 'Total items:', totalItems.value)
       } else {
         throw new Error('Invalid API response')
       }
@@ -106,10 +110,13 @@ export const useProductsStore = defineStore('products', () => {
         errorResponse.response?.data?.message ||
         'API indisponible - utilisation des données locales'
 
-      // Utiliser les fallbacks
-      products.value = fallbackFeaturedProducts
-      totalItems.value = fallbackFeaturedProducts.length
-      usingFallback.value = true
+      if (append) {
+        // En mode append on ne vide pas la liste
+      } else {
+        products.value = fallbackFeaturedProducts
+        totalItems.value = fallbackFeaturedProducts.length
+        usingFallback.value = true
+      }
       console.log('✅ Fallback products loaded:', fallbackFeaturedProducts.length)
     } finally {
       stopLoading()

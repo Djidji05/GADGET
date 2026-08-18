@@ -19,7 +19,17 @@ const FEE_RATES = {
     'default': 2.0
 };
 
-const getFeeRate = (method) => FEE_RATES[method] ?? FEE_RATES['default'];
+const getFeeRate = (method) => {
+    if (!method) return FEE_RATES['default'];
+    let cleanMethod = method;
+    if (typeof method === 'string' && (method.trim().startsWith('{') || method.trim().startsWith('['))) {
+        try {
+            const parsed = JSON.parse(method);
+            cleanMethod = parsed.provider || parsed.method || parsed.name || cleanMethod;
+        } catch (e) {}
+    }
+    return FEE_RATES[cleanMethod] ?? FEE_RATES['default'];
+};
 
 /**
  * GET /api/refunds/pending-orders
@@ -165,8 +175,8 @@ router.post('/', async (req, res) => {
         });
 
         if (!order) return res.status(404).json({ error: 'Commande introuvable' });
-        if (order.status !== 'cancelled') {
-            return res.status(400).json({ error: 'Seules les commandes annulées peuvent être remboursées' });
+        if (order.status !== 'cancelled' && order.status !== 'cancelled_refund_pending') {
+            return res.status(400).json({ error: 'Seules les commandes annulées ou en attente de remboursement peuvent être remboursées' });
         }
 
         // Vérifier qu'il n'y a pas déjà un remboursement

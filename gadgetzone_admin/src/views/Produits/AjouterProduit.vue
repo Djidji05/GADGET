@@ -128,6 +128,152 @@
             </div>
           </div>
 
+          <!-- Section 2: Spécifications du produit -->
+          <div class="space-y-6">
+            <div class="flex items-center gap-3 pb-3 border-b border-gray-200 dark:border-gray-700">
+              <div class="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
+                <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Spécifications du produit</h3>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-3">
+              <div>
+                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300" for="spec-couleur">
+                  Couleur(s) (ex: Noir, Bleu...)
+                </label>
+                <input
+                  id="spec-couleur"
+                  v-model="produit.specifications.Couleur"
+                  type="text"
+                  class="form-input w-full"
+                  placeholder="Ex: Noir, Bleu, Blanc"
+                />
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300" for="spec-taille">
+                  Taille / Stockage (ex: M, L ou 128Go...)
+                </label>
+                <input
+                  id="spec-taille"
+                  v-model="produit.specifications.Taille"
+                  type="text"
+                  class="form-input w-full"
+                  placeholder="Ex: L ou 128Go, 256Go"
+                />
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300" for="spec-poids">
+                  Poids (ex: 187 g)
+                </label>
+                <input
+                  id="spec-poids"
+                  v-model="produit.specifications.Poids"
+                  type="text"
+                  class="form-input w-full"
+                  placeholder="Ex: 187 g"
+                />
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300" for="spec-dimensions">
+                  Dimensions
+                </label>
+                <input
+                  id="spec-dimensions"
+                  v-model="produit.specifications.Dimensions"
+                  type="text"
+                  class="form-input w-full"
+                  placeholder="Ex: 159.9 x 76.7 x 8.3 mm"
+                />
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300" for="spec-autonomie">
+                  Autonomie / Batterie
+                </label>
+                <input
+                  id="spec-autonomie"
+                  v-model="produit.specifications.Autonomie"
+                  type="text"
+                  class="form-input w-full"
+                  placeholder="Ex: Jusqu'à 20 heures"
+                />
+              </div>
+
+              <div>
+                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300" for="spec-garantie">
+                  Garantie
+                </label>
+                <input
+                  id="spec-garantie"
+                  v-model="produit.specifications.Garantie"
+                  type="text"
+                  class="form-input w-full"
+                  placeholder="Ex: 1 An"
+                />
+              </div>
+            </div>
+
+            <!-- Spécifications personnalisées -->
+            <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+              <h4 class="text-sm font-medium text-gray-900 dark:text-white mb-4">
+                Autres spécifications personnalisées
+              </h4>
+              
+              <!-- Liste des caractéristiques personnalisées existantes -->
+              <div class="space-y-3 mb-4">
+                <div v-for="(val, key) in customSpecs" :key="key" class="flex gap-3 items-center bg-gray-50 dark:bg-gray-800/40 p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                  <span class="text-xs font-bold text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 px-3 py-1.5 rounded-md border border-gray-200 dark:border-gray-600 min-w-[120px]">
+                    {{ key }}
+                  </span>
+                  <input
+                    v-model="produit.specifications[key]"
+                    type="text"
+                    class="flex-1 form-input"
+                  />
+                  <button
+                    type="button"
+                    @click="removeCustomSpec(key as string)"
+                    class="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                  >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Formulaire d'ajout rapide d'une nouvelle caractéristique -->
+              <div class="flex flex-col sm:flex-row gap-3 max-w-2xl bg-gray-50/50 dark:bg-gray-800/20 p-4 rounded-lg border border-dashed border-gray-300 dark:border-gray-700">
+                <input
+                  v-model="newCustomKey"
+                  type="text"
+                  placeholder="Caractéristique (ex: RAM, Matériau...)"
+                  class="form-input sm:w-1/2"
+                />
+                <input
+                  v-model="newCustomValue"
+                  type="text"
+                  placeholder="Valeur (ex: 8Go, Aluminium...)"
+                  class="form-input flex-1"
+                  @keyup.enter="addCustomSpec"
+                />
+                <button
+                  type="button"
+                  @click="addCustomSpec"
+                  class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg text-sm transition-colors"
+                >
+                  Ajouter
+                </button>
+              </div>
+            </div>
+          </div>
+
           <!-- Section 3: Images du produit -->
           <div class="space-y-6">
             <div class="flex items-center gap-3 pb-3 border-b border-gray-200 dark:border-gray-700">
@@ -221,6 +367,88 @@
             </div>
           </div>
 
+          <!-- Section 4: Vidéo du produit -->
+          <div class="space-y-6">
+            <div class="flex items-center gap-3 pb-3 border-b border-gray-200 dark:border-gray-700">
+              <div class="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
+                <svg class="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Vidéo du produit (optionnel)</h3>
+            </div>
+
+            <div class="grid grid-cols-1 gap-6">
+              <div>
+                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300" for="video_url">
+                  URL de la vidéo (Direct MP4, YouTube, Cloudinary, etc.)
+                </label>
+                <div class="flex gap-3">
+                  <input
+                    id="video_url"
+                    v-model="produit.video_url"
+                    type="text"
+                    class="form-input w-full"
+                    placeholder="Ex: https://res.cloudinary.com/.../video.mp4"
+                  />
+                  <button
+                    v-if="produit.video_url"
+                    type="button"
+                    @click="produit.video_url = ''"
+                    class="px-4 py-2 border border-red-300 text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  >
+                    Supprimer
+                  </button>
+                </div>
+              </div>
+
+              <!-- Upload local video -->
+              <div>
+                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Ou téléverser un fichier vidéo local (Max 50MB)
+                </label>
+                <div class="flex items-center gap-4">
+                  <button
+                    type="button"
+                    @click="videoFileInput?.click()"
+                    :disabled="uploadingVideo"
+                    class="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 transition-colors flex items-center gap-2"
+                  >
+                    <svg v-if="uploadingVideo" class="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                    {{ uploadingVideo ? 'Téléversement de la vidéo...' : 'Choisir une vidéo' }}
+                  </button>
+                  <input
+                    type="file"
+                    ref="videoFileInput"
+                    class="hidden"
+                    accept="video/*"
+                    @change="handleVideoUpload"
+                  />
+                  <span v-if="uploadingVideo" class="text-xs text-gray-500">Veuillez patienter pendant le traitement...</span>
+                </div>
+              </div>
+
+              <!-- Prévisualisation vidéo -->
+              <div v-if="produit.video_url" class="max-w-md mt-4 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
+                <video
+                  v-if="produit.video_url.endsWith('.mp4') || produit.video_url.includes('cloudinary') || produit.video_url.includes('/uploads/')"
+                  :src="produit.video_url"
+                  controls
+                  class="w-full aspect-video bg-black"
+                ></video>
+                <div v-else class="p-4 bg-gray-50 dark:bg-gray-800 text-xs text-gray-500">
+                  Prévisualisation vidéo non disponible pour ce type de lien externe (ex: YouTube).
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Actions -->
           <div class="flex justify-end gap-3 sm:gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
             <button
@@ -261,10 +489,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import PageBreadcrumb from '@/components/common/PageBreadcrumb.vue';
-import { productService, categoryService, brandService } from '@/services/api';
+import { productService, categoryService, brandService, api } from '@/services/api';
 
 const router = useRouter();
 const route = useRoute();
@@ -277,7 +505,6 @@ const productId = route.params.id as string;
 if (productId) {
   currentPageTitle.value = 'Modifier un produit';
   isEditing.value = true;
-  // Simulation de chargement pour édition
   setTimeout(() => {
     produit.value = {
       id: parseInt(productId),
@@ -288,11 +515,60 @@ if (productId) {
       category_id: 1,
       image_url: 'https://placehold.co/300x300/3B82F6/FFFFFF?text=Product',
       images: ['https://placehold.co/300x300/3B82F6/FFFFFF?text=Product'], // Init images array
-      brand_id: null
+      brand_id: null,
+      video_url: '',
+      specifications: {
+        Couleur: 'Gris',
+        Taille: '128Go',
+        Poids: '187g',
+        Dimensions: '159.9 x 76.7 x 8.3 mm',
+        Autonomie: 'Jusqu\'à 20 heures',
+        Garantie: '1 An'
+      }
     };
     loading.value = false;
   }, 500);
 }
+
+const uploadingVideo = ref(false);
+const videoFileInput = ref<HTMLInputElement | null>(null);
+
+const handleVideoUpload = async (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  if (!input.files || input.files.length === 0) return;
+
+  const file = input.files[0];
+  if (file.size > 50 * 1024 * 1024) {
+    alert("Le fichier vidéo est trop volumineux (max 50 Mo).");
+    input.value = '';
+    return;
+  }
+
+  try {
+    uploadingVideo.value = true;
+    const formData = new FormData();
+    formData.append('video', file);
+
+    const response = await api.post('/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+
+    if (response.data && response.data.video) {
+      produit.value.video_url = response.data.video.url;
+      alert("Vidéo téléversée avec succès !");
+    } else {
+      throw new Error("Erreur de format de réponse.");
+    }
+  } catch (error: any) {
+    console.error('Erreur lors du téléversement de la vidéo:', error);
+    alert("Échec du téléversement de la vidéo.");
+  } finally {
+    uploadingVideo.value = false;
+    input.value = '';
+  }
+};
 
 const categories = ref<any[]>([]);
 
@@ -326,7 +602,49 @@ const produit = ref({
   brand_id: null as number | null,
   image_url: '', // Main image (first one)
   images: [] as string[], // All images
+  video_url: '', // Video URL
+  specifications: {
+    Couleur: '',
+    Taille: '',
+    Poids: '',
+    Dimensions: '',
+    Autonomie: '',
+    Garantie: ''
+  } as Record<string, string>
 });
+
+const newCustomKey = ref('');
+const newCustomValue = ref('');
+const standardKeys = ['Couleur', 'Taille', 'Poids', 'Dimensions', 'Autonomie', 'Garantie', 'Color', 'Size', 'Weight'];
+
+const customSpecs = computed(() => {
+  const custom: Record<string, string> = {};
+  if (!produit.value.specifications) return custom;
+  Object.keys(produit.value.specifications).forEach(k => {
+    if (!standardKeys.includes(k)) {
+      custom[k] = produit.value.specifications[k] || '';
+    }
+  });
+  return custom;
+});
+
+const addCustomSpec = () => {
+  const key = newCustomKey.value.trim();
+  const val = newCustomValue.value.trim();
+  if (!key || !val) return;
+  if (!produit.value.specifications) {
+    produit.value.specifications = {};
+  }
+  produit.value.specifications[key] = val;
+  newCustomKey.value = '';
+  newCustomValue.value = '';
+};
+
+const removeCustomSpec = (key: string) => {
+  if (produit.value.specifications) {
+    delete produit.value.specifications[key];
+  }
+};
 
 const fileInput = ref<HTMLInputElement | null>(null);
 
@@ -341,6 +659,7 @@ const loadProduit = async () => {
       // Ensure images array exists
       const images = (product as any).images || (product.image_url ? [product.image_url] : []);
       
+      const fetchedSpecs = (product as any).specifications || {};
       produit.value = {
         id: product.id,
         name: product.name,
@@ -350,7 +669,17 @@ const loadProduit = async () => {
         category_id: product.category_id || null,
         brand_id: (product as any).brand_id || null,
         image_url: product.image_url || '',
-        images: images
+        images: images,
+        video_url: (product as any).video_url || '',
+        specifications: {
+          Couleur: fetchedSpecs.Couleur || fetchedSpecs.Color || '',
+          Taille: fetchedSpecs.Taille || fetchedSpecs.Size || '',
+          Poids: fetchedSpecs.Poids || fetchedSpecs.Weight || '',
+          Dimensions: fetchedSpecs.Dimensions || '',
+          Autonomie: fetchedSpecs.Autonomie || '',
+          Garantie: fetchedSpecs.Garantie || '',
+          ...fetchedSpecs
+        }
       };
     }
   } catch (error) {
@@ -439,6 +768,16 @@ const submitForm = async () => {
   try {
     loading.value = true;
 
+    const cleanedSpecs: Record<string, string> = {};
+    if (produit.value.specifications) {
+      Object.keys(produit.value.specifications).forEach(k => {
+        const val = produit.value.specifications[k];
+        if (val && String(val).trim() !== '') {
+          cleanedSpecs[k] = String(val).trim();
+        }
+      });
+    }
+
     const productData = {
       name: produit.value.name,
       description: produit.value.description,
@@ -448,6 +787,8 @@ const submitForm = async () => {
       brand_id: produit.value.brand_id,
       image_url: produit.value.image_url,
       images: produit.value.images,
+      video_url: produit.value.video_url,
+      specifications: cleanedSpecs,
     };
 
     if (isEditing.value && produit.value.id) {

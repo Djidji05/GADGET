@@ -103,13 +103,13 @@ class PaymentController {
                     return res.status(403).json({ error: 'Forbidden: Invalid HMAC signature' });
                 }
             } else {
-                // Fallback (Ancienne méthode Digicel si le paramètre secret est présent dans l'URL)
+                // Fallback (Ancienne méthode Digicel : le paramètre secret doit être présent dans l'URL)
                 const legacySecret = req.query.secret;
                 const EXPECTED_LEGACY = 'GADGET_X_MONCASH_SECURE'; 
                 
-                if (legacySecret && legacySecret !== EXPECTED_LEGACY) {
+                if (!legacySecret || legacySecret !== EXPECTED_LEGACY) {
                     console.warn(`🛑 Unauthorized Legacy Webhook Attempt from IP: ${req.ip}`);
-                    return res.status(403).json({ error: 'Forbidden: Invalid legacy secret' });
+                    return res.status(403).json({ error: 'Forbidden: Missing or invalid secret key' });
                 }
             }
 

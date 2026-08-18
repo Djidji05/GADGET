@@ -122,12 +122,21 @@ export default class OrderService extends BaseService {
                 }
                 
                 // Calcul de la réduction (5 HTG par tranche de 100 points)
-                overallDiscount = Math.floor(pointsToUse / 100) * 5;
+                let calculatedDiscount = Math.floor(pointsToUse / 100) * 5;
                 const maxDiscount = Math.floor(overallSubtotal * 0.5);
-                overallDiscount = Math.min(overallDiscount, maxDiscount);
                 
-                // Mettre à jour le solde de points de l'utilisateur
-                await loyaltyAccount.decrement('points_balance', { by: pointsToUse, transaction: t });
+                if (calculatedDiscount > maxDiscount) {
+                    overallDiscount = maxDiscount;
+                    // Recalculer les points nécessaires (20 points = 1 HTG de réduction)
+                    pointsToUse = Math.ceil(overallDiscount / 5) * 100;
+                } else {
+                    overallDiscount = calculatedDiscount;
+                }
+                
+                // Mettre à jour le solde de points de l'utilisateur avec la valeur ajustée
+                if (pointsToUse > 0) {
+                    await loyaltyAccount.decrement('points_balance', { by: pointsToUse, transaction: t });
+                }
             }
 
             // 2. Group by Store
@@ -459,7 +468,7 @@ export default class OrderService extends BaseService {
             }
 
             // 💸 RÉVERSION FINANCIÈRE (Pending Balance)
-            if (oldStatus === 'confirmed') {
+            if (oldStatus === 'confirmed' || oldStatus === 'pending') {
                 const orderItems = await OrderItem.findAll({ 
                     where: { order_id: id },
                     include: [{ model: Product, as: 'product' }],

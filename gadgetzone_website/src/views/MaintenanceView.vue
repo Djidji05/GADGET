@@ -8,11 +8,6 @@
       Nous effectuons actuellement une mise à jour sur la plateforme pour améliorer votre expérience. 
       Veuillez revenir dans quelques instants.
     </p>
-    
-    <!-- Optional admin login bypass -->
-    <router-link to="/login" class="text-sm text-gray-400 hover:text-blue-600 transition">
-      Accès administrateur
-    </router-link>
   </div>
 </template>
 

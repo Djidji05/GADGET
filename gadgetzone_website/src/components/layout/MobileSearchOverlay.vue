@@ -22,18 +22,37 @@
             @keyup.enter="triggerSearch(query)"
             type="search"
             placeholder="Rechercher des produits, marques..."
-            class="w-full bg-gray-50 dark:bg-gray-800 border-none rounded-full pl-5 pr-10 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all text-gray-950 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+            class="w-full bg-gray-50 dark:bg-gray-800 border-none rounded-full pl-5 pr-20 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all text-gray-950 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
           />
-          <!-- Clear Button -->
-          <button 
-            v-if="query" 
-            @click="clearQuery"
-            class="absolute right-3 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-1"
-          >
-            <i class="fas fa-times-circle"></i>
-          </button>
+          <div class="absolute right-3 flex items-center gap-1.5">
+            <!-- Clear Button -->
+            <button 
+              v-if="query" 
+              @click="clearQuery"
+              class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-1"
+            >
+              <i class="fas fa-times-circle"></i>
+            </button>
+            <!-- Camera Button -->
+            <button 
+              @click="triggerImageSearch"
+              class="text-gray-400 dark:text-gray-500 hover:text-blue-500 p-1"
+              title="Recherche par image"
+            >
+               <i :class="isImageSearching ? 'fas fa-spinner fa-spin' : 'fas fa-camera'"></i>
+            </button>
+          </div>
         </div>
       </div>
+
+      <!-- Image Search Input (Hidden) -->
+      <input
+        type="file"
+        ref="imageInput"
+        accept="image/*"
+        class="hidden"
+        @change="handleImageSearch"
+      />
 
       <!-- Scrollable Suggestion Body -->
       <div class="flex-1 overflow-y-auto px-4 py-6 space-y-8 no-scrollbar bg-gray-50/50 dark:bg-gray-950">
@@ -192,6 +211,7 @@
 </template>
 
 <script setup lang="ts">
+import api from '@/services/api'
 import { ref, computed, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUiStore } from '@/stores/ui'
@@ -206,6 +226,64 @@ const productsStore = useProductsStore()
 // Query state
 const query = ref('')
 const searchInput = ref<HTMLInputElement | null>(null)
+
+// Image Search in Overlay
+const imageInput = ref<HTMLInputElement | null>(null)
+const isImageSearching = ref(false)
+
+const triggerImageSearch = () => {
+  if (isImageSearching.value) return
+  imageInput.value?.click()
+}
+
+const handleImageSearch = async (event: Event) => {
+  const input = event.target as HTMLInputElement
+  if (input.files && input.files[0]) {
+    const file = input.files[0]
+    
+    if (!file.type.startsWith('image/')) {
+        uiStore.showToast("Veuillez sélectionner une image valide.", 'warning')
+        return
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    
+    reader.onload = async () => {
+        const base64Image = reader.result;
+        
+        try {
+            isImageSearching.value = true
+            console.log("Analysant l'image...")
+            
+            const response = await api.post('/products/search/image', { image: base64Image });
+            
+            if (response.data && response.data.ids && response.data.ids.length > 0) {
+                console.log("Produits trouvés:", response.data.ids)
+                closeOverlay();
+                await router.push({
+                    name: 'products',
+                    query: { ids: response.data.ids.join(',') }
+                });
+            } else {
+                uiStore.showToast("Aucun produit similaire trouvé.", 'info')
+            }
+        } catch (error: any) {
+            console.error("Erreur recherche image:", error);
+            const msg = error.response?.data?.error || "Erreur lors de la recherche par image.";
+            uiStore.showToast(msg, 'error')
+        } finally {
+            isImageSearching.value = false;
+            if (imageInput.value) imageInput.value.value = '';
+        }
+    };
+    
+    reader.onerror = () => {
+        uiStore.showToast("Erreur lors de la lecture du fichier.", 'error')
+        isImageSearching.value = false;
+    }
+  }
+}
 
 // Live search state
 const liveProducts = ref<Product[]>([])

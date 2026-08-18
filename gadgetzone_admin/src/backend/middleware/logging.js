@@ -23,8 +23,8 @@ export const advancedLogger = (req, res, next) => {
     contentLength: req.get('Content-Length') || 0
   };
 
-  // Log la requête entrante (sauf pour les notifications silencieuses)
-  if (!(req.method === 'GET' && req.url.includes('/api/notifications'))) {
+  // Log la requête entrante en développement (sauf pour les notifications silencieuses)
+  if (process.env.NODE_ENV !== 'production' && !(req.method === 'GET' && req.url.includes('/api/notifications'))) {
     console.log(`🔵 IN: ${req.method} ${req.url} - IP: ${logData.ip}`);
   }
 
@@ -33,8 +33,8 @@ export const advancedLogger = (req, res, next) => {
     const duration = Date.now() - start;
     const statusCode = res.statusCode;
 
-    // Log la réponse sortante (sauf pour les notifications silencieuses)
-    if (!(req.method === 'GET' && req.url.includes('/api/notifications'))) {
+    // Log la réponse sortante en développement (sauf pour les notifications silencieuses)
+    if (process.env.NODE_ENV !== 'production' && !(req.method === 'GET' && req.url.includes('/api/notifications'))) {
       const statusIcon = statusCode < 400 ? '🟢' : statusCode < 500 ? '🟡' : '🔴';
       console.log(`${statusIcon} OUT: ${req.method} ${req.url} - ${statusCode} - ${duration}ms`);
     }

@@ -65,6 +65,5 @@ export default {
         sellerAcademy: 'Académie Vendeurs',
         flashSales: 'Ventes Flash',
         sitePages: 'Pages du site (CGU, etc.)',
-        disputes: 'Litiges',
     }
 }

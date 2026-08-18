@@ -174,22 +174,22 @@
           </span>
         </div>
         <div class="p-7">
-          <div class="flex items-center justify-between py-4 pl-4 pr-24 bg-gray-50 dark:bg-white/5 rounded-xl border border-stroke dark:border-strokedark">
+          <div class="flex items-center justify-between py-4 px-6 bg-gray-50 dark:bg-white/5 rounded-xl border border-stroke dark:border-strokedark">
             <div class="flex-1 min-w-0 mr-4">
               <h4 class="font-medium text-black dark:text-white mb-1">Activer le mode maintenance</h4>
               <p class="text-sm text-gray-500">Quand activé, seul les administrateurs peuvent accéder au site public. Les visiteurs verront une page de maintenance.</p>
             </div>
-            <label class="relative inline-flex items-center cursor-pointer shrink-0">
-              <input 
-                type="checkbox" 
-                class="sr-only peer"
-                :checked="String(settings.maintenance_mode) === 'true'"
-                @change="settings.maintenance_mode = String(settings.maintenance_mode) === 'true' ? 'false' : 'true'"
-              >
-              <div 
-                class="w-14 h-7 bg-gray-300 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all dark:border-gray-600 peer-checked:bg-orange-600 shadow-inner"
-              ></div>
-            </label>
+            <button 
+              type="button"
+              @click="settings.maintenance_mode = String(settings.maintenance_mode) === 'true' ? 'false' : 'true'"
+              class="relative inline-flex h-7 w-14 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out focus:outline-none shadow-inner items-center px-1"
+              :class="String(settings.maintenance_mode) === 'true' ? 'bg-orange-600' : 'bg-gray-300 dark:bg-gray-700'"
+            >
+              <span 
+                class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow transition duration-200 ease-in-out"
+                :class="String(settings.maintenance_mode) === 'true' ? 'translate-x-7' : 'translate-x-0'"
+              ></span>
+            </button>
           </div>
         </div>
       </div>

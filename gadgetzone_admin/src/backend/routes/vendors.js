@@ -793,7 +793,7 @@ router.get('/me/stats', authenticateToken, isSeller, checkStoreActive, async (re
                 SELECT COALESCE(SUM(o.seller_net_amount), 0) as total
                 FROM orders o
                 WHERE o.store_id = :storeId 
-                AND o.status IN ('shipped', 'confirmed', 'processing')
+                AND o.status IN ('pending', 'shipped', 'confirmed', 'processing')
             `, { 
                 replacements: { storeId }, 
                 type: 'SELECT' 
@@ -1240,7 +1240,7 @@ router.get('/me/transactions', authenticateToken, isSeller, checkStoreActive, as
                     },
                     { 
                         model: Order, 
-                        where: { status: { [Op.ne]: 'pending' } },
+                        where: { status: { [Op.notIn]: ['payment_pending', 'cancelled', 'cancelled_refund_pending'] } },
                         required: true,
                         attributes: ['id', 'status', 'created_at', 'seller_commission_rate', 'seller_net_amount', 'total_amount'], 
                         include: [{ model: User, as: 'user', attributes: ['name'] }] 

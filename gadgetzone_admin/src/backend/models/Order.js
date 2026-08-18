@@ -89,6 +89,12 @@ const Order = sequelize.define('Order', {
     defaultValue: 0.00,
     comment: 'Montant net vendeur snapshot au moment du paiement'
   },
+  total_paid: {
+    type: DataTypes.DECIMAL(10, 2),
+    defaultValue: 0.00,
+    allowNull: false,
+    comment: 'Cumul des paiements reçus pour cette commande'
+  },
   store_id: {
     type: DataTypes.INTEGER,
     allowNull: true,

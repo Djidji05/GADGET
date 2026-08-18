@@ -16,7 +16,7 @@
 
         <div v-else-if="error" class="text-center py-12">
           <div class="text-red-500 mb-4">{{ error }}</div>
-          <button @click="loadProducts" class="btn-primary">{{ $t('products.retry') }}</button>
+          <button @click="() => loadProducts()" class="btn-primary">{{ $t('products.retry') }}</button>
         </div>
 
         <div v-else-if="filteredProducts.length === 0" class="text-center py-12">
@@ -36,6 +36,11 @@
             :key="product.id"
             :product="product"
           />
+        </div>
+
+        <!-- Sentinel element for Infinite Scroll -->
+        <div ref="scrollSentinel" class="h-20 flex items-center justify-center mt-6">
+          <div v-if="isLoadingMore" class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-650"></div>
         </div>
       </div>
     </div>
@@ -131,10 +136,14 @@ const changePage = (page: number) => {
   scrollToTop()
 }
 
+const scrollSentinel = ref<HTMLElement | null>(null)
+const isLoadingMore = ref(false)
+let observer: IntersectionObserver | null = null
+
 // Methods
-const loadProducts = async () => {
+const loadProducts = async (page = 1, append = false) => {
   try {
-    await productsStore.loadProducts()
+    await productsStore.loadProducts(page, append)
   } catch {
     console.warn('Backend failed, checking for fallback products')
     // Si le backend échoue, utiliser les produits fallback directement
@@ -143,6 +152,34 @@ const loadProducts = async () => {
       const { fallbackFeaturedProducts } = await import('@/services/fallback')
       productsStore.products = fallbackFeaturedProducts
     }
+  }
+}
+
+const setupInfiniteScroll = () => {
+  if (observer) observer.disconnect()
+
+  observer = new IntersectionObserver(async (entries) => {
+    const entry = entries[0]
+    if (entry && entry.isIntersecting && !isLoading.value && !isLoadingMore.value) {
+      if (productsStore.currentPage < productsStore.totalPages) {
+        try {
+          isLoadingMore.value = true
+          const nextPage = productsStore.currentPage + 1
+          console.log("⚡ Infinite scroll: loading page", nextPage)
+          await loadProducts(nextPage, true)
+        } catch (e) {
+          console.error("Failed to load more products on scroll", e)
+        } finally {
+          isLoadingMore.value = false
+        }
+      }
+    }
+  }, {
+    rootMargin: '150px',
+  })
+
+  if (scrollSentinel.value) {
+    observer.observe(scrollSentinel.value)
   }
 }
 
@@ -354,10 +391,14 @@ onMounted(async () => {
   // Add scroll event listener
   window.addEventListener('scroll', handleScroll)
   handleScroll()
+  setupInfiniteScroll()
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  if (observer) {
+    observer.disconnect()
+  }
 })
 
 // Scroll to top logic

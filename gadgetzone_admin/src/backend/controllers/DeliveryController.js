@@ -14,15 +14,16 @@ class DeliveryController {
      */
     verifyScan = async (req, res) => {
         try {
-            const { orderId, deliveryToken } = req.body;
+            const { orderId, deliveryToken, token } = req.body;
+            const finalToken = deliveryToken || token;
             
-            if (!orderId || !deliveryToken) {
+            if (!orderId || !finalToken) {
                 return res.status(400).json({ error: 'Order ID and Delivery Token are required.' });
             }
 
             const result = await this.orderService.verifyDeliveryScan(
                 orderId, 
-                deliveryToken, 
+                finalToken, 
                 req.user.id
             );
 

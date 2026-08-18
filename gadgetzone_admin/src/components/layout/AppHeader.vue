@@ -75,6 +75,26 @@
         class="items-center justify-between w-full gap-4 px-5 py-4 shadow-theme-md lg:flex lg:justify-end lg:px-0 lg:shadow-none"
       >
         <div class="flex items-center gap-2 2xsm:gap-3">
+          <!-- Link to website (Globe icon only) -->
+          <button
+            @click.prevent="handleGoToSite"
+            class="relative flex items-center justify-center transition-colors bg-white border border-gray-200 rounded-full hover:text-dark-900 h-11 w-11 hover:bg-gray-100 hover:text-gray-700 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white cursor-pointer"
+            :class="[
+              settingsStore.general.maintenance_mode === 'true'
+                ? 'bg-amber-500/10 text-amber-600 border-amber-500/30 hover:bg-amber-500/20 dark:text-amber-400 dark:border-amber-500/50'
+                : ''
+            ]"
+            :title="settingsStore.general.maintenance_mode === 'true' ? 'Le site public est en mode maintenance (Accès Admin)' : 'Accéder au site public'"
+          >
+            <Globe class="w-5 h-5" />
+            
+            <!-- Pulsing dot for maintenance -->
+            <span v-if="settingsStore.general.maintenance_mode === 'true'" class="absolute top-1.5 right-1.5 flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-500 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-600"></span>
+            </span>
+          </button>
+
           <ThemeToggler />
           <NotificationMenu />
         </div>
@@ -85,15 +105,55 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useSidebar } from '@/composables/useSidebar'
+import { useSettingsStore } from '@/stores/settings'
+import { useAuthStore } from '@/stores/auth'
+import { api } from '@/services/api'
+import { Globe } from 'lucide-vue-next'
 import ThemeToggler from '../common/ThemeToggler.vue'
 import SearchBar from './header/SearchBar.vue'
 import HeaderLogo from './header/HeaderLogo.vue'
 import NotificationMenu from './header/NotificationMenu.vue'
 import UserMenu from './header/UserMenu.vue'
 
+const settingsStore = useSettingsStore()
+const authStore = useAuthStore()
 const { toggleSidebar, toggleMobileSidebar, isMobileOpen } = useSidebar()
+
+const handleGoToSite = async () => {
+  try {
+    const baseUrl = settingsStore.general.site_url || 'http://localhost:5173'
+    let resolvedUrl = baseUrl
+    
+    // Si on est en développement local (localhost), on privilégie le site local (port 5173)
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      if (!baseUrl || (!baseUrl.includes('localhost') && !baseUrl.includes('127.0.0.1'))) {
+        resolvedUrl = 'http://localhost:5173'
+      }
+    }
+
+    const cleanUrl = resolvedUrl.endsWith('/') ? resolvedUrl.slice(0, -1) : resolvedUrl
+    const currentToken = authStore.token || localStorage.getItem('auth_token')
+
+    if (currentToken) {
+      try {
+        const response = await api.post('/auth/one-time-code')
+        if (response.data && response.data.code) {
+          window.open(`${cleanUrl}/auth/callback?code=${response.data.code}`, '_blank', 'noopener,noreferrer')
+          return
+        }
+      } catch (err) {
+        console.error('Erreur lors de la génération du code à usage unique:', err)
+      }
+    }
+
+    // Repli de sécurité si l'obtention du code échoue
+    window.open(cleanUrl, '_blank', 'noopener,noreferrer')
+  } catch (error) {
+    console.error('Erreur redirection:', error)
+  }
+}
 
 const handleToggle = () => {
   if (window.innerWidth >= 1024) {

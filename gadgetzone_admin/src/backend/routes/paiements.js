@@ -58,7 +58,7 @@ router.get('/stats', async (req, res) => {
     });
 
     const pendingPayments = await Order.count({
-      where: { status: 'pending' }
+      where: { status: { [Op.in]: ['payment_pending', 'partially_paid'] } }
     });
 
     const totalOrders = await Order.count();

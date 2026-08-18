@@ -354,6 +354,9 @@ router.get('/recent-actions', authenticateToken, requireAdmin, async (req, res) 
         const limit = parseInt(req.query.limit) || 15;
         let actions = [];
 
+        // 24-hour limit: actions older than 24 hours should disappear automatically
+        const dateLimit = new Date(Date.now() - 24 * 60 * 60 * 1000);
+
         // Get all sellers IDs to filter easily without doing complex alias joins
         const sellers = await User.findAll({
             where: { role: 'seller' },
@@ -364,25 +367,34 @@ router.get('/recent-actions', authenticateToken, requireAdmin, async (req, res) 
         const sellerMap = {};
         sellers.forEach(s => sellerMap[s.id] = s);
 
-        // 🚀 Optimisation : Récupérer toutes les activités en parallèle
+        // 🚀 Optimisation : Récupérer toutes les activités en parallèle sur les dernières 24 heures
         const [orderLogs, disputeMsgs, newProducts] = await Promise.all([
             // 1. Get recent order status changes by sellers
             OrderLog.findAll({
-                where: { user_id: { [Op.in]: sellerIds } },
+                where: { 
+                    user_id: { [Op.in]: sellerIds },
+                    created_at: { [Op.gte]: dateLimit }
+                },
                 order: [['created_at', 'DESC']],
                 limit: limit,
                 raw: true
             }),
             // 2. Get recent dispute messages from sellers
             DisputeMessage.findAll({
-                where: { sender_id: { [Op.in]: sellerIds } },
+                where: { 
+                    sender_id: { [Op.in]: sellerIds },
+                    created_at: { [Op.gte]: dateLimit }
+                },
                 order: [['created_at', 'DESC']],
                 limit: limit,
                 raw: true
             }),
             // 3. Get recent products added by sellers
             Product.findAll({
-                where: { storeId: { [Op.ne]: null } },
+                where: { 
+                    storeId: { [Op.ne]: null },
+                    created_at: { [Op.gte]: dateLimit }
+                },
                 include: [
                     {
                         model: Store,
@@ -398,6 +410,62 @@ router.get('/recent-actions', authenticateToken, requireAdmin, async (req, res) 
             })
         ]);
 
+        // Map order status changes
+        orderLogs.forEach(log => {
+            const seller = sellerMap[log.user_id];
+            const vendorName = seller ? seller.name : 'Vendeur';
+            
+            let description = `a mis à jour une commande`;
+            let actionType = 'status';
+            let color = 'gray';
+            
+            if (log.action === 'status_change') {
+                description = `a changé le statut de la commande #${log.order_id} de "${log.old_status || ''}" à "${log.new_status || ''}"`;
+                if (log.new_status === 'delivered') {
+                    actionType = 'delivered';
+                    color = 'green';
+                } else if (log.new_status === 'cancelled') {
+                    actionType = 'cancelled';
+                    color = 'red';
+                } else {
+                    actionType = 'status';
+                    color = 'blue';
+                }
+            } else {
+                description = `a effectué l'action "${log.action}" sur la commande #${log.order_id}`;
+            }
+            
+            actions.push({
+                id: `log-${log.id}`,
+                vendorName: vendorName,
+                actionType: actionType,
+                color: color,
+                description: description,
+                timestamp: log.created_at,
+                link: `/commandes/${log.order_id}`
+            });
+        });
+
+        // Map dispute messages
+        disputeMsgs.forEach(msg => {
+            const seller = sellerMap[msg.sender_id];
+            const vendorName = seller ? seller.name : 'Vendeur';
+            const shortMsg = msg.message && msg.message.length > 60 
+                ? msg.message.substring(0, 60) + '...' 
+                : (msg.message || '');
+            
+            actions.push({
+                id: `dispute-${msg.id}`,
+                vendorName: vendorName,
+                actionType: 'dispute',
+                color: 'orange',
+                description: `a envoyé un message sur le litige #${msg.dispute_id} : "${shortMsg}"`,
+                timestamp: msg.created_at,
+                link: `/commandes/litiges`
+            });
+        });
+
+        // Map new products
         newProducts.forEach(prod => {
             const vendorName = prod.store && prod.store.owner ? prod.store.owner.name : (prod.store ? prod.store.name : 'Vendeur');
             actions.push({

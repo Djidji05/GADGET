@@ -192,6 +192,65 @@
             </div>
           </div>
 
+          <!-- Validation par Scan QR (Confirm-to-Deliver) -->
+          <div v-if="authStore.isAdmin && order.status !== 'delivered' && order.status !== 'cancelled' && order.status !== 'partially_paid'" class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <h2 class="text-lg font-semibold mb-2 text-gray-900 dark:text-white flex items-center gap-2">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h.01M16 20h2a2 2 0 002-2v-2m-2-12a2 2 0 00-2-2h-2m-8 16H4a2 2 0 01-2-2v-2m2-12a2 2 0 012-2h2" />
+              </svg>
+              Validation de Livraison
+            </h2>
+            <p class="text-xs text-gray-500 mb-4">
+              Scannez le code QR du client ou entrez le jeton de livraison pour confirmer et marquer la commande comme livrée.
+            </p>
+
+            <div class="space-y-4">
+              <!-- Bouton pour activer/désactiver le scanner photo -->
+              <button
+                @click="toggleQRScanner"
+                class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors flex justify-center items-center gap-2 text-sm font-semibold"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                {{ showScanner ? 'Fermer le scanner camera' : 'Activer le scanner camera' }}
+              </button>
+
+              <!-- Élément HTML pour accueillir le flux vidéo du scanner -->
+              <div v-show="showScanner" class="border rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-900/50 p-2">
+                <div id="qr-reader" style="width: 100%"></div>
+              </div>
+
+              <!-- Option de saisie manuelle du jeton -->
+              <div class="border-t border-gray-100 dark:border-gray-700 pt-4">
+                <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2" for="manual-token">
+                  Ou saisie manuelle du jeton
+                </label>
+                <div class="flex gap-2">
+                  <input
+                    id="manual-token"
+                    v-model="manualToken"
+                    type="text"
+                    placeholder="Ex: JETON12345"
+                    class="flex-1 px-4 py-2 border border-gray-300 rounded-md dark:bg-gray-700 dark:border-gray-600 font-mono text-sm"
+                  />
+                  <button
+                    @click="submitManualToken"
+                    :disabled="!manualToken.trim() || isValidating"
+                    class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 transition-colors text-sm font-semibold flex items-center gap-1"
+                  >
+                    <svg v-if="isValidating" class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Valider
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Historique de la commande (Timeline) -->
           <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
             <h2 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Historique de la commande</h2>
@@ -258,7 +317,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { orderService, deliveryService } from '@/services/api'
@@ -277,6 +336,80 @@ const isUpdating = ref(false)
 const newStatus = ref('')
 
 const showScanner = ref(false)
+const manualToken = ref('')
+const isValidating = ref(false)
+
+let html5QrCode: Html5Qrcode | null = null;
+
+const toggleQRScanner = () => {
+  showScanner.value = !showScanner.value;
+  if (showScanner.value) {
+    setTimeout(() => {
+      startScanner();
+    }, 100);
+  } else {
+    stopScanner();
+  }
+};
+
+const startScanner = () => {
+  html5QrCode = new Html5Qrcode("qr-reader");
+  html5QrCode.start(
+    { facingMode: "environment" },
+    {
+      fps: 10,
+      qrbox: { width: 250, height: 250 }
+    },
+    async (decodedText) => {
+      console.log(`Scan réussi : ${decodedText}`);
+      stopScanner();
+      showScanner.value = false;
+      await validateDeliveryToken(decodedText);
+    },
+    () => {}
+  ).catch(err => {
+    console.error("Impossible de démarrer le scanner camera", err);
+    alert("Impossible d'accéder à la caméra. Vérifiez les permissions.");
+    showScanner.value = false;
+  });
+};
+
+const stopScanner = () => {
+  if (html5QrCode && html5QrCode.isScanning) {
+    html5QrCode.stop().then(() => {
+      html5QrCode = null;
+    }).catch(err => {
+      console.error("Erreur lors de l'arrêt du scanner", err);
+    });
+  }
+};
+
+const submitManualToken = async () => {
+  if (!manualToken.value.trim()) return;
+  await validateDeliveryToken(manualToken.value.trim());
+};
+
+const validateDeliveryToken = async (tokenValue: string) => {
+  try {
+    isValidating.value = true;
+    if (!order.value) return;
+
+    await deliveryService.verifyScan(order.value.id, tokenValue);
+    alert("Livraison validée et confirmée avec succès !");
+    manualToken.value = '';
+    await fetchOrder();
+  } catch (error: any) {
+    console.error("Erreur lors de la validation du jeton :", error);
+    const message = error.response?.data?.details || error.response?.data?.error || error.message || "Code invalide ou expiré.";
+    alert(`Échec de la validation : ${message}`);
+  } finally {
+    isValidating.value = false;
+  }
+};
+
+onBeforeUnmount(() => {
+  stopScanner();
+});
 
 const formatCurrency = (value: number) => {
   return new Intl.NumberFormat('fr-FR', {

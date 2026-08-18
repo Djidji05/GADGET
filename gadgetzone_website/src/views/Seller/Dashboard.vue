@@ -204,6 +204,12 @@
  </div>
  <span class="text-[10px] font-bold text-gray-600 text-center leading-tight">Ambassadeur</span>
  </button>
+ <button @click="shareDeliveryScanner" class="flex flex-col items-center gap-3">
+ <div class="w-14 h-14 rounded-full bg-indigo-50 flex items-center justify-center shadow-sm active:bg-indigo-100 transition-colors text-indigo-600">
+ <i class="fas fa-shipping-fast text-xl"></i>
+ </div>
+ <span class="text-[10px] font-bold text-gray-600 text-center leading-tight">Partager<br>Livreur</span>
+ </button>
  </div>
  </div>
 
@@ -1227,6 +1233,25 @@ const formatDate = (date: string) => {
 
 const navigateToAddProduct = () => {
  router.push('/seller/products/new');
+};
+
+const shareDeliveryScanner = async () => {
+  try {
+    const response = await api.post('/delivery/session');
+    if (response.data && response.data.token) {
+      const baseUrl = window.location.origin;
+      const shareUrl = `${baseUrl}/delivery/scan?session=${response.data.token}`;
+      
+      const message = `Bonjour! Voici le lien de mon scanner de livraison pour la boutique (${response.data.storeName}). Ce lien est valable pendant 12 heures pour valider mes commandes :\n\n${shareUrl}`;
+      
+      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+      uiStore.showToast("Lien de livraison WhatsApp généré !", "success");
+    }
+  } catch (error: any) {
+    console.error("Erreur de génération de session de livraison", error);
+    uiStore.showToast("Échec de la génération du lien de livraison.", "error");
+  }
 };
 </script>
 

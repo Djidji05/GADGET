@@ -1049,4 +1049,102 @@ router.post('/reset-password', passwordResetLimiter, async (req, res) => {
   }
 });
 
+// In-memory store for one-time login codes
+const oneTimeCodes = new Map();
+
+/**
+ * POST /api/auth/one-time-code
+ * Génère un code d'authentification à usage unique (valable 15 secondes)
+ */
+router.post('/one-time-code', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    
+    // Récupérer le token d'origine depuis les en-têtes Authorization
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    
+    if (!token) {
+      return res.status(400).json({ error: 'Token manquant' });
+    }
+
+    // Générer un code unique aléatoire
+    const code = crypto.randomBytes(32).toString('hex');
+    
+    // Stocker le code avec expiration (15 secondes)
+    const expiresAt = Date.now() + 15000;
+    oneTimeCodes.set(code, { userId, token, expiresAt });
+    
+    // Nettoyage automatique après expiration
+    setTimeout(() => {
+      if (oneTimeCodes.has(code)) {
+        oneTimeCodes.delete(code);
+      }
+    }, 15000);
+
+    res.json({ code });
+  } catch (error) {
+    console.error('Erreur génération one-time-code:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
+/**
+ * POST /api/auth/exchange-one-time-code
+ * Échange un code d'authentification à usage unique contre le vrai token JWT
+ */
+router.post('/exchange-one-time-code', async (req, res) => {
+  try {
+    const { code } = req.body;
+    if (!code) {
+      return res.status(400).json({ error: 'Code manquant' });
+    }
+
+    const data = oneTimeCodes.get(code);
+    if (!data) {
+      return res.status(400).json({ error: 'Code invalide ou expiré' });
+    }
+
+    // Supprimer immédiatement après lecture (usage unique !)
+    oneTimeCodes.delete(code);
+
+    if (Date.now() > data.expiresAt) {
+      return res.status(400).json({ error: 'Code expiré' });
+    }
+
+    // Trouver l'utilisateur
+    const user = await User.findByPk(data.userId);
+    if (!user) {
+      return res.status(404).json({ error: 'Utilisateur introuvable' });
+    }
+
+    // Préparer les infos de réponse (sans mot de passe)
+    const nameParts = user.name ? user.name.split(' ') : ['', ''];
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+
+    const userResponse = {
+      id: user.id,
+      name: user.name,
+      firstName,
+      lastName,
+      email: user.email,
+      phone: user.phone,
+      role: user.role,
+      is_ambassador: user.is_ambassador,
+      referral_code: user.referral_code,
+      created_at: user.created_at
+    };
+
+    res.json({
+      token: data.token,
+      user: userResponse,
+      customer: userResponse
+    });
+  } catch (error) {
+    console.error('Erreur échange one-time-code:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
 export default router;

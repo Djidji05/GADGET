@@ -162,7 +162,7 @@ const resetFilters = () => {
 
 const loadProducts = () => {
   const query = router.currentRoute.value.query
-  productsStore.loadProducts(currentPage.value, {
+  productsStore.loadProducts(currentPage.value, false, {
     search: query.search as string,
     category: Number(query.category) || undefined,
   })

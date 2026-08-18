@@ -12,7 +12,8 @@ export const useSettingsStore = defineStore('settings', () => {
         site_description: '',
         timezone: 'America/Port-au-Prince',
         currency: 'HTG',
-        language: 'fr'
+        language: 'fr',
+        maintenance_mode: 'false'
     });
 
     const loading = ref(false);
@@ -31,7 +32,8 @@ export const useSettingsStore = defineStore('settings', () => {
                 site_description: data.site_description || '',
                 timezone: data.timezone || 'America/Port-au-Prince',
                 currency: data.currency || 'HTG',
-                language: savedLanguage || data.language || 'fr'
+                language: savedLanguage || data.language || 'fr',
+                maintenance_mode: String(data.maintenance_mode || 'false')
             };
 
             // Sync with i18n

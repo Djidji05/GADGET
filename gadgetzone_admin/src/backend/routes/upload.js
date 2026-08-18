@@ -23,8 +23,11 @@ const isCloudinaryConfigured = () => {
  * Strategy: Cloudinary (if configured) > Supabase (if configured) > S3 (if configured) > Local
  */
 router.post('/', authenticateToken, (req, res, next) => {
-    // We always use local multer storage as a staging area
-    upload.array('images', 5)(req, res, (err) => {
+    // Handle both images (max 5) and video (max 1) fields
+    upload.fields([
+        { name: 'images', maxCount: 5 },
+        { name: 'video', maxCount: 1 }
+    ])(req, res, (err) => {
         if (err) {
             console.error('[Upload Route] Multer Error:', err);
             return res.status(500).json({ error: err.message });
@@ -32,50 +35,52 @@ router.post('/', authenticateToken, (req, res, next) => {
         next();
     });
 }, async (req, res) => {
-    if (!req.files || req.files.length === 0) {
+    const imageFiles = req.files && req.files['images'] ? req.files['images'] : [];
+    const videoFiles = req.files && req.files['video'] ? req.files['video'] : [];
+
+    if (imageFiles.length === 0 && videoFiles.length === 0) {
         return res.status(400).json({ error: 'Aucun fichier fourni ou format invalide.' });
     }
 
     try {
-        const hybridResults = [];
         const useCloudinary = isCloudinaryConfigured();
-
-        // Base backend URL for local fallback
         const backendUrl = process.env.BACKEND_URL || `http://localhost:${process.env.BACKEND_PORT || 3003}`;
 
-        for (const file of req.files) {
+        const uploadFileHelper = async (file, folder) => {
             let cloudinaryUrl = null;
-
-            // 1. Attempt Cloudinary (Primary)
             if (useCloudinary) {
                 try {
-                    cloudinaryUrl = await cloudinaryService.uploadFile(file.path, 'products');
-                    if (cloudinaryUrl) console.log('✅ Hybrid: Uploaded to Cloudinary:', cloudinaryUrl);
+                    cloudinaryUrl = await cloudinaryService.uploadFile(file.path, folder);
+                    if (cloudinaryUrl) console.log(`✅ Hybrid: Uploaded file to Cloudinary: ${cloudinaryUrl}`);
                 } catch (e) {
                     console.error('❌ Hybrid: Cloudinary failed:', e.message);
                 }
             }
-
-            // 2. Local Fallback URL (File is already in public/uploads/products thanks to Multer)
-            // The file name is preserved in the destination folder
             const localPath = `/uploads/products/${file.filename}`;
             const localUrl = `${backendUrl}${localPath}`;
-            console.log('✅ Hybrid: Local fallback ready:', localUrl);
+            console.log(`✅ Hybrid: Local fallback ready: ${localUrl}`);
+            return {
+                url: cloudinaryUrl || localUrl,
+                fallback: localUrl
+            };
+        };
 
-            // Important: We DO NOT delete the local file anymore, as it serves as the fallback.
-            // (Previously we were unlinking file.path here)
+        const imageResults = [];
+        for (const file of imageFiles) {
+            const uploaded = await uploadFileHelper(file, 'products');
+            imageResults.push(uploaded);
+        }
 
-            // Store result
-            hybridResults.push({
-                url: cloudinaryUrl || localUrl, // Use Cloudinary if available, otherwise local
-                fallback: localUrl              // Always local as the ultra-reliable backup
-            });
+        let videoResult = null;
+        if (videoFiles.length > 0) {
+            videoResult = await uploadFileHelper(videoFiles[0], 'products');
         }
 
         res.json({
-            message: `${req.files.length} image(s) téléversée(s) avec succès (Stratégie Hybride Cloudinary + Local)`,
-            urls: hybridResults.map(r => r.url),
-            hybrid: hybridResults
+            message: 'Fichiers téléversés avec succès (Stratégie Hybride Cloudinary + Local)',
+            urls: imageResults.map(r => r.url),
+            hybrid: imageResults,
+            video: videoResult
         });
     } catch (error) {
         console.error('[Upload Route] Hybrid Local Error:', error.message);

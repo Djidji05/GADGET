@@ -153,7 +153,7 @@ class ProductController {
                 const allowedFields = [
                     'name', 'description', 'price', 'stock', 'category_id', 
                     'image_url', 'images', 'condition', 'specifications', 'tags',
-                    'brand_id', 'status'
+                    'brand_id', 'status', 'video_url'
                 ];
                 const filteredData = {};
                 allowedFields.forEach(field => {

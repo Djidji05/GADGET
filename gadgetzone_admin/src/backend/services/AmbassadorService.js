@@ -34,12 +34,17 @@ class AmbassadorService {
         const referrals = await ambassadorRepository.findAmbassadorStats(userId);
         const user = await ambassadorRepository.findById(userId);
 
-        const totalCommissions = referrals.reduce((sum, ref) => sum + parseFloat(ref.commission_amount || 0), 0);
-        const pendingCommissions = referrals
+        const activeReferrals = referrals.filter(ref => ref.status !== 'cancelled');
+
+        const totalCommissions = activeReferrals.reduce((sum, ref) => sum + parseFloat(ref.commission_amount || 0), 0);
+        const pendingCommissions = activeReferrals
             .filter(ref => ref.status === 'pending')
             .reduce((sum, ref) => sum + parseFloat(ref.commission_amount || 0), 0);
+        const paidCommissions = activeReferrals
+            .filter(ref => ref.status === 'confirmed')
+            .reduce((sum, ref) => sum + parseFloat(ref.commission_amount || 0), 0);
 
-        const successfulReferrals = referrals.length;
+        const successfulReferrals = activeReferrals.length;
 
         return {
             referral_code: user.referral_code,
@@ -47,7 +52,7 @@ class AmbassadorService {
                 total_referrals: successfulReferrals,
                 total_commissions: totalCommissions,
                 pending_commissions: pendingCommissions,
-                paid_commissions: totalCommissions - pendingCommissions
+                paid_commissions: paidCommissions
             },
             referrals: referrals.map(ref => ({
                 id: ref.id,

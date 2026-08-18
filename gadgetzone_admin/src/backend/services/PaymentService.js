@@ -702,7 +702,7 @@ export default class PaymentService extends BaseService {
 
         const pendingOrders = await Order.findAll({
             where: {
-                status: 'payment_pending',
+                status: { [Op.in]: ['payment_pending', 'partially_paid'] },
                 created_at: { [Op.between]: [yesterday, thirtyMinutesAgo] }
             }
         });

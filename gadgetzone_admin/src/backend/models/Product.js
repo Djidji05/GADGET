@@ -50,6 +50,10 @@ const Product = sequelize.define('Product', {
     type: DataTypes.JSON,
     defaultValue: []
   },
+  video_url: {
+    type: DataTypes.TEXT,
+    allowNull: true
+  },
   features: {
     type: DataTypes.JSON,
     defaultValue: []

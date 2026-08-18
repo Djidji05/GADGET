@@ -27,8 +27,8 @@ const reconciliationWorker = isRedisAvailable ? new Worker('reconciliation-queue
         const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
         const pendingOrders = await Order.findAll({
             where: {
-                status: 'pending',
-                created_at: { $lt: fifteenMinutesAgo }
+                status: { [Op.in]: ['payment_pending', 'partially_paid'] },
+                created_at: { [Op.lt]: fifteenMinutesAgo }
             }
         });
 

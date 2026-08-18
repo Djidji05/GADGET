@@ -988,7 +988,7 @@ router.put('/security-alerts/:id/resolve', async (req, res) => {
         COALESCE(COUNT(o.id), 0) as sales_count
       FROM months m
       LEFT JOIN orders o ON date_trunc('month', o.created_at) = m.month 
-        AND o.status != 'cancelled'
+        AND o.status NOT IN ('cancelled', 'payment_pending', 'cancelled_refund_pending')
       GROUP BY m.month
       ORDER BY m.month;
     `, {
@@ -1039,7 +1039,7 @@ router.get('/sales-data', cacheMiddleware(5), async (req, res) => {
           COALESCE(SUM(o.total_amount), 0) as total_revenue
         FROM hours h
         LEFT JOIN orders o ON date_trunc('hour', o.created_at) = h.hour 
-          AND o.status != 'cancelled'
+          AND o.status NOT IN ('cancelled', 'payment_pending', 'cancelled_refund_pending')
         GROUP BY h.hour
         ORDER BY h.hour;
       `, { type: sequelize.QueryTypes.SELECT });
@@ -1064,7 +1064,7 @@ router.get('/sales-data', cacheMiddleware(5), async (req, res) => {
           COALESCE(SUM(o.total_amount), 0) as total_revenue
         FROM days d
         LEFT JOIN orders o ON date_trunc('day', o.created_at) = d.day 
-          AND o.status != 'cancelled'
+          AND o.status NOT IN ('cancelled', 'payment_pending', 'cancelled_refund_pending')
         GROUP BY d.day
         ORDER BY d.day;
       `, { type: sequelize.QueryTypes.SELECT });
@@ -1089,7 +1089,7 @@ router.get('/sales-data', cacheMiddleware(5), async (req, res) => {
           COALESCE(SUM(o.total_amount), 0) as total_revenue
         FROM months m
         LEFT JOIN orders o ON date_trunc('month', o.created_at) = m.month 
-          AND o.status != 'cancelled'
+          AND o.status NOT IN ('cancelled', 'payment_pending', 'cancelled_refund_pending')
         GROUP BY m.month
         ORDER BY m.month;
       `, {
@@ -1116,7 +1116,7 @@ router.get('/sales-data', cacheMiddleware(5), async (req, res) => {
           COALESCE(SUM(o.total_amount), 0) as total_revenue
         FROM quarters q
         LEFT JOIN orders o ON date_trunc('quarter', o.created_at) = q.quarter 
-          AND o.status != 'cancelled'
+          AND o.status NOT IN ('cancelled', 'payment_pending', 'cancelled_refund_pending')
         GROUP BY q.quarter
         ORDER BY q.quarter;
       `, {
@@ -1143,7 +1143,7 @@ router.get('/sales-data', cacheMiddleware(5), async (req, res) => {
           COALESCE(SUM(o.total_amount), 0) as total_revenue
         FROM months m
         LEFT JOIN orders o ON date_trunc('month', o.created_at) = m.month 
-          AND o.status != 'cancelled'
+          AND o.status NOT IN ('cancelled', 'payment_pending', 'cancelled_refund_pending')
         GROUP BY m.month
         ORDER BY m.month;
       `, {

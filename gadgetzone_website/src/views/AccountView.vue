@@ -364,7 +364,56 @@
        </div>
     </Modal>
     <Modal v-model:isOpen="showConnectionsModal" title="Connexions"></Modal>
-    <Modal v-model:isOpen="showPaymentModal" title="Moyens de paiement"></Modal>
+    <!-- Payment Methods Modal -->
+    <Modal v-model:isOpen="showPaymentModal" :title="$t('account.payment_methods')">
+       <div class="space-y-6">
+          <p class="text-sm text-gray-600 dark:text-gray-400">
+            Pour des raisons de sécurité maximale, <strong>HTFasil ne stocke aucune coordonnée bancaire</strong> sur ses serveurs. Les transactions sont traitées directement via nos partenaires de paiement sécurisés et chiffrés.
+          </p>
+          
+          <div class="space-y-4">
+             <!-- MonCash Option -->
+             <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-800">
+                <div class="flex items-center gap-4">
+                   <div class="w-12 h-12 bg-orange-100 dark:bg-orange-950/30 text-orange-600 rounded-xl flex items-center justify-center font-black text-sm">
+                      MC
+                   </div>
+                   <div>
+                      <div class="font-bold text-gray-900 dark:text-white">MonCash (Digicel)</div>
+                      <div class="text-xs text-gray-500 dark:text-gray-400">Paiement mobile en HTG</div>
+                   </div>
+                </div>
+                <span class="text-xs bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-400 font-bold px-2.5 py-1 rounded-full">Actif</span>
+             </div>
+
+             <!-- Stripe Option -->
+             <div class="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-800">
+                <div class="flex items-center gap-4">
+                   <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl flex items-center justify-center">
+                      <i class="fab fa-stripe text-3xl"></i>
+                   </div>
+                   <div>
+                      <div class="font-bold text-gray-900 dark:text-white">Stripe Checkout</div>
+                      <div class="text-xs text-gray-500 dark:text-gray-400">Visa, Mastercard, etc. (USD)</div>
+                   </div>
+                </div>
+                <span class="text-xs bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-400 font-bold px-2.5 py-1 rounded-full">Actif</span>
+             </div>
+          </div>
+
+          <div class="bg-blue-50 dark:bg-blue-950/20 rounded-2xl p-4 text-xs text-blue-700 dark:text-blue-400 flex gap-2">
+             <i class="fas fa-shield-alt text-lg mt-0.5"></i>
+             <p>Vos informations sont chiffrées de bout en bout. Lors de vos commandes, vous êtes redirigé de manière sécurisée vers la passerelle du partenaire de votre choix.</p>
+          </div>
+       </div>
+       <template #footer>
+          <div class="flex justify-end">
+             <button @click="showPaymentModal = false" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 text-sm font-bold transition-colors">
+                {{ $t('common.cancel') }}
+             </button>
+          </div>
+       </template>
+    </Modal>
   </div>
 </template>
 

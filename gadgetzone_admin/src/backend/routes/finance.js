@@ -73,7 +73,7 @@ router.get('/overview', async (req, res) => {
                 WHERE o.status = 'delivered' AND o.created_at >= :startDate`, 
                 { replacements: { startDate }, type: sequelize.QueryTypes.SELECT }),
             // 3. Paiements reçus (gross)
-            sequelize.query(`SELECT COALESCE(SUM(total_amount), 0) as total FROM orders WHERE status != 'cancelled' AND created_at >= :startDate`, 
+            sequelize.query(`SELECT COALESCE(SUM(total_amount), 0) as total FROM orders WHERE status NOT IN ('cancelled', 'payment_pending', 'cancelled_refund_pending') AND created_at >= :startDate`, 
                 { replacements: { startDate }, type: sequelize.QueryTypes.SELECT }),
             // 4. Refunds
             sequelize.query(`SELECT COALESCE(SUM(refund_amount), 0) as total FROM refunds WHERE status = 'completed' AND created_at >= :startDate`, 
@@ -82,21 +82,21 @@ router.get('/overview', async (req, res) => {
             sequelize.query(`SELECT COALESCE(SUM(amount), 0) as total FROM expenses WHERE date >= :startDate`, 
                 { replacements: { startDate }, type: sequelize.QueryTypes.SELECT }),
             // 6. Deposits
-            sequelize.query(`SELECT COALESCE(SUM(amount), 0) as total FROM deposits WHERE status = 'completed' AND created_at >= :startDate`, 
-                { replacements: { startDate }, type: sequelize.QueryTypes.SELECT }),
+            sequelize.query(`SELECT COALESCE(SUM(amount), 0) as total FROM deposits WHERE status = 'completed'`, 
+                { type: sequelize.QueryTypes.SELECT }),
             // 7. Payouts
-            sequelize.query(`SELECT COALESCE(SUM(amount), 0) as total FROM payouts WHERE status = 'completed' AND created_at >= :startDate`, 
-                { replacements: { startDate }, type: sequelize.QueryTypes.SELECT }),
+            sequelize.query(`SELECT COALESCE(SUM(amount), 0) as total FROM payouts WHERE status = 'completed'`, 
+                { type: sequelize.QueryTypes.SELECT }),
             // 8. Available Balance
             sequelize.query(`SELECT COALESCE(SUM(o.seller_net_amount), 0) as total
                 FROM orders o
-                WHERE o.status = 'delivered' AND o.created_at >= :startDate`, 
-                { replacements: { startDate }, type: sequelize.QueryTypes.SELECT }),
+                WHERE o.status = 'delivered'`, 
+                { type: sequelize.QueryTypes.SELECT }),
             // 9. Pending Balance
             sequelize.query(`SELECT COALESCE(SUM(o.seller_net_amount), 0) as total
                 FROM orders o
-                WHERE o.status IN ('pending', 'processing', 'shipped', 'confirmed') AND o.created_at >= :startDate`, 
-                { replacements: { startDate }, type: sequelize.QueryTypes.SELECT }),
+                WHERE o.status IN ('pending', 'processing', 'shipped', 'confirmed')`, 
+                { type: sequelize.QueryTypes.SELECT }),
             // 10. Current Month Revenue (Growth)
             sequelize.query(`SELECT COALESCE(SUM(o.total_amount - o.seller_net_amount), 0) as total
                 FROM orders o

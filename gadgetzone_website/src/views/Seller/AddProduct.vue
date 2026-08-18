@@ -396,6 +396,67 @@
                 </div>
             </div>
 
+            <!-- Video Upload Card -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 h-fit">
+                <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-sm"><i class="fas fa-video"></i></span>
+                    Vidéo du produit (Optionnel)
+                </h3>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">URL de la vidéo</label>
+                        <div class="flex gap-2">
+                            <input 
+                                v-model="form.video_url" 
+                                type="text" 
+                                placeholder="Ex: https://example.com/video.mp4"
+                                class="flex-1 bg-gray-50 border-none rounded-xl py-3 px-4 text-sm font-medium text-gray-900 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder-gray-300" 
+                            />
+                            <button 
+                                v-if="form.video_url" 
+                                type="button" 
+                                @click="form.video_url = ''" 
+                                class="px-4 py-2 bg-red-50 text-red-500 hover:bg-red-100 rounded-xl text-sm font-bold transition-all"
+                            >
+                                Supprimer
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Upload local video -->
+                    <div class="border-t border-gray-100 pt-4">
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Ou téléverser un fichier vidéo (Max 50MB)</label>
+                        <div class="flex items-center gap-4">
+                            <button 
+                                type="button" 
+                                @click="sellerVideoInput?.click()" 
+                                :disabled="uploadingVideo"
+                                class="px-5 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold text-xs flex items-center gap-2 active:scale-95 transition-all disabled:opacity-50"
+                            >
+                                <i v-if="uploadingVideo" class="fas fa-circle-notch animate-spin"></i>
+                                <i v-else class="fas fa-file-video"></i>
+                                {{ uploadingVideo ? 'Téléversement en cours...' : 'Sélectionner une vidéo' }}
+                            </button>
+                            <input type="file" ref="sellerVideoInput" class="hidden" @change="handleVideoUpload" accept="video/*" />
+                        </div>
+                    </div>
+
+                    <!-- Preview -->
+                    <div v-if="form.video_url" class="mt-4 rounded-2xl overflow-hidden border border-gray-100">
+                        <video 
+                            v-if="form.video_url.endsWith('.mp4') || form.video_url.includes('cloudinary') || form.video_url.includes('/uploads/')" 
+                            :src="form.video_url" 
+                            controls 
+                            class="w-full aspect-video bg-black"
+                        ></video>
+                        <p v-else class="p-4 bg-gray-50 text-xs text-gray-400">
+                            Aperçu indisponible pour les liens externes.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             <div v-if="error" class="bg-red-50 text-red-650 p-4 rounded-xl text-sm font-medium text-center border border-red-100">
                 <i class="fas fa-exclamation-circle mr-2"></i> {{ error }}
             </div>
@@ -450,6 +511,7 @@ const form = reactive({
   brand_id: null,
   image_url: '',
   images: [] as string[],
+  video_url: '',
   specifications: {
     Couleur: '',
     Taille: '',
@@ -459,6 +521,47 @@ const form = reactive({
     Garantie: ''
   } as Record<string, string>
 });
+
+const uploadingVideo = ref(false);
+const sellerVideoInput = ref<HTMLInputElement | null>(null);
+
+const handleVideoUpload = async (event: Event) => {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files?.[0];
+    if (!file) return;
+    if (file.size > 50 * 1024 * 1024) {
+        uiStore.showToast("Le fichier vidéo est trop volumineux (max 50 Mo).", "warning");
+        input.value = '';
+        return;
+    }
+
+    try {
+        uploadingVideo.value = true;
+        const formData = new FormData();
+        formData.append('video', file);
+
+        const response = await api.post('/upload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        });
+
+        if (response.data && response.data.video) {
+            form.video_url = response.data.video.url;
+            uiStore.showToast("Vidéo téléversée avec succès !", "success");
+        } else {
+            throw new Error("Erreur de format de réponse.");
+        }
+    } catch (e: any) {
+        console.error("Video upload failed", e);
+        uiStore.showToast("Échec du téléversement de la vidéo.", "error");
+    } finally {
+        uploadingVideo.value = false;
+        input.value = '';
+    }
+};
 
 const brands = ref<any[]>([]);
 const showBrandDropdown = ref(false);
@@ -532,6 +635,7 @@ const fetchProduct = async () => {
         form.brand_id = product.brand_id;
         form.image_url = product.image_url;
         form.images = product.images || [];
+        form.video_url = product.video_url || '';
         
         // Merge fetched specifications with initialized standard keys
         const fetchedSpecs = product.specifications || {};

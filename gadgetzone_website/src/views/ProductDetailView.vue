@@ -35,16 +35,28 @@
           <!-- Mobile: Swipe Gallery -->
           <div class="md:hidden relative mb-4">
             <div 
+              ref="mobileScrollContainer"
               class="flex overflow-x-auto snap-x snap-mandatory no-scrollbar rounded-2xl bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 aspect-square"
               @scroll="handleMobileScroll"
             >
               <div 
                 v-for="(img, index) in productImages" 
                 :key="index"
-                class="w-full flex-shrink-0 snap-center flex items-center justify-center p-4 bg-white dark:bg-gray-900"
+                class="w-full flex-shrink-0 snap-center flex items-center justify-center p-4 bg-white dark:bg-gray-900 cursor-pointer"
                 @click="openLightbox(index)"
               >
+                <div v-if="isVideoUrl(img)" class="w-full h-full relative flex items-center justify-center bg-gray-50 dark:bg-gray-950 rounded-xl">
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <span class="w-16 h-16 rounded-full bg-primary-600 text-white flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all">
+                      <i class="fas fa-play text-xl ml-1"></i>
+                    </span>
+                  </div>
+                  <span class="absolute top-4 left-4 bg-black/60 text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full flex items-center gap-1">
+                    <i class="fas fa-video"></i> Vidéo
+                  </span>
+                </div>
                 <img 
+                  v-else
                   :src="img" 
                   :alt="`${product.name} view ${index + 1}`" 
                   class="max-w-full max-h-full object-contain" 
@@ -52,22 +64,46 @@
                 />
               </div>
             </div>
-            
-            <!-- Indicators -->
-            <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 bg-black/20 backdrop-blur-sm px-3 py-1.5 rounded-full pointer-events-none">
-               <div 
-                 v-for="(_, index) in productImages" 
-                 :key="index"
-                 class="w-2 h-2 rounded-full transition-all duration-300"
-                 :class="currentImageIndex === index ? 'bg-white w-4' : 'bg-white/50'"
-               ></div>
+
+          </div>
+
+          <!-- Mobile Thumbnails Gallery (Horizontally Scrollable) -->
+          <div v-if="productImages.length > 1" class="flex md:hidden overflow-x-auto gap-2 py-2 px-1 scrollbar-hide no-scrollbar select-none mb-4">
+            <div 
+              v-for="(img, index) in productImages" 
+              :key="index"
+              class="w-[60px] h-[60px] rounded-xl overflow-hidden cursor-pointer border-2 flex-shrink-0 transition-all duration-150 flex items-center justify-center bg-white dark:bg-gray-900 p-1 relative"
+              :class="currentImageIndex === index ? 'border-primary-600 ring-2 ring-primary-100 dark:ring-blue-950/40' : 'border-gray-200 dark:border-gray-800 hover:border-gray-350'"
+              @click="setMobileImage(index)"
+            >
+              <div v-if="isVideoUrl(img)" class="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg">
+                <i class="fas fa-play text-primary-600 text-sm"></i>
+              </div>
+              <img 
+                v-else
+                :src="img" 
+                :alt="`${product.name} thumbnail ${index + 1}`" 
+                class="max-w-full max-h-full object-contain" 
+                @error="handleImageError(index)"
+              />
             </div>
           </div>
 
           <!-- Desktop: Main Image + Thumbnails Below -->
           <div class="hidden md:block">
             <div class="aspect-square bg-white dark:bg-gray-900 rounded-2xl overflow-hidden relative group mb-4 border border-gray-150 dark:border-gray-800 flex items-center justify-center cursor-zoom-in p-6" @click="openLightbox(currentImageIndex)">
+              <div v-if="isVideoUrl(selectedImage)" class="w-full h-full relative flex items-center justify-center bg-gray-50 dark:bg-gray-950 rounded-xl">
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <span class="w-20 h-20 rounded-full bg-primary-600 text-white flex items-center justify-center shadow-xl hover:scale-105 active:scale-95 transition-all">
+                    <i class="fas fa-play text-2xl ml-1"></i>
+                  </span>
+                </div>
+                <span class="absolute top-4 left-4 bg-black/60 text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full flex items-center gap-1">
+                  <i class="fas fa-video"></i> Vidéo
+                </span>
+              </div>
               <img
+                v-else
                 :src="selectedImage"
                 :alt="product.name"
                 class="max-w-full max-h-full object-contain"
@@ -97,11 +133,15 @@
               <div 
                 v-for="(img, index) in productImages" 
                 :key="index"
-                class="w-[70px] h-[70px] rounded-xl overflow-hidden cursor-pointer border-2 transition-all duration-150 flex items-center justify-center bg-white dark:bg-gray-900 p-1"
+                class="w-[70px] h-[70px] rounded-xl overflow-hidden cursor-pointer border-2 transition-all duration-150 flex items-center justify-center bg-white dark:bg-gray-900 p-1 relative"
                 :class="currentImageIndex === index ? 'border-primary-600 ring-2 ring-primary-100 dark:ring-blue-950/40' : 'border-gray-200 dark:border-gray-800 hover:border-gray-350'"
                 @click="currentImageIndex = index"
               >
+                <div v-if="isVideoUrl(img)" class="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-lg">
+                  <i class="fas fa-play text-primary-600 text-lg"></i>
+                </div>
                 <img 
+                  v-else
                   :src="img" 
                   :alt="`${product.name} thumbnail ${index + 1}`" 
                   class="max-w-full max-h-full object-contain" 
@@ -666,7 +706,24 @@
       </button>
 
       <div class="w-full h-full flex items-center justify-center p-4">
+          <div v-if="isVideoUrl(selectedImage)" class="w-full max-w-4xl max-h-[75vh] flex items-center justify-center relative select-text" @click.stop>
+            <video 
+              v-if="selectedImage && (selectedImage.endsWith('.mp4') || selectedImage.includes('cloudinary') || selectedImage.includes('/uploads/'))" 
+              :src="selectedImage" 
+              controls 
+              autoplay
+              class="max-w-full max-h-full object-contain rounded-xl shadow-2xl"
+            ></video>
+            <iframe 
+              v-else-if="selectedImage"
+              :src="formatYoutubeUrl(selectedImage)" 
+              class="w-full aspect-video rounded-xl border-0 max-h-[70vh] shadow-2xl"
+              allowfullscreen
+              allow="autoplay; encrypted-media"
+            ></iframe>
+          </div>
           <img 
+            v-else
             :src="selectedImage" 
             :alt="product?.name" 
             class="max-w-full max-h-full object-contain transition-transform duration-200 cursor-zoom-in pointer-events-none"
@@ -675,15 +732,18 @@
       </div>
 
        <!-- Mobile Thumbnails in Lightbox -->
-       <div class="absolute bottom-8 left-0 right-0 flex justify-center gap-2 px-4 overflow-x-auto">
+       <div class="absolute bottom-8 left-0 right-0 flex justify-center gap-2 px-4 overflow-x-auto no-scrollbar">
           <button
             v-for="(img, index) in productImages" 
             :key="index"
             @click.stop="currentImageIndex = index"
-            class="w-12 h-12 rounded-lg overflow-hidden border-2 transition-all flex-shrink-0"
+            class="w-12 h-12 rounded-lg overflow-hidden border-2 transition-all flex-shrink-0 relative"
             :class="currentImageIndex === index ? 'border-white opacity-100' : 'border-transparent opacity-50 hover:opacity-100'"
           >
-            <img :src="img" class="w-full h-full object-cover" @error="handleImageError(index)" />
+            <div v-if="isVideoUrl(img)" class="w-full h-full flex items-center justify-center bg-gray-900">
+              <i class="fas fa-play text-white text-[10px]"></i>
+            </div>
+            <img v-else :src="img" class="w-full h-full object-cover" @error="handleImageError(index)" />
           </button>
        </div>
     </div>
@@ -901,6 +961,14 @@ const productImages = computed<string[]>(() => {
       images.push(mainImage)
     }
   }
+
+  // Add video if exists
+  if (product.value && (product.value as any).video_url) {
+    const normalizedVideo = normalizeImageUrl((product.value as any).video_url)
+    if (!images.includes(normalizedVideo)) {
+      images.push(normalizedVideo)
+    }
+  }
   
   // Ensure we have at least some images for demo
   if (images.length === 0) {
@@ -966,6 +1034,48 @@ const prevImage = () => {
   currentImageIndex.value = (currentImageIndex.value - 1 + productImages.value.length) % productImages.value.length
 }
 
+const mobileScrollContainer = ref<HTMLElement | null>(null)
+
+const setMobileImage = (index: number) => {
+  currentImageIndex.value = index
+  if (mobileScrollContainer.value) {
+    const width = mobileScrollContainer.value.offsetWidth
+    mobileScrollContainer.value.scrollTo({
+      left: index * width,
+      behavior: 'smooth'
+    })
+  }
+}
+
+const isVideoUrl = (url: string | null | undefined) => {
+  if (!url) return false
+  const lower = url.toLowerCase()
+  return (
+    lower.endsWith('.mp4') || 
+    lower.endsWith('.webm') || 
+    lower.endsWith('.ogg') ||
+    lower.includes('youtube.com') || 
+    lower.includes('youtu.be') || 
+    (lower.includes('cloudinary') && lower.includes('/video/')) ||
+    lower.includes('/uploads/videos/') ||
+    lower.includes('/uploads/video/')
+  )
+}
+
+const formatYoutubeUrl = (url: string | null | undefined) => {
+  if (!url) return ''
+  try {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|\?v=)([^#&?]*).*/
+    const match = url.match(regExp)
+    if (match && match[2] && match[2].length === 11) {
+      return `https://www.youtube.com/embed/${match[2]}`
+    }
+  } catch (e) {
+    console.warn('Invalid YouTube URL', e)
+  }
+  return url
+}
+
 const handleMobileScroll = (e: Event) => {
   const target = e.target as HTMLElement
   const scrollPosition = target.scrollLeft
@@ -981,12 +1091,16 @@ const touchStartX = ref(0)
 const touchEndX = ref(0)
 
 const handleTouchStart = (e: TouchEvent) => {
-  touchStartX.value = e.changedTouches[0].screenX
+  if (e.changedTouches && e.changedTouches[0]) {
+    touchStartX.value = e.changedTouches[0].screenX
+  }
 }
 
 const handleTouchEnd = (e: TouchEvent) => {
-  touchEndX.value = e.changedTouches[0].screenX
-  handleSwipe()
+  if (e.changedTouches && e.changedTouches[0]) {
+    touchEndX.value = e.changedTouches[0].screenX
+    handleSwipe()
+  }
 }
 
 const handleSwipe = () => {

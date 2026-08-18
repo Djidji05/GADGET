@@ -126,6 +126,18 @@ const router = createRouter({
         requiresAuth: true,
       },
     },
+    {
+      path: '/delivery/scan',
+      name: 'delivery-scan',
+      component: () => import('../views/Seller/DeliveryScanView.vue'),
+      meta: {
+        title: 'Scanner de Livraison - HTFasil',
+        requiresAuth: false,
+        hideNavSearch: true,
+        hideBottomNav: true,
+        hideMobileNav: true,
+      },
+    },
 
     {
       path: '/account/loyalty',
