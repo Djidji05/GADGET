@@ -109,12 +109,14 @@ const initializeDatabase = async () => {
 
     // Nettoyer les URLs d'images contenant localhost dans la base de données
     try {
-      await sequelize.query(`
-        UPDATE products 
-        SET image_url = REGEXP_REPLACE(image_url, '^https?://localhost:[0-9]+', '') 
-        WHERE image_url LIKE '%localhost%'
-      `);
-      console.log('🧹 Nettoyage des URLs localhost effectué dans la base de données');
+      if (Product && Product.sequelize) {
+        await Product.sequelize.query(`
+          UPDATE products 
+          SET image_url = REGEXP_REPLACE(image_url, '^https?://localhost:[0-9]+', '') 
+          WHERE image_url LIKE '%localhost%'
+        `);
+        console.log('🧹 Nettoyage des URLs localhost effectué dans la base de données');
+      }
     } catch (e) {
       console.warn('⚠️ Note nettoyage URLs localhost:', e.message);
     }
