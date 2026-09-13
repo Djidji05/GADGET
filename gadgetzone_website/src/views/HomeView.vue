@@ -337,12 +337,20 @@
       <div v-if="productsStore.isLoading" key="new-products-skeleton" class="product-grid">
         <div v-for="n in 8" :key="'np-skeleton-' + n" class="bg-gray-100 dark:bg-gray-850 rounded-2xl aspect-[4/5] animate-pulse"></div>
       </div>
-      <div v-else key="new-products-content" class="product-grid">
-        <ProductCard
-          v-for="product in newProducts"
-          :key="product.id"
-          :product="product"
-        />
+      <div v-else key="new-products-content" class="space-y-6">
+        <div class="product-grid">
+          <ProductCard
+            v-for="product in newProducts"
+            :key="product.id"
+            :product="product"
+          />
+        </div>
+        <div class="text-center pt-2">
+          <router-link to="/products" class="btn-primary text-sm md:text-base px-6 py-2.5 inline-flex items-center gap-2 rounded-full shadow-md hover:scale-105 transition-all">
+            {{ $t('home.view_all') }}
+            <i class="fas fa-arrow-right text-xs"></i>
+          </router-link>
+        </div>
       </div>
     </section>
 
@@ -724,10 +732,10 @@ const banners = computed(() => {
   return list.slice(0, 6) // Limit loop size
 })
 
-const featuredProducts = computed(() => productsStore.featuredProducts)
-const featuredProductsRow1 = computed(() => productsStore.featuredProducts.slice(0, Math.ceil(productsStore.featuredProducts.length / 2)))
-const featuredProductsRow2 = computed(() => productsStore.featuredProducts.slice(Math.ceil(productsStore.featuredProducts.length / 2)))
-const newProducts = computed(() => productsStore.newProducts)
+const featuredProducts = computed(() => productsStore.featuredProducts.slice(0, 16))
+const featuredProductsRow1 = computed(() => featuredProducts.value.slice(0, 8))
+const featuredProductsRow2 = computed(() => featuredProducts.value.slice(8, 16))
+const newProducts = computed(() => productsStore.newProducts.slice(0, 16))
 const brands = computed(() => productsStore.brands)
 const activeVendors = computed(() => productsStore.activeVendors)
 const promotions = computed(() => promotionsStore.activePromotions)
