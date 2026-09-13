@@ -196,22 +196,24 @@ const isOwnProduct = computed(() => {
 
 
 
-const currentImageUrl = ref(props.product.image_url)
+import { normalizeImageUrl } from '@/utils/urlHelper'
+
+const currentImageUrl = ref(normalizeImageUrl(props.product.image_url))
 
 watchEffect(() => {
-  currentImageUrl.value = props.product.image_url
+  currentImageUrl.value = normalizeImageUrl(props.product.image_url)
 })
 
 const handleImageError = () => {
-  // If we have multiple images and the first one (Cloudinary) fails,
-  // we check if there's a fallback URL in the images array
   if (props.product.images && props.product.images[0] && typeof props.product.images[0] === 'object') {
     const hybrid = props.product.images[0]
-    if (currentImageUrl.value !== hybrid.fallback) {
-      console.warn(`Fallback triggered for ${props.product.name}: ${hybrid.fallback}`)
-      currentImageUrl.value = hybrid.fallback
+    const normalizedFallback = normalizeImageUrl(hybrid.fallback)
+    if (currentImageUrl.value !== normalizedFallback) {
+      currentImageUrl.value = normalizedFallback
+      return
     }
   }
+  currentImageUrl.value = '/placeholder-product.jpg'
 }
 
 const isWishlisted = computed(() => wishlistStore.isInWishlist(props.product.id))

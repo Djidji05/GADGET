@@ -14,7 +14,7 @@
             class="relative flex-shrink-0"
           >
             <img 
-              :src="product.image_url || '/placeholder.png'" 
+              :src="normalizeImageUrl(product.image_url)" 
               :alt="product.name"
               class="w-12 h-12 rounded-xl object-cover border-2 border-gray-700"
             >
@@ -58,6 +58,7 @@
 
 <script setup lang="ts">
 import { useComparisonStore } from '@/stores/comparison'
+import { normalizeImageUrl } from '@/utils/urlHelper'
 const comparisonStore = useComparisonStore()
 </script>
 

@@ -179,7 +179,7 @@
                 class="bg-white dark:bg-gray-900 p-3 rounded-2xl border border-gray-100 dark:border-gray-800 flex gap-3 shadow-sm active:scale-[0.98] transition-transform cursor-pointer"
               >
                 <img 
-                  :src="product.image_url || product.image || '/placeholder.png'" 
+                  :src="normalizeImageUrl(product.image_url || product.image)" 
                   class="w-14 h-14 object-cover rounded-xl bg-gray-50 dark:bg-gray-800 flex-shrink-0 border border-gray-100 dark:border-gray-800" 
                   alt="Product Image"
                 />
@@ -218,6 +218,7 @@ import { useUiStore } from '@/stores/ui'
 import { useProductsStore } from '@/stores/products'
 import { productsService } from '@/services/products'
 import type { Category, Product } from '@/services/products'
+import { normalizeImageUrl } from '@/utils/urlHelper'
 
 const router = useRouter()
 const uiStore = useUiStore()

@@ -30,7 +30,7 @@
         <!-- Image + Badge -->
         <div class="relative aspect-square overflow-hidden bg-gray-50">
           <img 
-            :src="sale.product?.image_url || '/placeholder.png'" 
+            :src="normalizeImageUrl(sale.product?.image_url)" 
             :alt="sale.product?.name"
             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
           >
@@ -69,6 +69,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '@/services/api'
+import { normalizeImageUrl } from '@/utils/urlHelper'
 
 const router = useRouter()
 const flashSales = ref<any[]>([])
