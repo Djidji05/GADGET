@@ -5,6 +5,7 @@ import { productsService, type Product, type Store } from '@/services/products';
 import { useUiStore } from '@/stores/ui';
 import { useI18n } from 'vue-i18n';
 import ProductCard from '@/components/products/ProductCard.vue';
+import { normalizeImageUrl } from '@/utils/urlHelper';
 
 const route = useRoute();
 const router = useRouter();
@@ -169,7 +170,7 @@ watch(() => route.params.id, () => {
                     <div class="flex items-center gap-4">
                         <!-- Logo -->
                         <div class="w-16 h-16 bg-white dark:bg-gray-800 rounded-2xl shadow-md border border-gray-100 dark:border-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0">
-                            <img alt="" v-if="store?.logoUrl" :src="store.logoUrl" class="w-full h-full object-cover" />
+                            <img alt="" v-if="store?.logoUrl" :src="normalizeImageUrl(store.logoUrl)" class="w-full h-full object-cover" />
                             <i v-else class="fas fa-store text-2xl text-gray-300 dark:text-gray-600"></i>
                         </div>
                         
@@ -235,7 +236,7 @@ watch(() => route.params.id, () => {
                     <div class="flex items-center gap-6 flex-1 min-w-0">
                         <!-- Logo -->
                         <div class="w-24 h-24 bg-white dark:bg-gray-800 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-700 flex items-center justify-center overflow-hidden flex-shrink-0 hover:scale-105 transition-transform duration-300">
-                            <img alt="" v-if="store?.logoUrl" :src="store.logoUrl" class="w-full h-full object-cover" />
+                            <img alt="" v-if="store?.logoUrl" :src="normalizeImageUrl(store.logoUrl)" class="w-full h-full object-cover" />
                             <i v-else class="fas fa-store text-4xl text-gray-200 dark:text-gray-600"></i>
                         </div>
                         

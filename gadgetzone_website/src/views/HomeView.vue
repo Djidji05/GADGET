@@ -18,7 +18,7 @@
           >
             <!-- Image Background -->
             <img
-              :src="banner.image"
+              :src="normalizeImageUrl(banner.image)"
               :alt="banner.title"
               width="1920"
               height="600"
@@ -310,7 +310,7 @@
           <div class="w-full h-full flex items-center justify-center group-hover:scale-110 opacity-100 transition-all duration-300">
             <img
               v-if="vendor.logoUrl"
-              :src="vendor.logoUrl"
+              :src="normalizeImageUrl(vendor.logoUrl)"
               :alt="vendor.name"
               class="max-w-full max-h-full object-contain"
             />
@@ -378,6 +378,7 @@ import AdBanner from '@/components/home/AdBanner.vue'
 import FlashSalesSection from '@/components/home/FlashSalesSection.vue'
 import { usePersonalizationStore } from '@/stores/personalization'
 import { useGeolocation } from '@/composables/useGeolocation'
+import { normalizeImageUrl } from '@/utils/urlHelper'
 
 const { t } = useI18n()
 const router = useRouter()
