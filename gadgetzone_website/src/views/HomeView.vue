@@ -5,8 +5,8 @@
     <!-- Mobile Banner Carousel (Infinite Loop) -->
     <!-- Unified Banner Section (Mobile & Desktop) -->
     <section class="relative">
-      <div v-if="promotionsStore.isLoading" key="banner-skeleton" class="relative h-[300px] md:h-[500px] lg:h-[580px] xl:h-[620px] bg-gray-200 mx-4 rounded-2xl md:mx-0 md:rounded-none animate-pulse"></div>
-      <div v-else key="banner-content" class="relative h-[300px] md:h-[500px] lg:h-[580px] xl:h-[620px] bg-gray-900 mx-4 rounded-2xl overflow-hidden shadow-md md:mx-0 md:mt-0 md:rounded-none md:shadow-none md:w-full">
+      <div v-if="promotionsStore.isLoading" key="banner-skeleton" class="relative w-full aspect-[16/9] md:aspect-[21/9] min-h-[220px] md:min-h-[420px] lg:min-h-[580px] xl:min-h-[620px] bg-gray-200 dark:bg-gray-800 mx-4 rounded-2xl md:mx-0 md:rounded-none animate-pulse"></div>
+      <div v-else key="banner-content" class="relative w-full aspect-[16/9] md:aspect-[21/9] min-h-[220px] md:min-h-[420px] lg:min-h-[580px] xl:min-h-[620px] bg-gray-900 mx-4 rounded-2xl overflow-hidden shadow-md md:mx-0 md:mt-0 md:rounded-none md:shadow-none md:w-full">
         <!-- Carousel Container -->
         <div class="relative w-full h-full overflow-hidden">
           <!-- Carousel Slides -->
