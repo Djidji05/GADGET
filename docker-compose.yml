@@ -74,14 +74,13 @@ services:
           - backend
       networks:
           - gadget_network
-      ports:
-          - "80:80"
 
   # Nginx Proxy Manager pour gérer les domaines et SSL gratuitement
   npm:
     image: 'jc21/nginx-proxy-manager:latest'
     restart: always
     ports:
+      - '80:80'
       - '81:81'
       - '443:443'
     volumes:
