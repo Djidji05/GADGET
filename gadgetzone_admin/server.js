@@ -195,19 +195,20 @@ app.get('*', (req, res) => {
 const startServer = async () => {
   try {
     // Initialiser la base de données
-    const dbInitialized = await initDatabase();
-    if (!dbInitialized) {
-      throw new Error('Database initialization failed');
-    }
+    const dbInitialized = await initDatabase().catch(err => {
+      console.error('⚠️ DB Connection Delay:', err.message);
+      return false;
+    });
+
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Backend server running on port ${PORT}`);
       console.log(`📊 API available at: http://localhost:${PORT}/api`);
       console.log(`🏥 Health check: http://localhost:${PORT}/health`);
       
-      // Lancer les CRON
-      startAbandonedCartCron();
-      startMonCashExpirationCron();
-      startPaymentTimeoutCron();
+      // Lancer les CRON de manière sécurisée
+      try { startAbandonedCartCron(); } catch (e) { console.warn('Cron cart error:', e.message); }
+      try { startMonCashExpirationCron(); } catch (e) { console.warn('Cron moncash error:', e.message); }
+      try { startPaymentTimeoutCron(); } catch (e) { console.warn('Cron payment error:', e.message); }
 
       // Lancer la correction des descriptions en arrière-plan (non bloquant)
       setTimeout(() => {
@@ -216,7 +217,6 @@ const startServer = async () => {
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error);
-    process.exit(1);
   }
 };
 
