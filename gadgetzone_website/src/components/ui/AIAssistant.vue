@@ -6,6 +6,7 @@
       @touchstart.passive="startDrag"
       @click="toggleChat"
       :style="{ left: position.x + 'px', top: position.y + 'px' }"
+      aria-label="Ouvrir l'assistant virtuel Panyem"
       class="fixed w-14 h-14 bg-gradient-to-tr from-blue-600 to-indigo-500 text-white rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex items-center justify-center hover:scale-110 hover:shadow-[0_8px_30px_rgb(59,130,246,0.3)] active:scale-95 transition-all z-[9999] group cursor-move touch-none"
       ref="dragButton"
     >
@@ -45,7 +46,7 @@
               </p>
             </div>
           </div>
-          <button @click="aiStore.toggleChat" class="text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors w-8 h-8 flex items-center justify-center relative z-10" title="Fermer">
+          <button @click="aiStore.toggleChat" aria-label="Fermer l'assistant virtuel Panyem" class="text-white/80 hover:text-white hover:bg-white/10 rounded-full transition-colors w-8 h-8 flex items-center justify-center relative z-10" title="Fermer">
             <i class="fas fa-times"></i>
           </button>
         </div>

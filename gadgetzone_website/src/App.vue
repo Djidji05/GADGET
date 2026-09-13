@@ -252,7 +252,7 @@ const setupInactivityTracking = () => {
     <AnnouncementBar v-if="route.name === 'home' && !isAuthPage && !isSellerPage && !isCheckoutPage && !isPaymentSuccessPage && !isMaintenancePage" key="announcement-bar" />
     <AppNavbar v-if="!isAuthPage && !isSellerPage && !isCheckoutPage && !isPaymentSuccessPage && !isMaintenancePage" key="app-navbar" :transparent="!isScrolled" />
 
-    <main class="flex-1">
+    <main class="min-h-[85vh] flex-1">
       <RouterView />
     </main>
 

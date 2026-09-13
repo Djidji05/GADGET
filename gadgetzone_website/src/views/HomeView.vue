@@ -356,6 +356,7 @@
   <!-- Bouton retour en haut flottant -->
   <button
     @click="scrollToTop"
+    aria-label="Retour en haut de la page"
     class="hidden md:block fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 z-50"
     :class="{ 'opacity-0 invisible': !showScrollTop, 'opacity-100 visible': showScrollTop }"
   >
