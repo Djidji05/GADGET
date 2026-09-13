@@ -66,7 +66,8 @@ const post = ref<any>(null)
 const getImageUrl = (url: string) => {
   if (!url) return ''
   if (url.startsWith('http')) return url
-  return `http://localhost:3003${url}`
+  const apiBase = (import.meta.env.VITE_API_URL || '').replace('/api', '').replace(/\/+$/, '')
+  return `${apiBase}${url}`
 }
 
 const formatDate = (d: string) => d ? new Date(d).toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' }) : ''

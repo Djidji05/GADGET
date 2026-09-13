@@ -37,7 +37,7 @@ DB_USER=postgres
 DB_PASSWORD=votre_mot_de_passe_robuste
 DB_NAME=htfasil
 JWT_SECRET=une_cle_secrete_tres_longue_et_aleatoire
-```
+```  
 
 ## 5. Lancement de l'Application
 ```bash
@@ -50,11 +50,11 @@ docker compose up -d --build
    - Email: `admin@example.com`
    - Password: `changeme`
 3. Allez dans **Proxy Hosts** > **Add Proxy Host** :
-   - **Domain Names**: `htfasil.com`
+   - **Domain Names**: `panyem.com`
    - **Forward Hostname**: `frontend`
    - **Forward Port**: `80`
    - Dans l'onglet **SSL**, choisissez "Request a new SSL Certificate" (Let's Encrypt).
-4. Répétez pour `manage.htfasil.com` :
+4. Répétez pour `manage.panyem.com` :
    - **Forward Hostname**: `backend`
    - **Forward Port**: `3001` (ou redirigez vers le frontend si le build est unifié).
 

@@ -450,7 +450,7 @@
                 <div class="text-sm font-semibold mb-1 text-gray-900 dark:text-white">{{ $t('nav.your_account') }}</div>
                 <a 
                   v-if="['admin', 'gestionnaire'].includes(authStore.customer?.role || '')"
-                  href="http://localhost:5174" 
+                  :href="adminPortalUrl" 
                   target="_blank"
                   class="block w-full text-left py-2 px-3 hover:bg-gray-100 dark:hover:bg-gray-800 rounded text-gray-700 dark:text-gray-300 font-semibold text-blue-600"
                 >
@@ -980,6 +980,14 @@ const isProductListingPage = computed(() => {
 
 const isSeller = computed(() => {
   return authStore.customer?.role === 'seller' || authStore.customer?.role === 'admin'
+})
+
+const adminPortalUrl = computed(() => {
+  if (import.meta.env.VITE_ADMIN_URL) return import.meta.env.VITE_ADMIN_URL
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+    return `${window.location.protocol}//manage.${window.location.hostname}`
+  }
+  return 'http://localhost:5174'
 })
 
 const isProductPage = computed(() => {

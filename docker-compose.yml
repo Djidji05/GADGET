@@ -34,7 +34,7 @@ services:
       networks:
           - gadget_network
 
-  # Backend API + Admin UI (manage.htfasil.com)
+  # Backend API + Admin UI (manage.panyem.com)
   backend:
       build:
           context: ./gadgetzone_admin
@@ -64,7 +64,7 @@ services:
       ports:
           - "3001:3001"
 
-  # Frontend Client Website (htfasil.com)
+  # Frontend Client Website (panyem.com)
   frontend:
       build:
           context: ./gadgetzone_website

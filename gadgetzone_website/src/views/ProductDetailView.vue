@@ -889,7 +889,7 @@ const headData = computed(() => {
   }
 
   const p = product.value
-  const ogImage = p.image || p.image_url || 'https://htfasil.com/logo.png'
+  const ogImage = p.image || p.image_url || 'https://panyem.com/logo.png'
   const shortDesc = p.description ? p.description.substring(0, 160) : 'Achetez sur GadgetZone'
   
   return {

@@ -1,4 +1,15 @@
 {
+  "name": "htfasil-marketplace",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix gadgetzone_website run dev",
+    "dev:website": "npm --prefix gadgetzone_website run dev",
+    "dev:admin": "npm --prefix gadgetzone_admin run dev",
+    "dev:backend": "npm --prefix gadgetzone_admin run dev:backend",
+    "build": "npm --prefix gadgetzone_website run build-only && npm --prefix gadgetzone_admin run build-only",
+    "build:website": "npm --prefix gadgetzone_website run build-only",
+    "build:admin": "npm --prefix gadgetzone_admin run build-only"
+  },
   "dependencies": {
     "sharp": "^0.34.5"
   }

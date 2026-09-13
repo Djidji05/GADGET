@@ -7,11 +7,11 @@ const router = express.Router();
 // Default settings per category
 const DEFAULTS = {
     general: {
-        site_name: 'htfasil Admin',
+        site_name: 'Panyem Admin',
         site_logo: '',
-        contact_email: 'info@htfasil.com',
+        contact_email: 'info@panyem.com',
         site_description: 'La meilleure marketplace de gadgets en Haïti',
-        site_url: 'https://htfasil.com',
+        site_url: 'https://panyem.com',
         currency: 'HTG',
         timezone: 'America/Port-au-Prince',
         language: 'fr',
@@ -34,8 +34,8 @@ const DEFAULTS = {
         smtp_user: '',
         smtp_password: '',
         smtp_secure: 'false',
-        from_name: 'htfasil',
-        from_email: 'noreply@htfasil.com',
+        from_name: 'Panyem',
+        from_email: 'noreply@panyem.com',
         welcome_email_enabled: 'true',
         order_confirmation_enabled: 'true',
         shipping_notification_enabled: 'true'

@@ -85,15 +85,15 @@ const activeBarLeft = computed(() => {
   right: 0;
   display: flex;
   justify-content: space-around;
-  align-items: flex-end;
+  align-items: center;
   background: white;
   border: 1px solid #f3f4f6;
   border-bottom: none;
-  padding: 0;
+  padding: 6px 0 calc(8px + env(safe-area-inset-bottom, 0px));
   z-index: 1000;
-  box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.05); /* Sharper, minimal shadow instead of large blur */
-  padding-bottom: env(safe-area-inset-bottom, 0);
-  height: 60px;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+  min-height: 64px;
+  height: auto;
   border-radius: 24px 24px 0 0; /* Rounded top corners */
 }
 
@@ -113,15 +113,14 @@ const activeBarLeft = computed(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end; /* Align elements to the bottom */
-  padding-bottom: 8px; /* Fixed distance from bottom for labels */
+  justify-content: center;
+  padding: 4px 0;
   text-decoration: none;
   color: #94a3b8;
   transition: all 0.2s ease;
   width: 20%;
   position: relative;
   -webkit-tap-highlight-color: transparent;
-  height: 100%;
 }
 
 .icon-wrapper {
@@ -129,18 +128,18 @@ const activeBarLeft = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 4px;
 }
 
 .nav-item i {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
 }
 
 .nav-item span {
-  font-size: 0.65rem;
-  font-weight: 500;
-  line-height: normal;
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.2;
   white-space: nowrap;
+  margin-top: 2px;
 }
 
 /* Active State - Blue */
@@ -161,22 +160,32 @@ const activeBarLeft = computed(() => {
 }
 
 .central-button {
-  width: 70px;
-  height: 70px;
+  width: 64px;
+  height: 64px;
   background: linear-gradient(135deg, #2563eb, #1e40af);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  box-shadow: none; /* Removed the blue shadow completely */
-  transform: translateY(-35px); /* Exactly half-in (35px) half-out (35px) */
-  border: 5px solid white;
+  box-shadow: none;
+  transform: translateY(-30px);
+  border: 4px solid white;
   pointer-events: auto; /* Re-enable pointer events for the button circle itself */
 }
 
 .central-button i {
-  font-size: 1.9rem;
+  font-size: 1.65rem;
+}
+
+.nav-item.central-item {
+  justify-content: flex-end;
+}
+
+.nav-item.central-item span {
+  margin-top: 26px;
+  font-weight: 700;
+  font-size: 0.72rem;
 }
 
 /* Hover/Press effect */
@@ -185,7 +194,7 @@ const activeBarLeft = computed(() => {
   transform: scale(0.9);
 }
 .nav-item.central-item:active .central-button {
-  transform: scale(0.9) translateY(-35px);
+  transform: scale(0.9) translateY(-30px);
 }
 
 /* Hide on desktop (lg breakpoint) */

@@ -48,17 +48,26 @@ const app = express();
 // --- CONFIGURATION CORS (DOIT ÊTRE EN PREMIER) ---
 app.use(cors({
   origin: function (origin, callback) {
-    // Autorise Netlify, localhost et ngrok
+    const frontendUrl = process.env.FRONTEND_URL;
+    const allowedOriginsEnv = process.env.ALLOWED_ORIGINS 
+      ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim()) 
+      : [];
+
+    // Autorise requêtes sans origine (Mobile Apps, Curl, Same-origin), dev, netlify, ngrok, panyem.com, htfasil et variables d'env
     if (!origin || 
+        origin.includes('panyem.com') ||
+        origin.includes('htfasil.com') ||
         origin.includes('netlify.app') || 
         origin.includes('localhost') || 
         origin.includes('127.0.0.1') ||
         origin.includes('10.') ||
         origin.includes('192.168.') ||
-        origin.includes('ngrok-free.dev')) {
+        origin.includes('ngrok-free.dev') ||
+        (frontendUrl && origin.startsWith(frontendUrl)) ||
+        allowedOriginsEnv.some(allowed => origin.includes(allowed))) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error(`Not allowed by CORS: ${origin}`));
     }
   },
   credentials: true,

@@ -8,9 +8,9 @@ RUN npm install
 
 COPY . .
 
-# Injection de l'URL de l'API pour le site client
-# manage.htfasil.com est le domaine de l'API
-ENV VITE_API_URL=https://manage.htfasil.com/api
+# Injection de l'URL de l'API pour le site client (personnalisable via --build-arg)
+ARG VITE_API_URL=https://manage.panyem.com/api
+ENV VITE_API_URL=$VITE_API_URL
 
 RUN npm run build-only
 
