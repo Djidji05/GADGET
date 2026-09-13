@@ -23,6 +23,7 @@ import './src/backend/workers/paymentReconciliationWorker.js';
 import startAbandonedCartCron from './src/backend/scripts/abandoned_cart_cron.js';
 import startMonCashExpirationCron from './src/backend/scripts/moncash_expiration_cron.js';
 import { startPaymentTimeoutCron } from './src/backend/workers/paymentTimeoutCron.js';
+import { fixEmptyDescriptions } from './src/backend/scripts/fix_empty_descriptions.js';
 
 // Configuration
 const __filename = fileURLToPath(import.meta.url);
@@ -195,6 +196,7 @@ const startServer = async () => {
     if (!dbInitialized) {
       throw new Error('Database initialization failed');
     }
+    await fixEmptyDescriptions().catch(err => console.warn('[FixDescriptions] Warning:', err.message));
 
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Backend server running on port ${PORT}`);
