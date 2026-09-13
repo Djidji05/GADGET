@@ -39,7 +39,7 @@
             <button 
               @click="triggerImageSearch"
               aria-label="Recherche par image"
-              class="text-gray-400 dark:text-gray-500 hover:text-blue-500 p-1"
+              class="text-gray-400 dark:text-gray-500 hover:text-blue-500 min-w-[48px] min-h-[48px] flex items-center justify-center"
               title="Recherche par image"
             >
                <i :class="isImageSearching ? 'fas fa-spinner fa-spin' : 'fas fa-camera'"></i>

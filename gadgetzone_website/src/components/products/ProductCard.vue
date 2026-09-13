@@ -66,7 +66,7 @@
           <div class="w-4 h-4 rounded-full bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center">
             <i class="fas fa-store text-[8px] text-blue-500"></i>
           </div>
-          <span class="text-[10px] md:text-xs font-medium text-gray-500 dark:text-gray-400 truncate">
+          <span class="text-[10px] md:text-xs font-medium text-gray-600 dark:text-gray-300 truncate">
             {{ product.store?.name || 'Panyem' }}
           </span>
         </div>

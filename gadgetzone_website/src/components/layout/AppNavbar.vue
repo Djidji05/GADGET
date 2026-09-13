@@ -200,7 +200,7 @@
               <button 
                 @click="triggerImageSearch"
                 aria-label="Recherche par image"
-                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500"
+                class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 min-w-[48px] min-h-[48px] flex items-center justify-center"
               >
                 <i :class="isImageSearching ? 'fas fa-spinner fa-spin' : 'fas fa-camera'"></i>
               </button>
@@ -279,7 +279,7 @@
               <button 
                 @click="triggerImageSearch"
                 aria-label="Recherche par image"
-                class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500"
+                class="absolute right-1 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 min-w-[48px] min-h-[48px] flex items-center justify-center"
               >
                 <i :class="isImageSearching ? 'fas fa-spinner fa-spin' : 'fas fa-camera'"></i>
               </button>
