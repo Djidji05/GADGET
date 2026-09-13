@@ -69,11 +69,12 @@ const configurePassport = () => {
                         try {
                             const { sendEmail, emailTemplates } = await import('../services/emailService.js');
                             if (emailTemplates && emailTemplates.welcomeUser) {
-                                const welcome = emailTemplates.welcomeUser(firstName || user.name, email);
-                                sendEmail(email, welcome).catch(e => console.error('Error sending Google welcome email:', e));
+                                console.log('📧 [Google Auth] Envoi de l\'email de bienvenue à:', email);
+                                const welcome = emailTemplates.welcomeUser(firstName || user.name || 'Client', email);
+                                await sendEmail(email, welcome);
                             }
                         } catch (e) {
-                            console.error('Could not send Google welcome email:', e);
+                            console.error('❌ [Google Auth] Erreur lors de l\'envoi de l\'email de bienvenue:', e.message);
                         }
 
                         return done(null, user);
