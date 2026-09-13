@@ -5,7 +5,7 @@
         <div class="p-8 sm:p-10">
           <div class="flex flex-col items-center mb-8">
             <div class="mb-6">
-              <img src="/images/logo/logo panyem.png" alt="panyem logo" class="h-16 w-auto object-contain mx-auto" />
+              <img src="/images/logo/logo-panyem.png" alt="Panyem logo" class="h-16 w-auto object-contain mx-auto" />
             </div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
               panyem admin

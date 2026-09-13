@@ -64,7 +64,7 @@ export const useSettingsStore = defineStore('settings', () => {
 
     const logoIconUrl = computed(() => {
         // Currently we don't have a specific icon upload, so we fallback to the default
-        return '/images/logo/logo panyem.png';
+        return '/images/logo/logo-panyem.png';
     });
 
     return {
