@@ -10,7 +10,21 @@ function fontDisplaySwapPlugin() {
     name: 'font-display-swap-plugin',
     transform(code: string, id: string) {
       if (id.endsWith('.css') || id.includes('.css?')) {
-        return code.replace(/@font-face\s*\{(?!\s*font-display:)/g, '@font-face { font-display: swap; ');
+        let updated = code.replace(/font-display\s*:\s*(block|auto|fallback|optional)/gi, 'font-display: swap');
+        updated = updated.replace(/@font-face\s*\{(?!\s*font-display:)/gi, '@font-face { font-display: swap; ');
+        return updated;
+      }
+    },
+    generateBundle(_options: any, bundle: any) {
+      for (const file in bundle) {
+        if (file.endsWith('.css')) {
+          const chunk = bundle[file];
+          if (chunk.type === 'asset' && typeof chunk.source === 'string') {
+            let updated = chunk.source.replace(/font-display\s*:\s*(block|auto|fallback|optional)/gi, 'font-display: swap');
+            updated = updated.replace(/@font-face\s*\{(?!\s*font-display:)/gi, '@font-face { font-display: swap; ');
+            chunk.source = updated;
+          }
+        }
       }
     }
   }
