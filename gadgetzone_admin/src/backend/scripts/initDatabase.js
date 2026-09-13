@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import { initDatabase, syncDatabase } from '../config/database.js';
-import { Category, Product, User } from '../models/index.js';
+import { Category, Product, User, sequelize } from '../models/index.js';
 
 /**
  * Script d'initialisation de la base de données
@@ -109,7 +109,6 @@ const initializeDatabase = async () => {
 
     // Nettoyer les URLs d'images contenant localhost dans la base de données
     try {
-      const { sequelize } = await import('../config/database.js');
       await sequelize.query(`
         UPDATE products 
         SET image_url = REGEXP_REPLACE(image_url, '^https?://localhost:[0-9]+', '') 
