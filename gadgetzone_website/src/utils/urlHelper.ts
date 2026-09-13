@@ -6,16 +6,44 @@ export const normalizeImageUrl = (input: string | any | null | undefined): strin
 
     if (!url || typeof url !== 'string') return '/placeholder-product.jpg';
 
-    // Si l'URL contient localhost:3001, on le remplace par localhost:3003
-    let normalized = url;
-    if (normalized.includes('localhost:3001')) {
-        normalized = normalized.replace('localhost:3001', 'localhost:3003');
+    let normalized = url.trim();
+
+    // Si l'URL contient localhost, extraire le chemin relatif
+    if (normalized.includes('localhost')) {
+        try {
+            const parsed = new URL(normalized);
+            normalized = parsed.pathname;
+        } catch (e) {
+            normalized = normalized.replace(/^https?:\/\/localhost:\d+/i, '');
+        }
     }
 
-    // Si c'est un chemin relatif (commence par /uploads), on ajoute le base URL
-    if (normalized.startsWith('/uploads')) {
-        const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:3003';
-        normalized = `${baseUrl}${normalized}`;
+    // Normaliser /uploads
+    if (normalized.startsWith('uploads/')) {
+        normalized = '/' + normalized;
+    }
+
+    if (normalized.startsWith('/uploads/')) {
+        return normalized;
+    }
+
+    // Images fictives du seeder -> placeholder
+    if (
+        normalized.includes('smartphone.jpg') ||
+        normalized.includes('laptop.jpg') ||
+        normalized.includes('earbuds.jpg') ||
+        normalized.includes('smartwatch.jpg') ||
+        normalized.includes('console.jpg')
+    ) {
+        return '/placeholder-product.jpg';
+    }
+
+    if (normalized.startsWith('http://') || normalized.startsWith('https://')) {
+        return normalized;
+    }
+
+    if (!normalized.startsWith('/')) {
+        normalized = '/' + normalized;
     }
 
     return normalized;
