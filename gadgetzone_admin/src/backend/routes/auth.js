@@ -523,12 +523,12 @@ router.put('/profile', authenticateToken, validateProfileUpdate, async (req, res
     });
 
     const userObj = updatedUser.toJSON ? updatedUser.toJSON() : updatedUser;
-    const [firstName, ...lastNameParts] = userObj.name ? userObj.name.split(' ') : ['', ''];
-    const lastName = lastNameParts.join(' ');
+    const [parsedFirstName, ...lastNameParts] = userObj.name ? userObj.name.split(' ') : ['', ''];
+    const parsedLastName = lastNameParts.join(' ');
 
     res.json({
       message: 'Profil mis à jour avec succès',
-      user: { ...userObj, firstName, lastName }
+      user: { ...userObj, firstName: parsedFirstName, lastName: parsedLastName }
     });
 
   } catch (error) {
