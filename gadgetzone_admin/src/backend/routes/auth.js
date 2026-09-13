@@ -875,11 +875,22 @@ router.delete('/users/:id', authenticateToken, requireAdmin, async (req, res) =>
  */
 import passport from 'passport';
 
-router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+router.get('/google', (req, res, next) => {
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    return res.status(400).json({
+      error: 'Google Auth Not Configured',
+      message: 'La connexion avec Google n\'est pas encore configurée sur le serveur (GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET manquants).'
+    });
+  }
+  passport.authenticate('google', { scope: ['profile', 'email'] })(req, res, next);
+});
 
 router.get(
   '/google/callback',
   (req, res, next) => {
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+      return res.redirect('/login?error=not_configured&message=' + encodeURIComponent('Google Auth non configuré'));
+    }
     passport.authenticate('google', { session: false }, (err, user, info) => {
       if (err) {
         console.error('❌ Google Auth Error:', err);
@@ -922,7 +933,15 @@ router.get(
 /**
  * FACEBOOK AUTH ROUTES
  */
-router.get('/facebook', passport.authenticate('facebook', { scope: ['email'] }));
+router.get('/facebook', (req, res, next) => {
+  if (!process.env.FACEBOOK_APP_ID || !process.env.FACEBOOK_APP_SECRET) {
+    return res.status(400).json({
+      error: 'Facebook Auth Not Configured',
+      message: 'La connexion avec Facebook n\'est pas encore configurée sur le serveur (FACEBOOK_APP_ID / FACEBOOK_APP_SECRET manquants).'
+    });
+  }
+  passport.authenticate('facebook', { scope: ['email'] })(req, res, next);
+});
 
 router.get(
   '/facebook/callback',
