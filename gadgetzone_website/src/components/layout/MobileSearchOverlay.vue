@@ -45,10 +45,18 @@
         </div>
       </div>
 
-      <!-- Image Search Input (Hidden) -->
+      <!-- Image Search Inputs (Hidden) - Camera & Gallery -->
       <input
         type="file"
-        ref="imageInput"
+        ref="cameraInput"
+        accept="image/*"
+        capture="environment"
+        class="hidden"
+        @change="handleImageSearch"
+      />
+      <input
+        type="file"
+        ref="galleryInput"
         accept="image/*"
         class="hidden"
         @change="handleImageSearch"
@@ -206,6 +214,60 @@
         </template>
 
       </div>
+
+      <!-- Image Search Modal (Camera / Gallery Choice) -->
+      <Transition name="fade">
+        <div v-if="showImageSearchModal" class="fixed inset-0 bg-black/60 z-[10000] flex items-end sm:items-center justify-center p-0 sm:p-4 backdrop-blur-sm" @click.self="showImageSearchModal = false">
+          <div class="bg-white dark:bg-gray-900 w-full sm:max-w-md rounded-t-3xl sm:rounded-3xl p-6 space-y-5 border border-gray-100 dark:border-gray-800 shadow-2xl animate-slide-up">
+            <div class="flex justify-between items-center pb-2 border-b border-gray-100 dark:border-gray-800">
+              <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-full bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                  <i class="fas fa-camera text-base"></i>
+                </div>
+                <div>
+                  <h3 class="font-bold text-base text-gray-900 dark:text-white">Recherche par Image</h3>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">Trouvez des produits similaires sur Panyem</p>
+                </div>
+              </div>
+              <button @click="showImageSearchModal = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1">
+                <i class="fas fa-times text-lg"></i>
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 gap-3">
+              <!-- Option 1: Appareil photo -->
+              <button 
+                @click="openCamera" 
+                class="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-all text-left group"
+              >
+                <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center text-xl flex-shrink-0">
+                  <i class="fas fa-camera"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="font-bold text-sm">Prendre une photo</div>
+                  <div class="text-xs text-blue-100">Ouvrir directement l'appareil photo du téléphone</div>
+                </div>
+                <i class="fas fa-chevron-right text-sm text-blue-200 group-hover:translate-x-1 transition-transform"></i>
+              </button>
+
+              <!-- Option 2: Galerie photo -->
+              <button 
+                @click="openGallery" 
+                class="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/80 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white active:scale-[0.98] transition-all text-left hover:bg-gray-100 dark:hover:bg-gray-800 group"
+              >
+                <div class="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center text-xl flex-shrink-0">
+                  <i class="fas fa-images"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="font-bold text-sm">Choisir dans la galerie</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400">Importer une photo déjà enregistrée</div>
+                </div>
+                <i class="fas fa-chevron-right text-sm text-gray-400 group-hover:translate-x-1 transition-transform"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
     </div>
   </Transition>
 </template>
@@ -229,12 +291,24 @@ const query = ref('')
 const searchInput = ref<HTMLInputElement | null>(null)
 
 // Image Search in Overlay
-const imageInput = ref<HTMLInputElement | null>(null)
+const cameraInput = ref<HTMLInputElement | null>(null)
+const galleryInput = ref<HTMLInputElement | null>(null)
+const showImageSearchModal = ref(false)
 const isImageSearching = ref(false)
 
 const triggerImageSearch = () => {
   if (isImageSearching.value) return
-  imageInput.value?.click()
+  showImageSearchModal.value = true
+}
+
+const openCamera = () => {
+  showImageSearchModal.value = false
+  cameraInput.value?.click()
+}
+
+const openGallery = () => {
+  showImageSearchModal.value = false
+  galleryInput.value?.click()
 }
 
 const handleImageSearch = async (event: Event) => {
@@ -275,7 +349,8 @@ const handleImageSearch = async (event: Event) => {
             uiStore.showToast(msg, 'error')
         } finally {
             isImageSearching.value = false;
-            if (imageInput.value) imageInput.value.value = '';
+            if (cameraInput.value) cameraInput.value.value = '';
+            if (galleryInput.value) galleryInput.value.value = '';
         }
     };
     
