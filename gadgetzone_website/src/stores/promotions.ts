@@ -8,6 +8,14 @@ import {
   isValidApiResponse,
 } from '@/services/fallback'
 
+import { normalizeImageUrl } from '@/utils/urlHelper'
+
+// Helper
+const normalizeBannerItem = (b: any) => ({
+  ...b,
+  image: normalizeImageUrl(b.image || b.image_url)
+})
+
 export const usePromotionsStore = defineStore('promotions', () => {
   // State
   const activeBanners = ref<Banner[]>([])
@@ -38,7 +46,7 @@ export const usePromotionsStore = defineStore('promotions', () => {
 
       // Vérifier si la réponse est valide
       if (isValidApiResponse(banners) && Array.isArray(banners)) {
-        activeBanners.value = banners
+        activeBanners.value = banners.map(normalizeBannerItem)
         console.log('✅ Banners loaded from API:', banners.length)
       } else {
         throw new Error('Invalid API response')
