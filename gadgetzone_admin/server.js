@@ -23,7 +23,7 @@ import './src/backend/workers/paymentReconciliationWorker.js';
 import startAbandonedCartCron from './src/backend/scripts/abandoned_cart_cron.js';
 import startMonCashExpirationCron from './src/backend/scripts/moncash_expiration_cron.js';
 import { startPaymentTimeoutCron } from './src/backend/workers/paymentTimeoutCron.js';
-import { fixEmptyDescriptions } from './src/backend/scripts/fix_empty_descriptions.js';
+import { repairProductDescriptions } from './src/backend/scripts/repairProductDescriptions.js';
 
 // Configuration
 const __filename = fileURLToPath(import.meta.url);
@@ -212,7 +212,7 @@ const startServer = async () => {
 
       // Lancer la correction des descriptions en arrière-plan (non bloquant)
       setTimeout(() => {
-        fixEmptyDescriptions().catch(err => console.warn('[FixDescriptions] Warning:', err.message));
+        repairProductDescriptions().catch(err => console.warn('[RepairDescriptions] Warning:', err.message));
       }, 3000);
     });
   } catch (error) {
