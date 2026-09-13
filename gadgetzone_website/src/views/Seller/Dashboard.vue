@@ -1,9 +1,9 @@
 <template>
-  <div class="w-full">
+  <div class="w-full overflow-x-hidden">
  <!-- MOBILE DASHBOARD (Natcash inspired Blue Theme) -->
- <div class="lg:hidden bg-gray-50 min-h-screen pb-20 -mt-2 font-sans">
+ <div class="lg:hidden bg-gray-50 min-h-screen pb-20 -mt-2 font-sans overflow-x-hidden">
  <!-- Top Section (Header + Balance) -->
- <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white px-6 pt-10 pb-20 relative">
+ <div class="bg-gradient-to-br from-blue-600 to-blue-800 text-white px-6 pt-10 pb-20 relative overflow-hidden">
  <!-- User Info Row -->
  <div class="flex justify-between items-start mb-10">
  <div @click="router.push('/seller/settings')" class="flex items-center gap-4 active:scale-95 transition-transform cursor-pointer">

@@ -261,8 +261,8 @@ const handleSendInfo = () => {
  <!-- Main Content -->
  <div class="flex-1 w-full relative">
 
- <!-- MOBILE PAYMENTS (Site Theme) -->
- <div class="md:hidden bg-gray-50 min-h-screen pb-0 -mx-4 -mt-2">
+  <!-- MOBILE PAYMENTS (Site Theme) -->
+  <div class="md:hidden bg-gray-50 min-h-screen pb-0 -mt-2 overflow-x-hidden">
  <!-- Top Navy Blue Section -->
  <div class="bg-blue-900 text-white px-6 pt-8 pb-8 rounded-b-[2.5rem] relative z-10 shadow-lg shadow-blue-900/20">
  <!-- Header Row -->

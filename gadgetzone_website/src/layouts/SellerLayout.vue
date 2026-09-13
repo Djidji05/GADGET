@@ -18,7 +18,7 @@
   </div>
 
   <!-- ========== MOBILE LAYOUT (<lg) ========== -->
-  <div class="lg:hidden pb-24 min-h-screen bg-slate-50 dark:bg-gray-950">
+  <div class="lg:hidden pb-24 min-h-screen bg-slate-50 dark:bg-gray-950 overflow-x-hidden w-full max-w-full">
     <router-view></router-view>
   </div>
 </template>
