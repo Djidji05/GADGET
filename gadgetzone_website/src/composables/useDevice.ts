@@ -22,7 +22,7 @@ export function useDevice() {
 
     onMounted(() => {
         checkDevice()
-        window.addEventListener('resize', checkDevice)
+        window.addEventListener('resize', checkDevice, { passive: true })
     })
 
     onUnmounted(() => {

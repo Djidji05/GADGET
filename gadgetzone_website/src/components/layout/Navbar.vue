@@ -5,7 +5,7 @@
       <div class="flex items-center justify-between h-16">
         <!-- Logo -->
         <router-link to="/" class="flex items-center">
-          <img src="/images/logo.png" alt="Panyem Logo" width="120" height="32" class="h-8 w-auto" />
+          <img src="/images/logo.png" alt="Panyem Logo" width="120" height="32" class="h-8 w-auto" style="aspect-ratio: 120 / 32;" />
         </router-link>
 
         <!-- Navigation Links -->
