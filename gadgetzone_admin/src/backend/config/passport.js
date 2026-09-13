@@ -52,8 +52,22 @@ const configurePassport = () => {
 
                         if (user) {
                             // Context: User exists with email but not linked to Google
-                            // Update user with googleId
+                            const firstTimeGoogle = !user.googleId;
                             await user.update({ googleId });
+
+                            if (firstTimeGoogle) {
+                                try {
+                                    const { sendEmail, emailTemplates } = await import('../services/emailService.js');
+                                    if (emailTemplates && emailTemplates.welcomeUser) {
+                                        console.log('📧 [Google Auth] First time Google link, sending welcome email to:', email);
+                                        const welcome = emailTemplates.welcomeUser(firstName || user.name || 'Client', email);
+                                        await sendEmail(email, welcome);
+                                    }
+                                } catch (e) {
+                                    console.error('❌ [Google Auth] Error sending Google welcome email:', e.message);
+                                }
+                            }
+
                             return done(null, user);
                         }
 
