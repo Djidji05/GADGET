@@ -209,7 +209,7 @@
     <div class="border-t border-gray-800 bg-gray-950">
       <div class="container mx-auto px-4 py-6">
         <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-          <p class="text-sm text-gray-500">
+          <p class="text-sm text-gray-400">
             {{ $t('footer.rights') }}
           </p>
           
@@ -230,10 +230,10 @@
           </div>
 
           <div class="flex gap-6 text-sm">
-            <router-link to="/privacy" class="text-gray-500 hover:text-white transition-colors">{{ $t('footer.privacy') }}</router-link>
-            <router-link to="/terms" class="text-gray-500 hover:text-white transition-colors">{{ $t('footer.terms') }}</router-link>
-            <router-link to="/faq" class="text-gray-500 hover:text-white transition-colors">{{ $t('common.faq') || 'FAQ' }}</router-link>
-            <router-link to="/sitemap" class="text-gray-500 hover:text-white transition-colors">{{ $t('footer.sitemap') }}</router-link>
+            <router-link to="/privacy" class="text-gray-400 hover:text-white transition-colors">{{ $t('footer.privacy') }}</router-link>
+            <router-link to="/terms" class="text-gray-400 hover:text-white transition-colors">{{ $t('footer.terms') }}</router-link>
+            <router-link to="/faq" class="text-gray-400 hover:text-white transition-colors">{{ $t('common.faq') || 'FAQ' }}</router-link>
+            <router-link to="/sitemap" class="text-gray-400 hover:text-white transition-colors">{{ $t('footer.sitemap') }}</router-link>
           </div>
         </div>
       </div>
