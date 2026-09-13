@@ -167,17 +167,24 @@ router.post('/register', registerLimiter, validateRegister, async (req, res) => 
 router.post('/login', authLimiter, validateLogin, async (req, res) => {
   try {
     const { email, password } = req.body;
+    const cleanEmail = String(email || '').trim().toLowerCase();
 
-    // Trouver l'utilisateur
-    const user = await User.findOne({ where: { email } });
+    // Trouver l'utilisateur (par email minuscules ou tel quel)
+    const user = await User.findOne({ where: { email: cleanEmail } }) 
+              || await User.findOne({ where: { email: String(email || '').trim() } });
+
     if (!user) {
-      await SecurityLog.create({
-        ip_address: req.ip || req.socket?.remoteAddress || req.connection?.remoteAddress || '127.0.0.1',
-        event_type: 'failed_login',
-        severity: 'low',
-        description: `Tentative de connexion échouée avec un email inexistant (${email})`,
-        user_agent: req.headers['user-agent']
-      });
+      try {
+        await SecurityLog.create({
+          ip_address: req.ip || req.socket?.remoteAddress || '127.0.0.1',
+          event_type: 'failed_login',
+          severity: 'low',
+          description: `Tentative de connexion échouée avec un email inexistant (${cleanEmail})`,
+          user_agent: req.headers['user-agent']
+        });
+      } catch (logErr) {
+        console.warn('SecurityLog Warning:', logErr.message);
+      }
 
       return res.status(401).json({
         error: 'Identifiants invalides',
@@ -185,16 +192,28 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
       });
     }
 
+    // Vérifier si le compte est créé via OAuth Google sans mot de passe
+    if (!user.password) {
+      return res.status(401).json({
+        error: 'Compte Google',
+        message: 'Ce compte a été créé via Google. Veuillez utiliser la connexion avec Google.'
+      });
+    }
+
     // Vérifier le mot de passe
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) {
-      await SecurityLog.create({
-        ip_address: req.ip || req.socket?.remoteAddress || req.connection?.remoteAddress || '127.0.0.1',
-        event_type: 'failed_login',
-        severity: 'medium',
-        description: `Tentative de connexion échouée (mot de passe incorrect pour ${email})`,
-        user_agent: req.headers['user-agent']
-      });
+      try {
+        await SecurityLog.create({
+          ip_address: req.ip || req.socket?.remoteAddress || '127.0.0.1',
+          event_type: 'failed_login',
+          severity: 'medium',
+          description: `Tentative de connexion échouée (mot de passe incorrect pour ${cleanEmail})`,
+          user_agent: req.headers['user-agent']
+        });
+      } catch (logErr) {
+        console.warn('SecurityLog Warning:', logErr.message);
+      }
 
       return res.status(401).json({
         error: 'Identifiants invalides',
@@ -237,6 +256,7 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
     }
 
     // Créer le token (si pas de 2FA)
+    const jwtSecret = process.env.JWT_SECRET || 'htfasil_gadgetzone_super_secret_jwt_key_2026';
     const token = jwt.sign(
       {
         userId: user.id,
@@ -244,7 +264,7 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
         role: user.role,
         lastActivity: Date.now()
       },
-      process.env.JWT_SECRET,
+      jwtSecret,
       { expiresIn: process.env.JWT_EXPIRES_IN || '24h' }
     );
 
@@ -252,8 +272,13 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
     const [firstName, lastName] = user.name ? user.name.split(' ') : ['', ''];
 
     // Check if user has a store
-    const { Store } = await import('../models/index.js');
-    const store = await Store.findOne({ where: { userId: user.id } });
+    let store = null;
+    try {
+      const { Store } = await import('../models/index.js');
+      store = await Store.findOne({ where: { userId: user.id } });
+    } catch (sErr) {
+      console.warn('Store fetch warning on login:', sErr.message);
+    }
 
     const userResponse = {
       id: user.id,
@@ -270,13 +295,16 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
     };
 
     // Set HttpOnly Cookie
-    res.cookie('token', token, {
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 24 * 60 * 60 * 1000, // 24h
-      domain: process.env.COOKIE_DOMAIN
-    });
+      maxAge: 24 * 60 * 60 * 1000 // 24h
+    };
+    if (process.env.COOKIE_DOMAIN) {
+      cookieOptions.domain = process.env.COOKIE_DOMAIN;
+    }
+    res.cookie('token', token, cookieOptions);
 
     res.json({
       message: 'Connexion réussie',
@@ -286,10 +314,11 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Erreur connexion:', error);
+    console.error('❌ Erreur connexion [login]:', error);
     res.status(500).json({
       error: 'Erreur serveur',
-      message: 'Erreur lors de la connexion'
+      message: error.message || 'Erreur lors de la connexion',
+      details: error.message
     });
   }
 });
