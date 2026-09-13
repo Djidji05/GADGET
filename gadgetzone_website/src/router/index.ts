@@ -330,8 +330,7 @@ const router = createRouter({
           component: () => import('../views/Seller/Reports.vue'),
           meta: {
             title: 'Rapports Vendeur - Panyem',
-            requiresAuth: true,
-            hideBottomNav: true
+            requiresAuth: true
           }
         },
         {
@@ -340,8 +339,7 @@ const router = createRouter({
           component: () => import('../views/Seller/Transactions.vue'),
           meta: {
             title: 'Transactions Vendeur - Panyem',
-            requiresAuth: true,
-            hideBottomNav: true
+            requiresAuth: true
           }
         },
         {
@@ -350,8 +348,7 @@ const router = createRouter({
           component: () => import('../views/Seller/Payments.vue'),
           meta: {
             title: 'Paiements Vendeur - Panyem',
-            requiresAuth: true,
-            hideBottomNav: true
+            requiresAuth: true
           }
         },
         {
@@ -360,8 +357,7 @@ const router = createRouter({
           component: () => import('../views/Seller/Deposits.vue'),
           meta: {
             title: 'Dépôts Vendeur - Panyem',
-            requiresAuth: true,
-            hideBottomNav: true
+            requiresAuth: true
           }
         },
         {
@@ -370,8 +366,7 @@ const router = createRouter({
           component: () => import('../views/Seller/Settings.vue'),
           meta: {
             title: 'Paramètres Vendeur - Panyem',
-            requiresAuth: true,
-            hideBottomNav: true
+            requiresAuth: true
           }
         },
         {
@@ -380,8 +375,7 @@ const router = createRouter({
           component: () => import('../views/Seller/ShippingRates.vue'),
           meta: {
             title: 'Tarifs et Zones de Livraison - Panyem',
-            requiresAuth: true,
-            hideBottomNav: true
+            requiresAuth: true
           }
         },
         {
@@ -390,8 +384,7 @@ const router = createRouter({
           component: () => import('../views/Seller/Notifications.vue'),
           meta: {
             title: 'Notifications Vendeur - Panyem',
-            requiresAuth: true,
-            hideBottomNav: true
+            requiresAuth: true
           }
         },
         {
@@ -400,8 +393,7 @@ const router = createRouter({
           component: () => import('../views/Seller/Messages.vue'),
           meta: {
             title: 'Messages Vendeur - Panyem',
-            requiresAuth: true,
-            hideBottomNav: true
+            requiresAuth: true
           }
         },
         {
@@ -410,8 +402,7 @@ const router = createRouter({
           component: () => import('../views/Seller/MyQR.vue'),
           meta: {
             title: 'Mon QR Code - Panyem',
-            requiresAuth: true,
-            hideBottomNav: true
+            requiresAuth: true
           }
         },
         {
@@ -420,8 +411,7 @@ const router = createRouter({
           component: () => import('../views/Seller/SellerAcademy.vue'),
           meta: {
             title: 'Académie Vendeur - Panyem',
-            requiresAuth: true,
-            hideBottomNav: true
+            requiresAuth: true
           }
         },
         {
@@ -430,8 +420,7 @@ const router = createRouter({
           component: () => import('../views/Ambassador/Dashboard.vue'),
           meta: {
             title: 'Ambassadeur Vendeur - Panyem',
-            requiresAuth: true,
-            hideBottomNav: true
+            requiresAuth: true
           }
         },
         {
@@ -440,8 +429,7 @@ const router = createRouter({
           component: () => import('../views/Seller/SellerHelp.vue'),
           meta: {
             title: "Centre d'Aide - Panyem",
-            requiresAuth: true,
-            hideBottomNav: true
+            requiresAuth: true
           }
         },
         {
@@ -450,8 +438,7 @@ const router = createRouter({
           component: () => import('../views/Seller/SellerBoost.vue'),
           meta: {
             title: 'Booster Visibilité - Panyem',
-            requiresAuth: true,
-            hideBottomNav: true
+            requiresAuth: true
           }
         },
         {
@@ -460,8 +447,7 @@ const router = createRouter({
           component: () => import('../views/Seller/SellerCommunity.vue'),
           meta: {
             title: 'Communauté Vendeur - Panyem',
-            requiresAuth: true,
-            hideBottomNav: true
+            requiresAuth: true
           }
         },
         {
@@ -470,8 +456,7 @@ const router = createRouter({
           component: () => import('../views/Seller/SellerTrust.vue'),
           meta: {
             title: 'Confiance & Sécurité - Panyem',
-            requiresAuth: true,
-            hideBottomNav: true
+            requiresAuth: true
           }
         },
         {
@@ -480,8 +465,7 @@ const router = createRouter({
           component: () => import('../views/Seller/SellerServices.vue'),
           meta: {
             title: 'Nos Services Vendeur - Panyem',
-            requiresAuth: true,
-            hideBottomNav: true
+            requiresAuth: true
           }
         },
         {
@@ -490,8 +474,7 @@ const router = createRouter({
           component: () => import('../views/Seller/Promotions.vue'),
           meta: {
             title: 'Mes Promotions - Panyem',
-            requiresAuth: true,
-            hideBottomNav: true
+            requiresAuth: true
           }
         }
       ]

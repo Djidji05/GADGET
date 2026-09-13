@@ -261,7 +261,7 @@ const setupInactivityTracking = () => {
     
     <!-- Bottom Navigation (hidden on auth, seller and checkout pages) -->
     <BottomNav v-if="!isAuthPage && !isSellerPage && !isCheckoutPage && !isOrderDetailPage && !route.meta.hideBottomNav" />
-    <SellerBottomNav v-if="isSellerPage && uiStore.isSellerNavVisible && !route.meta.hideBottomNav" />
+    <SellerBottomNav v-if="isSellerPage" />
 
     <!-- Global UI Components -->
     <GlobalToastContainer />
