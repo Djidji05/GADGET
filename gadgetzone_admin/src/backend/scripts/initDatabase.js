@@ -33,7 +33,7 @@ const initializeDatabase = async () => {
       { name: 'Accessoires', description: 'Accessoires pour téléphones et ordinateurs' },
       { name: 'Maison Connectée', description: 'Appareils pour la maison intelligente' },
       { name: 'Gaming', description: 'Consoles de jeux et accessoires' }
-    ]);
+    ], { ignoreDuplicates: true });
 
     // Créer les produits
     const products = await Product.bulkCreate([
@@ -42,7 +42,7 @@ const initializeDatabase = async () => {
         description: 'Dernier smartphone avec écran AMOLED et 5G',
         price: 899.99,
         stock: 50,
-        category_id: categories[0].id,
+        category_id: categories[0]?.id || 1,
         image_url: '/images/products/smartphone.jpg'
       },
       {
@@ -50,7 +50,7 @@ const initializeDatabase = async () => {
         description: 'Ordinateur portable ultra-fin avec processeur dernière génération',
         price: 1299.99,
         stock: 25,
-        category_id: categories[0].id,
+        category_id: categories[0]?.id || 1,
         image_url: '/images/products/laptop.jpg'
       },
       {
@@ -58,7 +58,7 @@ const initializeDatabase = async () => {
         description: 'Écouteurs Bluetooth avec réduction de bruit',
         price: 199.99,
         stock: 100,
-        category_id: categories[1].id,
+        category_id: categories[1]?.id || 2,
         image_url: '/images/products/earbuds.jpg'
       },
       {
@@ -66,7 +66,7 @@ const initializeDatabase = async () => {
         description: 'Smartwatch avec suivi fitness et notifications',
         price: 299.99,
         stock: 75,
-        category_id: categories[0].id,
+        category_id: categories[0]?.id || 1,
         image_url: '/images/products/smartwatch.jpg'
       },
       {
@@ -74,10 +74,10 @@ const initializeDatabase = async () => {
         description: 'Console de nouvelle génération avec 4K',
         price: 499.99,
         stock: 30,
-        category_id: categories[3].id,
+        category_id: categories[3]?.id || 4,
         image_url: '/images/products/console.jpg'
       }
-    ]);
+    ], { ignoreDuplicates: true });
 
     // Créer les utilisateurs
     const hashedPassword = await bcrypt.hash('password123', 10);
@@ -107,7 +107,7 @@ const initializeDatabase = async () => {
         password: hashedPassword,
         role: 'user'
       }
-    ]);
+    ], { ignoreDuplicates: true });
 
     console.log('✅ Base de données initialisée avec succès !');
     console.log(`📊 ${categories.length} catégories créées`);
