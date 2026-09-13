@@ -110,34 +110,20 @@ const initializeDatabase = async () => {
     // Créer les utilisateurs
     try {
       const hashedPassword = await bcrypt.hash('password123', 10);
-      await User.bulkCreate([
-        {
-          name: 'Admin User',
-          email: 'admin@panyem.com',
-          password: hashedPassword,
-          role: 'admin'
-        },
-        {
-          name: 'Jean Dupont',
-          email: 'jean.dupont@example.com',
-          password: hashedPassword,
-          role: 'user'
-        },
-        {
-          name: 'Marie Martin',
-          email: 'marie.martin@example.com',
-          password: hashedPassword,
-          role: 'user'
-        },
-        {
-          name: 'Pierre Durand',
-          email: 'pierre.durand@example.com',
-          password: hashedPassword,
-          role: 'user'
-        }
-      ], { ignoreDuplicates: true });
+      const defaultUsers = [
+        { name: 'Admin User', email: 'admin@panyem.com', password: hashedPassword, role: 'admin' },
+        { name: 'Jean Dupont', email: 'jean.dupont@example.com', password: hashedPassword, role: 'user' },
+        { name: 'Marie Martin', email: 'marie.martin@example.com', password: hashedPassword, role: 'user' },
+        { name: 'Pierre Durand', email: 'pierre.durand@example.com', password: hashedPassword, role: 'user' }
+      ];
+      for (const u of defaultUsers) {
+        await User.findOrCreate({
+          where: { email: u.email },
+          defaults: u
+        });
+      }
     } catch (e) {
-      console.log('ℹ️ Utilisateurs déjà existants');
+      console.log('ℹ️ Note création utilisateurs:', e.message);
     }
 
     console.log('✅ Base de données initialisée et vérifiée avec succès !');
