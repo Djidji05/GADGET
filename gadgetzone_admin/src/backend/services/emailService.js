@@ -7,6 +7,8 @@ import { Resend } from 'resend';
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'notifications@panyem.com';
 
+const SITE_URL = process.env.FRONTEND_URL || 'https://panyem.com';
+
 /**
  * Layout HTML Master d'Email professionnel Panyem
  */
@@ -25,13 +27,15 @@ const buildMasterEmailLayout = (title, contentHtml) => {
             <td align="center">
                 <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 600px; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;">
                     
-                    <!-- Header avec Logo & Gradient -->
+                    <!-- Header avec Logo & Lien du Site -->
                     <tr>
                         <td style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 32px 32px 28px 32px; text-align: center;">
-                            <a href="https://panyem.com" style="text-decoration: none; display: inline-block;">
+                            <a href="${SITE_URL}" target="_blank" style="text-decoration: none; display: inline-block;">
                                 <span style="font-size: 28px; font-weight: 900; color: #ffffff; letter-spacing: -0.5px;">Panyem<span style="color: #3b82f6;">.</span></span>
                             </a>
-                            <p style="margin: 6px 0 0 0; color: #94a3b8; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px;">Le Marché Numérique d'Haïti</p>
+                            <p style="margin: 6px 0 0 0; color: #94a3b8; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px;">
+                                Le Marché Numérique d'Haïti &bull; <a href="${SITE_URL}" target="_blank" style="color: #60a5fa; text-decoration: none; font-weight: 700;">panyem.com</a>
+                            </p>
                         </td>
                     </tr>
 
@@ -42,10 +46,11 @@ const buildMasterEmailLayout = (title, contentHtml) => {
                         </td>
                     </tr>
 
-                    <!-- Footer Officiel -->
+                    <!-- Footer Officiel avec Lien du Site -->
                     <tr>
                         <td style="background-color: #f8fafc; padding: 28px 32px; border-top: 1px solid #e2e8f0; text-align: center; color: #64748b; font-size: 12px; line-height: 1.5;">
-                            <p style="margin: 0 0 8px 0; font-weight: 600; color: #475569;">Panyem Inc. &bull; Port-au-Prince, Haïti</p>
+                            <p style="margin: 0 0 6px 0; font-weight: 600; color: #475569;">Panyem Inc. &bull; Port-au-Prince, Haïti</p>
+                            <p style="margin: 0 0 8px 0;">Visitez notre site : <a href="${SITE_URL}" target="_blank" style="color: #2563eb; text-decoration: none; font-weight: 700;">https://panyem.com</a></p>
                             <p style="margin: 0;">Besoin d'aide ? Notre support est à votre écoute sur <a href="mailto:support@panyem.com" style="color: #2563eb; text-decoration: none; font-weight: 500;">support@panyem.com</a></p>
                             <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid #e2e8f0; font-size: 11px; color: #94a3b8;">
                                 &copy; ${currentYear} Panyem. Tous droits réservés.
