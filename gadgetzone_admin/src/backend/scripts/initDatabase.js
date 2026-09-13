@@ -126,12 +126,14 @@ const initializeDatabase = async () => {
       console.log('ℹ️ Note création utilisateurs:', e.message);
     }
 
-    console.log('✅ Base de données initialisée et vérifiée avec succès !');
+    const categoriesCount = await Category.count();
+    const productsCount = await Product.count();
+    const usersCount = await User.count();
 
-    console.log('✅ Base de données initialisée avec succès !');
-    console.log(`📊 ${categories.length} catégories créées`);
-    console.log(`📦 ${products.length} produits créés`);
-    console.log(`👥 ${users.length} utilisateurs créés`);
+    console.log('✅ Base de données initialisée et vérifiée avec succès !');
+    console.log(`📊 ${categoriesCount} catégories dans la base de données`);
+    console.log(`📦 ${productsCount} produits dans la base de données`);
+    console.log(`👥 ${usersCount} utilisateurs dans la base de données`);
     console.log('');
     console.log('🔑 Comptes de test :');
     console.log('Admin: admin@panyem.com / password123');
