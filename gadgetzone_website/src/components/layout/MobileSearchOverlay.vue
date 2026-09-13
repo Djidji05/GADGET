@@ -267,17 +267,19 @@
             </div>
           </div>
         </div>
-    <!-- Modal de Recadrage & Recherche Visuelle -->
-    <ImageCropperModal
-      :is-open="isCropperOpen"
-      :image-src="cropperImageSrc"
-      :is-searching="isImageSearching"
-      @close="isCropperOpen = false"
-      @retake="triggerImageSearch"
-      @confirm="performCroppedImageSearch"
-    />
-  </Transition>
-</template>
+
+        <!-- Modal de Recadrage & Recherche Visuelle -->
+        <ImageCropperModal
+          :is-open="isCropperOpen"
+          :image-src="cropperImageSrc"
+          :is-searching="isImageSearching"
+          @close="isCropperOpen = false"
+          @retake="triggerImageSearch"
+          @confirm="performCroppedImageSearch"
+        />
+      </div>
+    </Transition>
+  </template>
 
 <script setup lang="ts">
 import api from '@/services/api'
