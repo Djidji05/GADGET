@@ -12,10 +12,10 @@ const emit = defineEmits(['update:isOpen'])
 const { locale } = useI18n()
 
 const languages = [
-  { code: 'fr', name: 'Français', flag: '/images/flags/fr.png' },
-  { code: 'en', name: 'English', flag: '/images/flags/en.png' },
-  { code: 'es', name: 'Español', flag: '/images/flags/es.png' },
-  { code: 'ht', name: 'Kreyòl', flag: '/images/flags/ht.png' }
+  { code: 'fr', name: 'Français', flag: '/images/flags/fr.svg' },
+  { code: 'en', name: 'English', flag: '/images/flags/en.svg' },
+  { code: 'es', name: 'Español', flag: '/images/flags/es.svg' },
+  { code: 'ht', name: 'Kreyòl', flag: '/images/flags/ht.svg' }
 ]
 
 const selectLanguage = (code: string) => {

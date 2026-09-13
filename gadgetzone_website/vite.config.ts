@@ -61,4 +61,22 @@ export default defineConfig({
       }
     }
   },
+  build: {
+    chunkSizeWarningLimit: 800,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('vue') || id.includes('pinia') || id.includes('vue-router')) {
+              return 'vue-core';
+            }
+            if (id.includes('axios') || id.includes('vue-i18n')) {
+              return 'vendor-utils';
+            }
+            return 'vendor';
+          }
+        }
+      }
+    }
+  }
 })

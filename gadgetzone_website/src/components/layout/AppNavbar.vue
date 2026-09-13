@@ -1083,8 +1083,8 @@ const showLanguageMenu = ref(false)
 const currentLocale = ref(locale.value)
 
 const languages = [
-  { code: 'fr', name: 'FR', flag: '/images/flags/fr.png' },
-  { code: 'ht', name: 'HT', flag: '/images/flags/ht.png' }
+  { code: 'fr', name: 'FR', flag: '/images/flags/fr.svg' },
+  { code: 'ht', name: 'HT', flag: '/images/flags/ht.svg' }
 ]
 
 const currentLanguage = computed(() => (languages.find(l => l.code === currentLocale.value) || languages[0])!)

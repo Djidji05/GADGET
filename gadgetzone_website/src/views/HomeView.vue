@@ -19,10 +19,11 @@
             <!-- Image Background -->
             <img
               :src="normalizeImageUrl(banner.image)"
-              :alt="banner.title"
+              :alt="banner.title || 'Bannière promotionnelle Panyem'"
               width="1920"
               height="600"
               :loading="index === 0 ? 'eager' : 'lazy'"
+              :fetchpriority="index === 0 ? 'high' : 'auto'"
               class="absolute inset-0 w-full h-full object-cover"
               @error="handleImageError"
             />
@@ -85,6 +86,7 @@
               v-for="(banner, index) in banners"
               :key="index"
               @click="goToBanner(index)"
+              :aria-label="'Bannière ' + (index + 1)"
               :class="[
                 'w-2 h-2 rounded-full transition-all shadow-sm',
                 currentBannerIndex === index

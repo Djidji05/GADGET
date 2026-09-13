@@ -50,13 +50,13 @@
             {{ $t('footer.description') }}
           </p>
           <div class="flex gap-4">
-            <a href="https://www.tiktok.com/@panyemhightech" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-black hover:text-white transition-all duration-300 group">
+            <a href="https://www.tiktok.com/@panyemhightech" target="_blank" rel="noopener noreferrer" aria-label="Compte TikTok de Panyem" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-black hover:text-white transition-all duration-300 group">
               <i class="fab fa-tiktok text-lg group-hover:scale-110 transition-transform"></i>
             </a>
-            <a href="https://wa.me/50941393544" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-green-500 hover:text-white transition-all duration-300 group">
+            <a href="https://wa.me/50941393544" target="_blank" rel="noopener noreferrer" aria-label="Contact WhatsApp de Panyem" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-green-500 hover:text-white transition-all duration-300 group">
               <i class="fab fa-whatsapp text-lg group-hover:scale-110 transition-transform"></i>
             </a>
-            <a href="https://www.instagram.com/panyemhightech" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-pink-600 hover:text-white transition-all duration-300 group">
+            <a href="https://www.instagram.com/panyemhightech" target="_blank" rel="noopener noreferrer" aria-label="Compte Instagram de Panyem" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-pink-600 hover:text-white transition-all duration-300 group">
               <i class="fab fa-instagram text-lg group-hover:scale-110 transition-transform"></i>
             </a>
           </div>
