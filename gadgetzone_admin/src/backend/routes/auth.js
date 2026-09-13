@@ -143,8 +143,10 @@ router.post('/register', registerLimiter, validateRegister, async (req, res) => 
     // 📧 Envoi de l'email de bienvenue (en arrière-plan)
     try {
       const { emailTemplates } = await import('../services/emailService.js');
-      const welcome = emailTemplates.welcome(firstName);
-      sendEmail(user.email, welcome).catch(e => console.error('Error sending welcome email:', e));
+      if (emailTemplates.welcomeUser) {
+        const welcome = emailTemplates.welcomeUser(firstName, user.email);
+        sendEmail(user.email, welcome).catch(e => console.error('Error sending welcome email:', e));
+      }
     } catch (e) {
       console.error('Could not send welcome email:', e);
     }

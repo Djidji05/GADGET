@@ -472,6 +472,27 @@ export const emailTemplates = {
             
             <p style="font-size: 13px; color: #64748b;">Le délai d'apparition du crédit dépend de votre établissement financier ou service de paiement.</p>
         `
+    }),
+
+    // 16. Email de Bienvenue lors de l'Inscription
+    welcomeUser: (userName, email) => ({
+        subject: `Bienvenue sur Panyem, ${userName} ! 🚀`,
+        text: `Bonjour ${userName},\n\nBienvenue sur Panyem, le marché numérique d'Haïti ! Votre compte (${email}) a été créé avec succès. Visitez https://panyem.com pour découvrir nos produits.`,
+        html: `
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="display: inline-block; padding: 8px 16px; background-color: #dbeafe; color: #1d4ed8; font-weight: 700; font-size: 12px; border-radius: 9999px; text-transform: uppercase;">
+                    👋 Bienvenue chez Panyem
+                </div>
+            </div>
+            <h2 style="color: #0f172a; font-size: 22px; font-weight: 800; margin: 0 0 12px 0; text-align: center;">Ravis de vous compter parmi nous, ${userName} !</h2>
+            <p>Bonjour <strong>${userName}</strong>,</p>
+            <p>Votre compte client a été créé avec succès sur <strong>Panyem</strong> avec l'adresse email <strong style="color: #2563eb;">${email}</strong>.</p>
+            <p>Vous pouvez dès maintenant parcourir les boutiques, commander vos produits préférés et suivre vos livraisons en temps réel.</p>
+            
+            <div style="text-align: center; margin: 32px 0;">
+                <a href="${SITE_URL}" style="display: inline-block; padding: 14px 32px; background-color: #2563eb; color: #ffffff; text-decoration: none; font-weight: 700; border-radius: 10px; font-size: 16px;">Découvrir les produits sur Panyem</a>
+            </div>
+        `
     })
 };
 

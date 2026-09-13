@@ -1,11 +1,30 @@
-/**
- * Middleware de validation des données
- */
+import dns from 'dns';
+
+const DISPOSABLE_DOMAINS = new Set([
+  'yopmail.com', 'yopmail.fr', 'mailinator.com', 'tempmail.com', 
+  '10minutemail.com', 'guerrillamail.com', 'trashmail.com', 
+  'sharklasers.com', 'dispostable.com', 'getnada.com', 'throwawaymail.com',
+  'maildrop.cc', 'temp-mail.org', '10minmail.com', 'fakemail.net',
+  'disposable.com', 'getairmail.com', 'mohmal.com', 'guerrillamail.block'
+]);
+
+const COMMON_TYPO_DOMAINS = {
+  'gamil.com': 'gmail.com',
+  'gmial.com': 'gmail.com',
+  'gmal.com': 'gmail.com',
+  'gmaill.com': 'gmail.com',
+  'hotmial.com': 'hotmail.com',
+  'hotmai.com': 'hotmail.com',
+  'yaho.com': 'yahoo.com',
+  'yaho.fr': 'yahoo.fr',
+  'outlok.com': 'outlook.com',
+  'iclou.com': 'icloud.com'
+};
 
 /**
  * Valide les données d'inscription
  */
-export const validateRegister = (req, res, next) => {
+export const validateRegister = async (req, res, next) => {
   const { firstName, lastName, email, password, role } = req.body;
   const errors = [];
 
@@ -19,10 +38,18 @@ export const validateRegister = (req, res, next) => {
     errors.push('Le nom doit contenir au moins 2 caractères');
   }
 
-  // Validation de l'email
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!email || !emailRegex.test(email)) {
-    errors.push('L\'email n\'est pas valide');
+  // Validation stricte du format de l'email
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  if (!email || typeof email !== 'string' || !emailRegex.test(email.trim())) {
+    errors.push('L\'adresse email n\'est pas au format valide (ex: exemple@domaine.com)');
+  } else {
+    const cleanEmail = email.trim().toLowerCase();
+    const domain = cleanEmail.split('@')[1];
+    if (DISPOSABLE_DOMAINS.has(domain)) {
+      errors.push('Les adresses emails temporaires/jetables ne sont pas autorisées');
+    } else if (COMMON_TYPO_DOMAINS[domain]) {
+      errors.push(`Faute de frappe détectée dans l'email (@${domain}). Vouliez-vous dire @${COMMON_TYPO_DOMAINS[domain]} ?`);
+    }
   }
 
   // Validation du mot de passe
@@ -40,9 +67,31 @@ export const validateRegister = (req, res, next) => {
   if (errors.length > 0) {
     return res.status(400).json({
       error: 'Erreur de validation',
-      message: 'Les données fournies ne sont pas valides',
+      message: errors[0],
       errors
     });
+  }
+
+  // Vérification DNS MX du domaine de l'email
+  const cleanEmail = email.trim().toLowerCase();
+  const domain = cleanEmail.split('@')[1];
+
+  try {
+    const mxRecords = await dns.promises.resolveMx(domain);
+    if (!mxRecords || mxRecords.length === 0) {
+      return res.status(400).json({
+        error: 'Email invalide',
+        message: `Le domaine @${domain} ne possède pas de serveur de messagerie valide pour recevoir des emails.`
+      });
+    }
+  } catch (dnsErr) {
+    if (dnsErr.code === 'ENOTFOUND' || dnsErr.code === 'ENODATA') {
+      return res.status(400).json({
+        error: 'Email invalide',
+        message: `Le domaine @${domain} n'existe pas ou ne peut pas recevoir d'emails.`
+      });
+    }
+    console.warn(`[Validation] DNS check warning for ${domain}:`, dnsErr.message);
   }
 
   next();
