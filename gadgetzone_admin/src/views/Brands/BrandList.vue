@@ -28,7 +28,7 @@
     <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       <div v-for="brand in brands" :key="brand.id" class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-md transition-shadow">
         <div class="h-32 flex items-center justify-center p-6 bg-gray-50 dark:bg-gray-900/50">
-          <img v-if="brand.logo_url" :src="brand.logo_url" :alt="brand.name" class="max-h-full max-w-full object-contain" />
+          <img v-if="brand.logo_url" :src="normalizeImageUrl(brand.logo_url)" :alt="brand.name" class="max-h-full max-w-full object-contain" />
           <div v-else class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-2xl font-bold">
             {{ brand.name.charAt(0) }}
           </div>
@@ -126,6 +126,7 @@
 import { ref, onMounted } from 'vue'
 import { brandService } from '@/services/api'
 import { useUIStore } from '@/stores/ui'
+import { normalizeImageUrl } from '@/utils/urlHelper'
 
 const uiStore = useUIStore()
 const brands = ref<any[]>([])
