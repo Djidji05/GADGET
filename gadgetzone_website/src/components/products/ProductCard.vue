@@ -213,7 +213,7 @@ const handleImageError = () => {
       return
     }
   }
-  currentImageUrl.value = '/placeholder-product.jpg'
+  currentImageUrl.value = '/placeholder-product.svg'
 }
 
 const isWishlisted = computed(() => wishlistStore.isInWishlist(props.product.id))

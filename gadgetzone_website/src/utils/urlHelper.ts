@@ -1,10 +1,10 @@
 export const normalizeImageUrl = (input: string | any | null | undefined): string => {
-    if (!input) return '/placeholder-product.jpg';
+    if (!input) return '/placeholder-product.svg';
 
     // Si on reçoit un objet hybride { url, fallback }
     const url = typeof input === 'object' ? (input.url || input.fallback) : input;
 
-    if (!url || typeof url !== 'string') return '/placeholder-product.jpg';
+    if (!url || typeof url !== 'string') return '/placeholder-product.svg';
 
     let normalized = url.trim();
 
@@ -35,7 +35,7 @@ export const normalizeImageUrl = (input: string | any | null | undefined): strin
         normalized.includes('smartwatch.jpg') ||
         normalized.includes('console.jpg')
     ) {
-        return '/placeholder-product.jpg';
+        return '/placeholder-product.svg';
     }
 
     if (normalized.startsWith('http://') || normalized.startsWith('https://')) {
