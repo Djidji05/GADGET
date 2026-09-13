@@ -302,7 +302,7 @@ const allMenuGroups: MenuGroup[] = [
       {
         icon: GridIcon,
         name: "Tableau de bord",
-        subItems: [{ name: "Tableau de bord", path: "/" }],
+        path: "/",
       },
       {
         icon: ChatIcon,
