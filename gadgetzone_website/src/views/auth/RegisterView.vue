@@ -129,14 +129,10 @@
         </div>
 
         <!-- Social Login -->
-        <div class="grid grid-cols-2 gap-4">
-           <a :href="googleAuthUrl" class="flex items-center justify-center gap-2 py-3 px-4 border border-gray-200 dark:border-gray-700 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+        <div class="flex justify-center">
+           <a :href="googleAuthUrl" class="w-full flex items-center justify-center gap-2 py-3 px-4 border border-gray-200 dark:border-gray-700 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
               <i class="fab fa-google text-xl text-red-500"></i>
-              <span class="font-medium text-gray-700 dark:text-gray-300">Google</span>
-           </a>
-           <a :href="facebookAuthUrl" class="flex items-center justify-center gap-2 py-3 px-4 border border-gray-200 dark:border-gray-700 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-              <i class="fab fa-facebook text-xl text-blue-600"></i>
-              <span class="font-medium text-gray-700 dark:text-gray-300">Facebook</span>
+              <span class="font-medium text-gray-700 dark:text-gray-300">Continuer avec Google</span>
            </a>
         </div>
 
@@ -164,7 +160,6 @@ const authStore = useAuthStore()
 
 const apiBaseUrl = (import.meta.env.VITE_API_URL || '/api').replace(/\/+$/, '')
 const googleAuthUrl = `${apiBaseUrl}/auth/google`
-const facebookAuthUrl = `${apiBaseUrl}/auth/facebook`
 
 const isLoading = ref(false)
 const error = ref('')
