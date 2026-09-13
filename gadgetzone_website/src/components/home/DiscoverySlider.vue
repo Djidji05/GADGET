@@ -81,7 +81,7 @@
               <!-- Grid Card Type -->
               <template v-if="getCardType(card) === 'grid'">
                 <div class="p-4 md:p-5 flex flex-col h-full">
-                  <h3 v-if="card.title" class="text-base md:text-lg font-extrabold text-gray-900 dark:text-white mb-3 line-clamp-1">{{ translateIfPossible(card.title) || card.title }}</h3>
+                  <component :is="sectionTitle ? 'h3' : 'h2'" v-if="card.title" class="text-base md:text-lg font-extrabold text-gray-900 dark:text-white mb-3 line-clamp-1">{{ translateIfPossible(card.title) || card.title }}</component>
                   
                   <div 
                     class="grid gap-2.5 mb-3 flex-1"
@@ -129,7 +129,7 @@
                 <div class="p-4 md:p-5 flex flex-col h-full bg-white dark:bg-gray-900 relative">
                   <!-- Header -->
                   <div class="mb-3" v-if="card.title || card.subtitle">
-                    <h3 v-if="card.title" class="text-base md:text-lg font-extrabold text-gray-900 dark:text-white line-clamp-1">{{ translateIfPossible(card.title) || card.title }}</h3>
+                    <component :is="sectionTitle ? 'h3' : 'h2'" v-if="card.title" class="text-base md:text-lg font-extrabold text-gray-900 dark:text-white line-clamp-1">{{ translateIfPossible(card.title) || card.title }}</component>
                     <p v-if="card.subtitle" class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-1">{{ translateIfPossible(card.subtitle) || card.subtitle }}</p>
                   </div>
   

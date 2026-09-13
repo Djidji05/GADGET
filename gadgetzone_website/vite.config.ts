@@ -5,9 +5,21 @@ import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import { VitePWA } from 'vite-plugin-pwa'
 
+function fontDisplaySwapPlugin() {
+  return {
+    name: 'font-display-swap-plugin',
+    transform(code: string, id: string) {
+      if (id.endsWith('.css') || id.includes('.css?')) {
+        return code.replace(/@font-face\s*\{(?!\s*font-display:)/g, '@font-face { font-display: swap; ');
+      }
+    }
+  }
+}
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    fontDisplaySwapPlugin(),
     vue(),
     VitePWA({
       registerType: 'autoUpdate',
