@@ -128,8 +128,23 @@ class ProductController {
                 delete data.is_featured;
             } else if (req.user.role === 'admin' || req.user.role === 'gestionnaire') {
                 data.moderation_status = 'approved';
-                if (!data.storeId && req.store) {
-                    data.storeId = req.store.id;
+                if (!data.storeId) {
+                    const { Store } = await import('../models/index.js');
+                    const { Op } = await import('sequelize');
+                    let officialStore = await Store.findOne({ where: { userId: req.user.id } })
+                                     || await Store.findOne({ where: { name: { [Op.like]: '%Panyem%' } } })
+                                     || await Store.findOne({ where: { name: { [Op.like]: '%panyem%' } } });
+
+                    if (!officialStore) {
+                        officialStore = await Store.create({
+                            name: 'Panyem',
+                            slug: 'panyem',
+                            description: 'Boutique officielle Panyem',
+                            userId: req.user.id,
+                            status: 'active'
+                        });
+                    }
+                    data.storeId = officialStore.id;
                 }
             }
             const product = await this.productService.create(data);

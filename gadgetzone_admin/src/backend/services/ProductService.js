@@ -159,23 +159,29 @@ export default class ProductService extends BaseService {
     }
 
     async create(data, options = {}) {
-        // Garantir qu'un storeId valide existe en base de données
+        // Garantir qu'un storeId valide et lié à Panyem est défini
         if (!data.storeId) {
-            let defaultStore = await Store.findOne({ order: [['id', 'ASC']] });
-            if (!defaultStore) {
-                const { User } = await import('../models/index.js');
+            const { Op } = await import('sequelize');
+            let officialStore = await Store.findOne({ where: { name: { [Op.like]: '%Panyem%' } } })
+                             || await Store.findOne({ where: { name: { [Op.like]: '%panyem%' } } });
+            if (!officialStore) {
                 const adminUser = await User.findOne({ where: { role: 'admin' } }) || await User.findOne();
                 if (adminUser) {
-                    defaultStore = await Store.create({
-                        name: 'Boutique Officielle GadgetZone',
-                        slug: 'gadgetzone-officiel',
-                        description: 'Boutique officielle GadgetZone',
+                    officialStore = await Store.create({
+                        name: 'Panyem',
+                        slug: 'panyem',
+                        description: 'Boutique officielle Panyem',
                         userId: adminUser.id,
                         status: 'active'
                     });
                 }
             }
-            data.storeId = defaultStore ? defaultStore.id : 1;
+            if (officialStore) {
+                data.storeId = officialStore.id;
+            } else {
+                let defaultStore = await Store.findOne({ order: [['id', 'ASC']] });
+                data.storeId = defaultStore ? defaultStore.id : 1;
+            }
         }
 
         // Traiter les images Base64 avant création
