@@ -800,26 +800,14 @@ onMounted(async () => {
   try {
     console.log('🏠 Loading home page data...')
 
-    // Initialize Geolocation
+    // Initialize Geolocation from saved coords (do NOT prompt on initial load to preserve bfcache)
     const lastCoords = localStorage.getItem('user_coords');
-    if (!lastCoords) {
-      // First time: try to get position
-      try {
-        const coords = await getPosition();
-        if (coords) {
-          saveCoords(coords.latitude, coords.longitude);
-          productsStore.setCoordinates(coords.latitude, coords.longitude);
-        }
-      } catch (err) {
-        console.log('Location access declined or error:', err);
-      }
-    } else {
-      // Already has coords
+    if (lastCoords) {
       try {
         const coords = JSON.parse(lastCoords);
         productsStore.setCoordinates(coords.latitude, coords.longitude);
-      } catch (e) {
-        console.error("Error loading saved coords", e);
+      } catch (err) {
+        console.log('Error parsing user_coords:', err);
       }
     }
 
