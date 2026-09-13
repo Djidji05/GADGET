@@ -160,9 +160,9 @@ export async function notifyNewOrder(order) {
             // Email Vendeur
             if (owner.email) {
                 try {
-                    const subject = `🎉 Nouvelle vente sur votre boutique ! (Commande #${order.order_number || order.id})`;
-                    const text = `Bonjour ${owner.name},\n\nFélicitations ! Vous venez de recevoir une nouvelle commande d'une valeur de ${order.total_amount} HTG de la part de ${order.user?.name || 'un client'}.\n\nMerci de vous connecter rapidement à votre tableau de bord vendeur pour préparer et expédier cette commande.\n\nL'équipe Panyem.`;
-                    sendEmail(owner.email, subject, text);
+                    const { emailTemplates } = await import('../services/emailService.js');
+                    const template = emailTemplates.vendorNewOrder(owner.name, order.order_number || order.id, order.total_amount);
+                    sendEmail(owner.email, template);
                 } catch (e) {
                     console.error('Error sending order email to seller:', e);
                 }
@@ -185,7 +185,7 @@ export async function notifyNewOrder(order) {
             try {
                 const { emailTemplates } = await import('../services/emailService.js');
                 const template = emailTemplates.orderConfirmed(order.order_number || order.id, order.total_amount);
-                sendEmail(order.user.email, template.subject, template.text);
+                sendEmail(order.user.email, template);
             } catch (e) {
                 console.error('Error sending order confirmation email:', e);
             }
@@ -417,7 +417,7 @@ export async function notifyOrderStatusChange(order, oldStatus, newStatus) {
             try {
                 const { emailTemplates } = await import('../services/emailService.js');
                 const template = emailTemplates.orderStatusUpdate(order.order_number || order.id, statusLabels[newStatus] || newStatus);
-                sendEmail(order.user.email, template.subject, template.text);
+                sendEmail(order.user.email, template);
             } catch (e) {
                 console.error('Error sending order status update email:', e);
             }

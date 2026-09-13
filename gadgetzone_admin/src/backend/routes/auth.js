@@ -144,7 +144,7 @@ router.post('/register', registerLimiter, validateRegister, async (req, res) => 
     try {
       const { emailTemplates } = await import('../services/emailService.js');
       const welcome = emailTemplates.welcome(firstName);
-      sendEmail(user.email, welcome.subject, welcome.text).catch(e => console.error('Error sending welcome email:', e));
+      sendEmail(user.email, welcome).catch(e => console.error('Error sending welcome email:', e));
     } catch (e) {
       console.error('Could not send welcome email:', e);
     }
@@ -222,7 +222,7 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
       try {
         const { emailTemplates } = await import('../services/emailService.js');
         const template = emailTemplates.twoFactor(code);
-        sendEmail(user.email, template.subject, template.text);
+        sendEmail(user.email, template);
       } catch (e) {
         console.error('2FA Email Error:', e);
       }
@@ -385,7 +385,7 @@ router.post('/2fa/setup', authenticateToken, async (req, res) => {
 
     const { emailTemplates } = await import('../services/emailService.js');
     const template = emailTemplates.twoFactor(code);
-    await sendEmail(user.email, template.subject, template.text);
+    await sendEmail(user.email, template);
 
     res.json({ message: 'Code de vérification envoyé.' });
   } catch (error) {
