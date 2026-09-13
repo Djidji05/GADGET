@@ -861,9 +861,9 @@ const vendorLocation = computed(() => {
   if (store.department && !store.city) return store.department
   if (store.address) return store.address
   if (store.location) return store.location
-  if (p.vendor_location) return p.vendor_location
-  if (p.location) return p.location
-  if (p.city) return p.city
+  if ((p as any).vendor_location) return (p as any).vendor_location
+  if ((p as any).location) return (p as any).location
+  if ((p as any).city) return (p as any).city
 
   // Fallback Haïti Locations by Store/Product ID
   const locations = [
@@ -876,7 +876,7 @@ const vendorLocation = computed(() => {
     'Saint-Marc',
     'Hinche'
   ]
-  const seed = Number(store.id || p.storeId || p.store_id || p.id || 0)
+  const seed = Number(store.id || (p as any).storeId || (p as any).store_id || p.id || 0)
   return locations[seed % locations.length]
 })
 
