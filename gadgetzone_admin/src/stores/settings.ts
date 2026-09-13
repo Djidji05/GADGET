@@ -51,7 +51,8 @@ export const useSettingsStore = defineStore('settings', () => {
     const getImageUrl = (path: string) => {
         if (!path) return '';
         if (path.startsWith('http')) return path;
-        const baseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:3003/api').replace('/api', '');
+        const defaultApi = typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.hostname}/api` : '/api';
+        const baseUrl = (import.meta.env.VITE_API_URL || defaultApi).replace('/api', '');
         return `${baseUrl}${path}`;
     };
 

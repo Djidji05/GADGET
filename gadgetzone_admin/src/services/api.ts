@@ -5,9 +5,9 @@ import { inactivityTracker, INACTIVITY_TIMEOUT } from './inactivity'
 const getApiBaseUrl = () => {
   if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
   if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-    return `http://${window.location.hostname}:3003/api`;
+    return `${window.location.protocol}//${window.location.hostname}/api`;
   }
-  return 'http://localhost:3003/api';
+  return 'http://localhost:3001/api';
 };
 
 const API_BASE_URL = getApiBaseUrl();

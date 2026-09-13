@@ -95,6 +95,7 @@ app.use(sentryTracingHandler());
 
 // Middleware
 app.use(helmet({
+  contentSecurityPolicy: false,
   crossOriginResourcePolicy: false,
 }));
 app.use(compression());
