@@ -82,21 +82,9 @@ const isMaintenancePage = computed(() => {
   return route.name === 'maintenance'
 })
 
-// Check if footer should be shown
+// Check if footer should be shown (only on home page)
 const shouldShowFooter = computed(() => {
-  // Always hide on auth, seller, checkout, payment success and maintenance pages
-  if (isAuthPage.value || isSellerPage.value || isCheckoutPage.value || isPaymentSuccessPage.value || isMaintenancePage.value) return false
-  
-  // Hide on mobile for specific pages requested (Orders, Cart, Account)
-  if (isMobile.value) {
-    const isCart = route.name === 'cart'
-    const isOrders = route.name === 'orders' || route.name === 'order-detail'
-    const isAccount = ['account', 'addresses', 'wishlist', 'notifications', 'browsing-history'].includes(route.name as string)
-    
-    if (isCart || isOrders || isAccount) return false
-  }
-  
-  return true
+  return route.name === 'home' || route.path === '/'
 })
 
 
