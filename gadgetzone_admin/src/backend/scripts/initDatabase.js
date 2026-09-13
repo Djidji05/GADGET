@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
-import { initDatabase, syncDatabase } from '../config/database.js';
-import { Category, Product, User, sequelize } from '../models/index.js';
+import sequelize, { initDatabase, syncDatabase } from '../config/database.js';
+import { Category, Product, User } from '../models/index.js';
 
 /**
  * Script d'initialisation de la base de données
@@ -109,14 +109,12 @@ const initializeDatabase = async () => {
 
     // Nettoyer les URLs d'images contenant localhost dans la base de données
     try {
-      if (Product && Product.sequelize) {
-        await Product.sequelize.query(`
-          UPDATE products 
-          SET image_url = REGEXP_REPLACE(image_url, '^https?://localhost:[0-9]+', '') 
-          WHERE image_url LIKE '%localhost%'
-        `);
-        console.log('🧹 Nettoyage des URLs localhost effectué dans la base de données');
-      }
+      await sequelize.query(`
+        UPDATE products 
+        SET image_url = REGEXP_REPLACE(image_url, '^https?://localhost:[0-9]+', '') 
+        WHERE image_url LIKE '%localhost%'
+      `);
+      console.log('🧹 Nettoyage des URLs localhost effectué dans la base de données');
     } catch (e) {
       console.warn('⚠️ Note nettoyage URLs localhost:', e.message);
     }
