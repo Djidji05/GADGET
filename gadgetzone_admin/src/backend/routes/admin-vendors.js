@@ -2,6 +2,7 @@ import express from 'express';
 import { Store, User, OrderLog, Product, DisputeMessage, Order } from '../models/index.js';
 import { authenticateToken, requireAdmin } from '../middleware/auth.js';
 import { createNotification } from '../utils/notificationHelper.js';
+import { sendEmail, emailTemplates } from '../services/emailService.js';
 import { Op } from 'sequelize';
 
 const router = express.Router();
@@ -160,6 +161,15 @@ router.put('/applications/:id/approve', authenticateToken, requireAdmin, async (
             }
         );
 
+        if (user.email) {
+            try {
+                const template = emailTemplates.vendorApplicationApproved(user.name || 'Vendeur', store.name);
+                await sendEmail(user.email, template);
+            } catch (mailErr) {
+                console.error('Error sending application approved email:', mailErr);
+            }
+        }
+
         res.json({
             message: 'Application approved successfully',
             store: store.get({ plain: true })
@@ -217,6 +227,15 @@ router.put('/applications/:id/reject', authenticateToken, requireAdmin, async (r
                 metadata: { reason }
             }
         );
+
+        if (user.email) {
+            try {
+                const template = emailTemplates.vendorApplicationRejected(user.name || 'Candidat', store.name, reason);
+                await sendEmail(user.email, template);
+            } catch (mailErr) {
+                console.error('Error sending application rejected email:', mailErr);
+            }
+        }
 
         res.json({
             message: 'Application rejected',
@@ -276,6 +295,15 @@ router.put('/applications/:id/suspend', authenticateToken, requireAdmin, async (
             }
         );
 
+        if (user.email) {
+            try {
+                const template = emailTemplates.vendorStatusUpdate(user.name || 'Vendeur', store.name, 'SUSPENDED', reason);
+                await sendEmail(user.email, template);
+            } catch (mailErr) {
+                console.error('Error sending vendor suspend email:', mailErr);
+            }
+        }
+
         res.json({
             message: 'Vendor suspended',
             store: store.get({ plain: true })
@@ -330,6 +358,15 @@ router.put('/applications/:id/reactivate', authenticateToken, requireAdmin, asyn
                 relatedType: 'store'
             }
         );
+
+        if (user.email) {
+            try {
+                const template = emailTemplates.vendorStatusUpdate(user.name || 'Vendeur', store.name, 'ACTIVE');
+                await sendEmail(user.email, template);
+            } catch (mailErr) {
+                console.error('Error sending vendor reactivate email:', mailErr);
+            }
+        }
 
         res.json({
             message: 'Vendor reactivated',

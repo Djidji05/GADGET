@@ -2,6 +2,7 @@ import express from 'express';
 import { Op } from 'sequelize';
 import { Order, User, Refund } from '../models/index.js';
 import { authenticateToken, requireAdmin } from '../middleware/auth.js';
+import { sendEmail, emailTemplates } from '../services/emailService.js';
 
 const router = express.Router();
 
@@ -260,6 +261,23 @@ router.patch('/:id/complete', async (req, res) => {
             processed_at: refund.processed_at || new Date(),
             updated_at: new Date()
         });
+
+        // Notify Customer by email
+        try {
+            const customer = await User.findByPk(refund.user_id);
+            if (customer && customer.email) {
+                const template = emailTemplates.userRefundCompleted(
+                    customer.name || 'Client',
+                    refund.order_id,
+                    refund.refund_amount,
+                    refund.payment_method || 'Mode initial',
+                    refund.reference
+                );
+                await sendEmail(customer.email, template);
+            }
+        } catch (mailErr) {
+            console.error('Erreur envoi email refund completed:', mailErr);
+        }
 
         res.json(refund);
     } catch (error) {

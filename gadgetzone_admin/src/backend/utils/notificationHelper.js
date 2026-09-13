@@ -612,6 +612,25 @@ export async function notifyNewDisputeMessage(dispute, message) {
                 relatedId: dispute.id,
                 relatedType: 'dispute'
             });
+
+            try {
+                const customer = await User.findByPk(dispute.user_id, { attributes: ['name', 'email'] });
+                const sender = await User.findByPk(message.sender_id, { attributes: ['name', 'role'] });
+                if (customer && customer.email) {
+                    const { emailTemplates } = await import('../services/emailService.js');
+                    const senderTitle = sender ? (sender.role === 'admin' ? 'L\'équipe Admin Panyem' : sender.name) : 'Support Panyem';
+                    const snippet = message.message ? (message.message.length > 150 ? message.message.substring(0, 150) + '...' : message.message) : '';
+                    const template = emailTemplates.disputeMessageAlert(
+                        customer.name || 'Client',
+                        dispute.id,
+                        senderTitle,
+                        snippet
+                    );
+                    await sendEmail(customer.email, template);
+                }
+            } catch (mailErr) {
+                console.error('❌ Erreur envoi email litige au client:', mailErr);
+            }
         }
     } catch (error) {
         console.error('❌ Erreur notification message litige:', error);

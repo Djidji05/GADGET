@@ -320,5 +320,158 @@ export const emailTemplates = {
                 <a href="https://manage.panyem.com/support/tickets" style="display: inline-block; padding: 12px 28px; background-color: #0f172a; color: #ffffff; text-decoration: none; font-weight: 700; border-radius: 8px;">Répondre au ticket</a>
             </div>
         `
+    }),
+
+    // 10. Candidature Vendeur Approuvée (Envoyé au Vendeur)
+    vendorApplicationApproved: (vendorName, storeName) => ({
+        subject: `🎉 Votre candidature boutique "${storeName}" a été approuvée !`,
+        text: `Félicitations ${vendorName} !\n\nVotre demande d'ouverture de la boutique "${storeName}" sur Panyem a été approuvée par nos administrateurs.\n\nVous pouvez désormais vous connecter à votre Espace Vendeur et publier vos premiers produits :\n${SITE_URL}/seller`,
+        html: `
+            <div style="text-align: center; margin-bottom: 24px;">
+                <div style="display: inline-block; padding: 10px 20px; background-color: #dcfce7; color: #15803d; font-weight: 700; font-size: 13px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 1px;">
+                    ✓ Candidature Approuvée
+                </div>
+            </div>
+            <h1 style="color: #0f172a; font-size: 22px; font-weight: 800; margin: 0 0 16px 0; text-align: center;">Félicitations ${vendorName} !</h1>
+            <p>Nous avons le plaisir de vous informer que votre demande d'ouverture de la boutique <strong>"${storeName}"</strong> a été validée par notre équipe d'administration.</p>
+            <p>Votre compte vendeur est maintenant actif. Vous pouvez accéder dès aujourd'hui à votre tableau de bord vendeur pour configurer vos options de livraison, ajouter des produits et recevoir des commandes.</p>
+            <div style="text-align: center; margin: 32px 0;">
+                <a href="${SITE_URL}/seller" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #ffffff; text-decoration: none; font-weight: 700; border-radius: 10px; box-shadow: 0 4px 12px rgba(22,163,74,0.25);">Accéder à mon Espace Vendeur</a>
+            </div>
+            <p style="font-size: 13px; color: #64748b;">Si vous avez besoin d'accompagnement pour démarrer votre activité sur Panyem, n'hésitez pas à contacter notre équipe support sur <a href="mailto:support@panyem.com" style="color: #2563eb;">support@panyem.com</a>.</p>
+        `
+    }),
+
+    // 11. Candidature Vendeur Rejetée (Envoyé au Vendeur)
+    vendorApplicationRejected: (vendorName, storeName, reason = null) => ({
+        subject: `Mise à jour concernant votre demande de boutique "${storeName}"`,
+        text: `Bonjour ${vendorName},\n\nNous avons examiné votre demande d'ouverture de la boutique "${storeName}". Malheureusement, nous ne pouvons pas l'approuver pour le moment.${reason ? `\n\nRaison: ${reason}` : ''}\n\nVous pouvez contacter le support à support@panyem.com pour toute précision.`,
+        html: `
+            <div style="text-align: center; margin-bottom: 24px;">
+                <div style="display: inline-block; padding: 10px 20px; background-color: #fee2e2; color: #b91c1c; font-weight: 700; font-size: 13px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 1px;">
+                    Information Candidature
+                </div>
+            </div>
+            <h2 style="color: #0f172a; font-size: 20px; font-weight: 800; margin: 0 0 16px 0; text-align: center;">Décision concernant la boutique "${storeName}"</h2>
+            <p>Bonjour <strong>${vendorName}</strong>,</p>
+            <p>Nous vous remercions pour l'intérêt que vous portez à Panyem. Après examen de votre dossier de candidature pour la boutique <strong>"${storeName}"</strong>, nous ne sommes pas en mesure d'approuver votre demande pour le moment.</p>
+            ${reason ? `
+            <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 16px 20px; margin: 24px 0; border-radius: 0 8px 8px 0;">
+                <div style="font-size: 12px; color: #991b1b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Motif de la décision</div>
+                <div style="font-size: 14px; color: #7f1d1d; margin-top: 6px; font-weight: 500;">${reason}</div>
+            </div>
+            ` : ''}
+            <p style="font-size: 14px; color: #475569;">Si vous souhaitez obtenir plus d'informations ou soumettre des documents complémentaires, vous pouvez nous écrire sur <a href="mailto:support@panyem.com" style="color: #2563eb;">support@panyem.com</a>.</p>
+        `
+    }),
+
+    // 12. Suspension / Réactivation de Boutique (Envoyé au Vendeur)
+    vendorStatusUpdate: (vendorName, storeName, newStatus, reason = null) => {
+        const isSuspended = newStatus === 'SUSPENDED' || newStatus === 'suspended';
+        return {
+            subject: isSuspended ? `⚠️ Notification importante : Votre boutique "${storeName}" a été suspendue` : `✅ Votre boutique "${storeName}" a été réactivée !`,
+            text: isSuspended 
+                ? `Bonjour ${vendorName},\n\nVotre boutique "${storeName}" a été suspendue par l'administration.${reason ? ` Raison: ${reason}` : ''}`
+                : `Bonjour ${vendorName},\n\nBonne nouvelle ! Votre boutique "${storeName}" a été réactivée par l'administration. Vos produits sont de nouveau visibles sur Panyem.`,
+            html: isSuspended ? `
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <div style="display: inline-block; padding: 10px 20px; background-color: #fef3c7; color: #b45309; font-weight: 700; font-size: 13px; border-radius: 9999px; text-transform: uppercase;">
+                        ⚠️ Suspension de compte
+                    </div>
+                </div>
+                <h2 style="color: #0f172a; font-size: 20px; font-weight: 800; margin: 0 0 16px 0; text-align: center;">Boutique "${storeName}" suspendue</h2>
+                <p>Bonjour <strong>${vendorName}</strong>,</p>
+                <p>Nous vous informons que les activités de votre boutique <strong>"${storeName}"</strong> ont été temporairement suspendues par l'équipe d'administration.</p>
+                ${reason ? `
+                <div style="background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 16px 20px; margin: 24px 0; border-radius: 0 8px 8px 0;">
+                    <div style="font-size: 12px; color: #b45309; font-weight: 700; text-transform: uppercase;">Raison de la suspension</div>
+                    <div style="font-size: 14px; color: #92400e; margin-top: 6px;">${reason}</div>
+                </div>
+                ` : ''}
+                <p style="font-size: 14px; color: #475569;">Veuillez contacter le support à <a href="mailto:support@panyem.com" style="color: #2563eb;">support@panyem.com</a> pour résoudre cette situation.</p>
+            ` : `
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <div style="display: inline-block; padding: 10px 20px; background-color: #dcfce7; color: #15803d; font-weight: 700; font-size: 13px; border-radius: 9999px; text-transform: uppercase;">
+                        ✅ Boutique Réactivée
+                    </div>
+                </div>
+                <h2 style="color: #0f172a; font-size: 20px; font-weight: 800; margin: 0 0 16px 0; text-align: center;">Bonne nouvelle ${vendorName} !</h2>
+                <p>Votre boutique <strong>"${storeName}"</strong> a été réactivée. Vos produits sont à nouveau visibles et vous pouvez recevoir des commandes dès maintenant.</p>
+                <div style="text-align: center; margin: 32px 0;">
+                    <a href="${SITE_URL}/seller" style="display: inline-block; padding: 14px 32px; background-color: #2563eb; color: #ffffff; text-decoration: none; font-weight: 700; border-radius: 10px;">Accéder à la boutique</a>
+                </div>
+            `
+        };
+    },
+
+    // 13. Rejet de Retrait / Payout (Envoyé au Vendeur)
+    vendorPayoutRejected: (vendorName, amount, reason = null) => ({
+        subject: `Information concernant votre demande de retrait de ${amount} HTG`,
+        text: `Bonjour ${vendorName},\n\nVotre demande de retrait de ${amount} HTG n'a pas pu être traitée.${reason ? ` Raison: ${reason}` : ''}`,
+        html: `
+            <h2 style="color: #0f172a; font-size: 20px; font-weight: 800; margin: 0 0 12px 0;">Demande de retrait non validée</h2>
+            <p>Bonjour <strong>${vendorName}</strong>,</p>
+            <p>Nous vous informons que votre demande de retrait d'un montant de <strong>${amount} HTG</strong> n'a pas été validée.</p>
+            ${reason ? `
+            <div style="background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 16px 20px; margin: 20px 0; border-radius: 0 8px 8px 0;">
+                <div style="font-size: 12px; color: #991b1b; font-weight: 700; text-transform: uppercase;">Raison du rejet</div>
+                <div style="font-size: 14px; color: #7f1d1d; margin-top: 4px;">${reason}</div>
+            </div>
+            ` : ''}
+            <p style="font-size: 13px; color: #64748b;">Le montant est réaffecté à votre solde disponible. Pour toute question, contactez notre équipe sur <a href="mailto:support@panyem.com" style="color: #2563eb;">support@panyem.com</a>.</p>
+        `
+    }),
+
+    // 14. Message Litige / Réponse Support (Envoyé au Client)
+    disputeMessageAlert: (customerName, disputeId, senderName, messageSnippet) => ({
+        subject: `Nouveau message sur votre litige #${disputeId} 📩`,
+        text: `Bonjour ${customerName},\n\n${senderName} a envoyé une réponse concernant votre litige #${disputeId} :\n\n"${messageSnippet}"\n\nConsultez le litige sur ${SITE_URL}/orders`,
+        html: `
+            <h2 style="color: #0f172a; font-size: 20px; font-weight: 800; margin: 0 0 12px 0;">Nouveau message dans le litige #${disputeId}</h2>
+            <p>Bonjour <strong>${customerName}</strong>,</p>
+            <p>Une nouvelle réponse a été ajoutée au litige <strong>#${disputeId}</strong> par <strong>${senderName}</strong> :</p>
+            <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 18px; border-radius: 10px; margin: 20px 0; font-style: italic; color: #334155;">
+                "${messageSnippet}"
+            </div>
+            <div style="text-align: center; margin-top: 24px;">
+                <a href="${SITE_URL}/orders" style="display: inline-block; padding: 12px 28px; background-color: #2563eb; color: #ffffff; text-decoration: none; font-weight: 700; border-radius: 8px;">Voir et répondre sur Panyem</a>
+            </div>
+        `
+    }),
+
+    // 15. Confirmation de Remboursement (Envoyé au Client)
+    userRefundCompleted: (customerName, orderId, refundAmount, paymentMethod, reference = null) => ({
+        subject: `Confirmation de votre remboursement de ${refundAmount} HTG 💳`,
+        text: `Bonjour ${customerName},\n\nVotre remboursement de ${refundAmount} HTG pour la commande #${orderId} a été effectué avec succès via ${paymentMethod}.${reference ? ` Référence: ${reference}` : ''}`,
+        html: `
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="display: inline-block; padding: 8px 16px; background-color: #dcfce7; color: #15803d; font-weight: 700; font-size: 12px; border-radius: 9999px; text-transform: uppercase;">
+                    ✓ Remboursement Effectué
+                </div>
+            </div>
+            <h2 style="color: #0f172a; font-size: 20px; font-weight: 800; margin: 0 0 12px 0; text-align: center;">Remboursement Traité avec Succès</h2>
+            <p>Bonjour <strong>${customerName}</strong>,</p>
+            <p>Nous vous confirmons que le remboursement lié à la commande <strong>#${orderId}</strong> a été traité.</p>
+            
+            <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin: 24px 0;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 10px;">
+                    <span style="color: #64748b;">Montant remboursé</span>
+                    <strong style="color: #16a34a; font-size: 18px;">${refundAmount} HTG</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; ${reference ? 'border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 10px;' : ''}">
+                    <span style="color: #64748b;">Moyen de versement</span>
+                    <strong style="color: #0f172a;">${paymentMethod}</strong>
+                </div>
+                ${reference ? `
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #64748b;">Référence de transaction</span>
+                    <strong style="color: #2563eb;">${reference}</strong>
+                </div>
+                ` : ''}
+            </div>
+            
+            <p style="font-size: 13px; color: #64748b;">Le délai d'apparition du crédit dépend de votre établissement financier ou service de paiement.</p>
+        `
     })
 };
+

@@ -3,6 +3,7 @@ import { Payout, Store, User, Wallet } from '../models/index.js';
 import db from '../models/index.js';
 import { authenticateToken, requireAdmin } from '../middleware/auth.js';
 import { createNotification } from '../utils/notificationHelper.js';
+import { sendEmail, emailTemplates } from '../services/emailService.js';
 
 const router = express.Router();
 
@@ -92,8 +93,9 @@ router.put('/:id/approve', authenticateToken, requireAdmin, async (req, res) => 
 
         // Notifier le vendeur
         if (payout.store && payout.store.userId) {
+            const userId = payout.store.userId;
             await createNotification(
-                payout.store.userId,
+                userId,
                 'success',
                 '💸 Retrait traité',
                 `Votre demande de retrait de ${payout.amount} HTG a été traitée avec succès.`,
@@ -102,6 +104,20 @@ router.put('/:id/approve', authenticateToken, requireAdmin, async (req, res) => 
                     relatedType: 'payout'
                 }
             );
+
+            try {
+                const vendorUser = await User.findByPk(userId);
+                if (vendorUser && vendorUser.email) {
+                    const template = emailTemplates.vendorPayoutApproved(
+                        vendorUser.name || payout.store.name || 'Vendeur',
+                        payout.amount,
+                        payout.paymentMethod || 'MonCash'
+                    );
+                    await sendEmail(vendorUser.email, template);
+                }
+            } catch (mailErr) {
+                console.error('Error sending payout approved email:', mailErr);
+            }
         }
 
         res.json({ message: 'Paiement approuvé', payout });
@@ -135,8 +151,9 @@ router.put('/:id/reject', authenticateToken, requireAdmin, async (req, res) => {
 
         // Notifier le vendeur
         if (payout.store && payout.store.userId) {
+            const userId = payout.store.userId;
             await createNotification(
-                payout.store.userId,
+                userId,
                 'error',
                 '❌ Retrait rejeté',
                 `Votre demande de retrait de ${payout.amount} HTG a été rejetée. Raison: ${reason || 'Non spécifiée'}`,
@@ -145,6 +162,20 @@ router.put('/:id/reject', authenticateToken, requireAdmin, async (req, res) => {
                     relatedType: 'payout'
                 }
             );
+
+            try {
+                const vendorUser = await User.findByPk(userId);
+                if (vendorUser && vendorUser.email) {
+                    const template = emailTemplates.vendorPayoutRejected(
+                        vendorUser.name || payout.store.name || 'Vendeur',
+                        payout.amount,
+                        reason
+                    );
+                    await sendEmail(vendorUser.email, template);
+                }
+            } catch (mailErr) {
+                console.error('Error sending payout rejected email:', mailErr);
+            }
         }
 
         res.json({ message: 'Paiement rejeté', payout });
