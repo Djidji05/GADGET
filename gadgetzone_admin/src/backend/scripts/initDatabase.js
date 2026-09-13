@@ -43,7 +43,9 @@ const initializeDatabase = async () => {
         price: 899.99,
         stock: 50,
         category_id: categories[0]?.id || 1,
-        image_url: '/images/products/smartphone.jpg'
+        image_url: '/images/products/smartphone.jpg',
+        status: 'active',
+        moderation_status: 'approved'
       },
       {
         name: 'Laptop Ultra',
@@ -51,7 +53,9 @@ const initializeDatabase = async () => {
         price: 1299.99,
         stock: 25,
         category_id: categories[0]?.id || 1,
-        image_url: '/images/products/laptop.jpg'
+        image_url: '/images/products/laptop.jpg',
+        status: 'active',
+        moderation_status: 'approved'
       },
       {
         name: 'Écouteurs Sans Fil',
@@ -59,7 +63,9 @@ const initializeDatabase = async () => {
         price: 199.99,
         stock: 100,
         category_id: categories[1]?.id || 2,
-        image_url: '/images/products/earbuds.jpg'
+        image_url: '/images/products/earbuds.jpg',
+        status: 'active',
+        moderation_status: 'approved'
       },
       {
         name: 'Montre Intelligente',
@@ -67,7 +73,9 @@ const initializeDatabase = async () => {
         price: 299.99,
         stock: 75,
         category_id: categories[0]?.id || 1,
-        image_url: '/images/products/smartwatch.jpg'
+        image_url: '/images/products/smartwatch.jpg',
+        status: 'active',
+        moderation_status: 'approved'
       },
       {
         name: 'Console de Gaming',
@@ -75,9 +83,17 @@ const initializeDatabase = async () => {
         price: 499.99,
         stock: 30,
         category_id: categories[3]?.id || 4,
-        image_url: '/images/products/console.jpg'
+        image_url: '/images/products/console.jpg',
+        status: 'active',
+        moderation_status: 'approved'
       }
     ], { ignoreDuplicates: true });
+
+    // Approuver tous les produits existants pour qu'ils s'affichent publiquement
+    await Product.update(
+      { status: 'active', moderation_status: 'approved' },
+      { where: {} }
+    );
 
     // Créer les utilisateurs
     const hashedPassword = await bcrypt.hash('password123', 10);
