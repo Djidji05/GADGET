@@ -1058,7 +1058,7 @@ const oneTimeCodes = new Map();
  */
 router.post('/one-time-code', authenticateToken, async (req, res) => {
   try {
-    const userId = req.user.userId;
+    const userId = req.user.id || req.user.userId;
     
     // Récupérer le token d'origine depuis les en-têtes Authorization
     const authHeader = req.headers['authorization'];

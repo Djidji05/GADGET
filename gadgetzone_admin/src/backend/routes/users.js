@@ -210,7 +210,7 @@ router.delete('/:id', authenticateToken, hasPermission('manage_users'), async (r
         }
 
         // Ne pas se supprimer soi-même
-        if (user.id === req.user.userId) {
+        if (user.id === (req.user.id || req.user.userId)) {
             return res.status(403).json({ error: 'Vous ne pouvez pas supprimer votre propre compte' });
         }
 
