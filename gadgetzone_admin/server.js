@@ -199,8 +199,6 @@ const startServer = async () => {
     if (!dbInitialized) {
       throw new Error('Database initialization failed');
     }
-    await fixEmptyDescriptions().catch(err => console.warn('[FixDescriptions] Warning:', err.message));
-
     app.listen(PORT, '0.0.0.0', () => {
       console.log(`🚀 Backend server running on port ${PORT}`);
       console.log(`📊 API available at: http://localhost:${PORT}/api`);
@@ -210,6 +208,11 @@ const startServer = async () => {
       startAbandonedCartCron();
       startMonCashExpirationCron();
       startPaymentTimeoutCron();
+
+      // Lancer la correction des descriptions en arrière-plan (non bloquant)
+      setTimeout(() => {
+        fixEmptyDescriptions().catch(err => console.warn('[FixDescriptions] Warning:', err.message));
+      }, 3000);
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error);
