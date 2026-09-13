@@ -171,7 +171,7 @@
               <span v-if="notificationsStore.unreadCount > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full leading-none">{{ notificationsStore.unreadCount }}</span>
             </router-link>
 
-            <router-link to="/wishlist" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors relative p-1">
+            <router-link to="/wishlist" aria-label="Ma liste d'envies" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors relative p-1">
               <i class="fas fa-heart text-xl"></i>
               <span v-if="wishlistStore.itemCount > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full leading-none">{{ wishlistStore.itemCount }}</span>
             </router-link>
@@ -199,13 +199,14 @@
               />
               <button 
                 @click="triggerImageSearch"
+                aria-label="Recherche par image"
                 class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500"
               >
                 <i :class="isImageSearching ? 'fas fa-spinner fa-spin' : 'fas fa-camera'"></i>
               </button>
             </div>
             <Transition name="fade">
-              <button v-if="!isMobileMenuOpen" @click="isMobileMenuOpen = true" class="p-2 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
+              <button v-if="!isMobileMenuOpen" @click="isMobileMenuOpen = true" aria-label="Ouvrir le menu" class="p-2 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path d="M4 6H21L19 9H2L4 6Z"/>
                     <path d="M4 12H16L14 15H2L4 12Z"/>
@@ -249,7 +250,7 @@
               <span v-if="notificationsStore.unreadCount > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full leading-none">{{ notificationsStore.unreadCount }}</span>
             </router-link>
 
-            <router-link to="/wishlist" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors relative p-1">
+            <router-link to="/wishlist" aria-label="Ma liste d'envies" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors relative p-1">
               <i class="fas fa-heart text-xl"></i>
               <span v-if="wishlistStore.itemCount > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full leading-none">{{ wishlistStore.itemCount }}</span>
             </router-link>
@@ -277,13 +278,14 @@
               />
               <button 
                 @click="triggerImageSearch"
+                aria-label="Recherche par image"
                 class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500"
               >
                 <i :class="isImageSearching ? 'fas fa-spinner fa-spin' : 'fas fa-camera'"></i>
               </button>
             </div>
             <Transition name="fade">
-              <button v-if="!isMobileMenuOpen" @click="isMobileMenuOpen = true" class="p-2 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
+              <button v-if="!isMobileMenuOpen" @click="isMobileMenuOpen = true" aria-label="Ouvrir le menu" class="p-2 text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400">
                 <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                     <path d="M4 6H21L19 9H2L4 6Z"/>
                     <path d="M4 12H16L14 15H2L4 12Z"/>
@@ -380,6 +382,7 @@
             <!-- Search Button -->
             <button
               @click="handleSearch"
+              aria-label="Rechercher"
               class="absolute right-0 top-0 bottom-0 bg-blue-400 hover:bg-blue-500 text-white px-6 rounded-r-full transition-colors"
             >
               <i class="fas fa-search"></i>

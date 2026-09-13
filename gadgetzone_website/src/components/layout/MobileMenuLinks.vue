@@ -47,6 +47,7 @@
     <!-- Wishlist (Mobile) -->
     <router-link
       to="/wishlist"
+      aria-label="Ma liste d'envies"
       class="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-200 font-medium"
       @click="$emit('close')"
     >

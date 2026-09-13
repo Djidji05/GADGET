@@ -9,6 +9,7 @@
         <!-- Back Button -->
         <button 
           @click="closeOverlay" 
+          aria-label="Retour"
           class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-800 active:scale-90 transition-all text-gray-700 dark:text-gray-300"
         >
           <i class="fas fa-arrow-left text-lg"></i>
@@ -29,6 +30,7 @@
             <button 
               v-if="query" 
               @click="clearQuery"
+              aria-label="Effacer la recherche"
               class="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 p-1"
             >
               <i class="fas fa-times-circle"></i>
@@ -36,6 +38,7 @@
             <!-- Camera Button -->
             <button 
               @click="triggerImageSearch"
+              aria-label="Recherche par image"
               class="text-gray-400 dark:text-gray-500 hover:text-blue-500 p-1"
               title="Recherche par image"
             >
@@ -92,6 +95,7 @@
                 </button>
                 <button 
                   @click="deleteRecent(search)"
+                  aria-label="Supprimer de l'historique"
                   class="text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 p-1.5 transition-colors"
                 >
                   <i class="fas fa-times text-xs"></i>
