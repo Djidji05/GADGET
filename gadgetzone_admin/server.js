@@ -136,7 +136,6 @@ if (process.env.NODE_ENV === 'production') {
 // Routes API
 app.use('/api/v1', apiRoutes);
 app.use('/api', apiRoutes);
-app.use('/', apiRoutes); // Alias pour les appels qui oublient le /api
 
 // Middleware de gestion des erreurs
 app.use(asyncErrorLogger);
