@@ -3,8 +3,8 @@ import { PushSubscription, User } from '../models/index.js';
 
 // Les clés VAPID sont générées une fois et stockées dans .env
 // Générer avec: npx web-push generate-vapid-keys
-const VAPID_PUBLIC = process.env.VAPID_PUBLIC_KEY || '';
-const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY || '';
+const VAPID_PUBLIC = process.env.VAPID_PUBLIC_KEY || 'BEy8gtF92dvanQUiSvycNfvpPhu-Q49igaOB32pJXUEc7rIx9e1VRLOZbaAs8DHjlxVZ-CIGS5ccxdurL4cZPtA';
+const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY || 'y_BMWgcunb871xbdK6YXkREQm3ySB-gqdty1PLo0mpk';
 const VAPID_SUBJECT = process.env.VAPID_SUBJECT || 'mailto:contact@panyem.com';
 
 if (VAPID_PUBLIC && VAPID_PRIVATE) {

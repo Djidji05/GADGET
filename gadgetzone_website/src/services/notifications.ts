@@ -42,8 +42,12 @@ export const notificationsService = {
     },
 
     async getVapidKey(): Promise<string> {
-        const response = await api.get('/push/vapid-key')
-        return response.data.publicKey
+        try {
+            const response = await api.get('/push/vapid-key')
+            return response.data?.publicKey || ''
+        } catch (e) {
+            return ''
+        }
     },
 
     async subscribePush(subscription: any): Promise<any> {

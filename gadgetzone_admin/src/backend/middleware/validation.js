@@ -266,18 +266,27 @@ export const validatePasswordChange = (req, res, next) => {
  * Valide les données de mise à jour du profil
  */
 export const validateProfileUpdate = (req, res, next) => {
-  const { name, email } = req.body;
+  const { name, firstName, lastName, email } = req.body;
   const errors = [];
 
-  // Validation du nom
-  if (!name || typeof name !== 'string' || name.trim().length < 2) {
-    errors.push('Le nom doit contenir au moins 2 caractères');
+  // Construct name if firstName/lastName provided
+  if (!name && (firstName || lastName)) {
+    req.body.name = `${firstName || ''} ${lastName || ''}`.trim();
   }
 
-  // Validation de l'email
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!email || !emailRegex.test(email)) {
-    errors.push('L\'email n\'est pas valide');
+  // Validation du nom si fourni
+  if (req.body.name !== undefined) {
+    if (typeof req.body.name !== 'string' || req.body.name.trim().length < 2) {
+      errors.push('Le nom doit contenir au moins 2 caractères');
+    }
+  }
+
+  // Validation de l'email si fourni
+  if (email !== undefined && email !== null) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      errors.push('L\'email n\'est pas valide');
+    }
   }
 
   if (errors.length > 0) {

@@ -465,13 +465,18 @@ router.get('/profile', authenticateToken, async (req, res) => {
  * PUT /api/auth/profile
  * Mettre à jour le profil de l'utilisateur
  */
-router.put('/profile', validateProfileUpdate, authenticateToken, async (req, res) => {
+router.put('/profile', authenticateToken, validateProfileUpdate, async (req, res) => {
   try {
-    const { name, email, phone, currentPassword, password } = req.body;
+    const { name, firstName, lastName, email, phone, currentPassword, password } = req.body;
     const userId = req.user.id;
 
+    let fullName = name;
+    if (!fullName && (firstName || lastName)) {
+      fullName = `${firstName || ''} ${lastName || ''}`.trim();
+    }
+
     // Vérifier si l'email est déjà utilisé par un autre utilisateur
-    if (email !== req.user.email) {
+    if (email && email !== req.user.email) {
       const existingUser = await User.findOne({
         where: { email, id: { [Sequelize.Op.ne]: userId } }
       });
@@ -484,7 +489,10 @@ router.put('/profile', validateProfileUpdate, authenticateToken, async (req, res
       }
     }
 
-    const updates = { name, email, phone };
+    const updates = {};
+    if (fullName) updates.name = fullName;
+    if (email) updates.email = email;
+    if (phone !== undefined) updates.phone = phone;
 
     // Check if user wants to update password
     if (password) {
