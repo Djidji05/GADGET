@@ -105,7 +105,7 @@
 
     <!-- Top Discovery Sections (PC Desktop Overlapping Style ONLY) -->
     <div class="relative z-20 mt-4 md:mt-6 lg:-mt-48 xl:-mt-52 max-w-7xl mx-auto px-4">
-      <DiscoverySlider :cards="mainDiscoveryCards as any" :cards-per-view="4" :is-loading="personalizationStore.isLoading" />
+      <DiscoverySlider :cards="mainDiscoveryCards as any" :cards-per-view="4" :is-loading="personalizationStore.isLoading" :is-eager="true" />
     </div>
 
     <!-- Commercial Trust & Services Bar (PC Desktop ONLY) -->

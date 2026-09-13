@@ -107,7 +107,8 @@
                           :alt="item.name" 
                           width="200" 
                           height="200" 
-                          loading="lazy"
+                          :loading="isEager ? 'eager' : 'lazy'"
+                          :fetchpriority="isEager ? 'high' : 'auto'"
                           class="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" 
                         />
                         <div v-else class="text-gray-300"><i class="fas fa-image text-xl"></i></div>
@@ -146,7 +147,8 @@
                         :alt="card.title || 'Offres promotionnelles de la semaine'"
                         width="600"
                         height="338"
-                        loading="lazy"
+                        :loading="isEager ? 'eager' : 'lazy'"
+                        :fetchpriority="isEager ? 'high' : 'auto'"
                         class="absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-700 group-hover:scale-105"
                       >
                       
@@ -226,10 +228,12 @@ const props = withDefaults(defineProps<{
   layout?: 'slider' | 'grid';
   cardsPerView?: 1 | 2 | 3 | 4;
   isLoading?: boolean;
+  isEager?: boolean;
 }>(), {
   layout: 'slider',
   cardsPerView: 3,
-  isLoading: false
+  isLoading: false,
+  isEager: false
 });
 
 const router = useRouter();
