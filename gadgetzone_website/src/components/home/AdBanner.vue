@@ -13,7 +13,7 @@
         class="relative overflow-hidden rounded-3xl shadow-xl bg-gray-900 group h-[220px] transition-all hover:-translate-y-1 hover:shadow-2xl"
       >
         <img 
-          :src="banner.image" 
+          :src="normalizeImageUrl(banner.image)" 
           width="800"
           height="300"
           loading="lazy"
@@ -54,7 +54,7 @@
         >
           <!-- Background Image -->
           <img 
-            :src="banner.image" 
+            :src="normalizeImageUrl(banner.image)" 
             width="1280"
             height="360"
             loading="lazy"
@@ -154,6 +154,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { usePersonalizationStore } from '@/stores/personalization';
 import { storeToRefs } from 'pinia';
+import { normalizeImageUrl } from '@/utils/urlHelper';
 
 const { adsConfig } = storeToRefs(usePersonalizationStore());
 const currentIndex = ref(0);

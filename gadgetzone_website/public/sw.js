@@ -1,5 +1,5 @@
-// Service Worker HTFasil — Cache-first pour assets statiques, Network-first pour API
-const CACHE_NAME = 'htfasil-v1'
+// Service Worker Panyem — Cache-first pour assets statiques, Network-first pour API
+const CACHE_NAME = 'panyem-v2'
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -28,8 +28,8 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url)
   
-  // ⚡ Ignorer les requêtes API et SSE (toujours réseau)
-  if (url.pathname.startsWith('/api') || url.pathname.startsWith('/sse')) return
+  // ⚡ Ignorer les requêtes API, SSE et uploads (toujours réseau)
+  if (url.pathname.startsWith('/api') || url.pathname.startsWith('/sse') || url.pathname.startsWith('/uploads')) return
 
   // 🖼️ Assets statiques : Cache-first avec fallback réseau
   if (event.request.destination === 'image' || 

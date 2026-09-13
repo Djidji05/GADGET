@@ -103,7 +103,7 @@
                       >
                         <img 
                           v-if="item.image" 
-                          :src="item.image" 
+                          :src="normalizeImageUrl(item.image)" 
                           :alt="item.name" 
                           width="200" 
                           height="200" 
@@ -142,7 +142,7 @@
                       <!-- Background Image -->
                       <img 
                         v-if="card.promoStyle !== 'color' && card.image" 
-                        :src="card.image" 
+                        :src="normalizeImageUrl(card.image)" 
                         width="600"
                         height="338"
                         loading="lazy"
@@ -273,6 +273,7 @@ const navigateTo = (link: string) => {
 
 // --- i18n Helpers ---
 import { useI18n } from 'vue-i18n';
+import { normalizeImageUrl } from '@/utils/urlHelper';
 const { t, te } = useI18n();
 
 const translateIfPossible = (text: string | undefined) => {
