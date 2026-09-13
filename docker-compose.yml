@@ -53,6 +53,8 @@ services:
           BACKEND_PORT: 3001
           JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
           SENTRY_DSN: ${SENTRY_DSN:-}
+          RESEND_API_KEY: ${RESEND_API_KEY:-}
+          RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:-notifications@panyem.com}
       depends_on:
           - db
           - redis
