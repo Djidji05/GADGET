@@ -118,11 +118,13 @@ const isActive = (path: string) => {
 }
 
 .nav-item.active {
-  color: #3b82f6;
+  color: #2563eb;
+  font-weight: 600;
 }
 
 :global(.dark) .nav-item.active {
-  color: #3b82f6;
+  color: #60a5fa;
+  font-weight: 600;
 }
 
 .icon {
@@ -168,6 +170,6 @@ span {
 }
 
 .dark .nav-item.active {
-  color: #3b82f6 !important;
+  color: #60a5fa !important;
 }
 </style>

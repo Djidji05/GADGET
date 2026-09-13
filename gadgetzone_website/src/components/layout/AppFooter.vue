@@ -25,7 +25,7 @@
               <button 
                 @click="subscribeNewsletter"
                 :disabled="isSubscribing"
-                class="absolute right-1 top-1 bottom-1 bg-blue-500 hover:bg-blue-600 text-white px-6 rounded-md font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                class="absolute right-1 top-1 bottom-1 bg-blue-600 hover:bg-blue-700 text-white px-6 rounded-md font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {{ isSubscribing ? $t('footer.subscribing') : $t('footer.subscribe') }}
               </button>

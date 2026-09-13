@@ -352,7 +352,7 @@
       <div class="container mx-auto px-4 flex items-center">
         <!-- Logo -->
         <div class="flex items-center mr-6">
-          <router-link to="/" class="flex items-center">
+          <router-link to="/" class="flex items-center" aria-label="Panyem - Page d'accueil">
             <img src="/images/logo.png" alt="Panyem Logo" width="120" height="24" class="h-6 w-auto" />
           </router-link>
         </div>
@@ -375,6 +375,7 @@
               @click="triggerImageSearch"
               class="absolute right-16 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 transition-colors p-2"
               title="Recherche par image"
+              aria-label="Recherche par image"
             >
                <i :class="isImageSearching ? 'fas fa-spinner fa-spin' : 'fas fa-camera'"></i>
             </button>
@@ -383,7 +384,7 @@
             <button
               @click="handleSearch"
               aria-label="Rechercher"
-              class="absolute right-0 top-0 bottom-0 bg-blue-400 hover:bg-blue-500 text-white px-6 rounded-r-full transition-colors"
+              class="absolute right-0 top-0 bottom-0 bg-blue-600 hover:bg-blue-700 text-white px-6 rounded-r-full transition-colors"
             >
               <i class="fas fa-search"></i>
             </button>

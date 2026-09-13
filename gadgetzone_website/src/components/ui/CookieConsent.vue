@@ -130,20 +130,20 @@ const acceptCookies = () => {
 }
 
 .btn-accept {
-  background: #3b82f6;
-  color: white;
+  background: #2563eb;
+  color: #ffffff;
   border: none;
   padding: 0.75rem 1.5rem;
   border-radius: 0.75rem;
   font-size: 0.875rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s;
   white-space: nowrap;
 }
 
 .btn-accept:hover {
-  background: #2563eb;
+  background: #1d4ed8;
   transform: translateY(-1px);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
 }

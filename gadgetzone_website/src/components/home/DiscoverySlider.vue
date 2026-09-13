@@ -81,7 +81,7 @@
               <!-- Grid Card Type -->
               <template v-if="getCardType(card) === 'grid'">
                 <div class="p-4 md:p-5 flex flex-col h-full">
-                  <h3 class="text-base md:text-lg font-extrabold text-gray-900 dark:text-white mb-3 line-clamp-1">{{ translateIfPossible(card.title) || card.title }}</h3>
+                  <h3 v-if="card.title" class="text-base md:text-lg font-extrabold text-gray-900 dark:text-white mb-3 line-clamp-1">{{ translateIfPossible(card.title) || card.title }}</h3>
                   
                   <div 
                     class="grid gap-2.5 mb-3 flex-1"
@@ -127,8 +127,8 @@
               <template v-else>
                 <div class="p-4 md:p-5 flex flex-col h-full bg-white dark:bg-gray-900 relative">
                   <!-- Header -->
-                  <div class="mb-3">
-                    <h3 class="text-base md:text-lg font-extrabold text-gray-900 dark:text-white line-clamp-1">{{ translateIfPossible(card.title) || card.title }}</h3>
+                  <div class="mb-3" v-if="card.title || card.subtitle">
+                    <h3 v-if="card.title" class="text-base md:text-lg font-extrabold text-gray-900 dark:text-white line-clamp-1">{{ translateIfPossible(card.title) || card.title }}</h3>
                     <p v-if="card.subtitle" class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-1">{{ translateIfPossible(card.subtitle) || card.subtitle }}</p>
                   </div>
   
@@ -151,8 +151,8 @@
                       >
                       
                       <!-- Overlay Content inside image -->
-                      <div class="relative z-10 flex flex-col items-center justify-center h-full w-full p-3">
-                        <h3 
+                      <div v-if="card.promoText" class="relative z-10 flex flex-col items-center justify-center h-full w-full p-3">
+                        <p 
                             class="mb-1 drop-shadow-md text-center leading-snug"
                             :class="[
                                 card.promoStyle === 'color' ? 'text-white' : 'text-white',
@@ -162,8 +162,9 @@
                             :style="{ color: card.promoTextColor }"
                         >
                           {{ card.promoText }}
-                        </h3>
+                        </p>
                       </div>
+
   
                       <!-- Dark overlay -->
                       <div v-if="card.promoStyle !== 'color' && card.image" class="absolute inset-0 bg-black/30 z-0"></div>
