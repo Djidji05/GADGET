@@ -55,6 +55,10 @@ services:
           SENTRY_DSN: ${SENTRY_DSN:-}
           RESEND_API_KEY: ${RESEND_API_KEY:-}
           RESEND_FROM_EMAIL: ${RESEND_FROM_EMAIL:-notifications@panyem.com}
+          GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+          GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+          GOOGLE_CALLBACK_URL: ${GOOGLE_CALLBACK_URL:-https://manage.panyem.com/api/auth/google/callback}
+          FRONTEND_URL: ${FRONTEND_URL:-https://panyem.com}
       depends_on:
           - db
           - redis
