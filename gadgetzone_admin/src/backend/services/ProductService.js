@@ -4,7 +4,7 @@ import { applyPromotionsToProducts, applyPromotionsToProduct } from '../utils/pr
 import { getCache, setCache, delCache, delCacheByPattern } from '../config/redis.js';
 import searchService from './SearchService.js';
 import OfferRepository from '../repositories/OfferRepository.js';
-import { Product, Offer } from '../models/index.js';
+import { Product, Offer, Store, User } from '../models/index.js';
 import LocalFileService from './LocalFileService.js';
 import { slugify } from '../utils/slugify.js';
 
