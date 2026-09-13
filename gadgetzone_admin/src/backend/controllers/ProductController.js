@@ -117,6 +117,9 @@ class ProductController {
             // 🛡️ SÉCURISATION MASS ASSIGNMENT : Filtrer et forcer les champs critiques
             let data = { ...req.body };
             if (req.user.role === 'seller') {
+                if (!req.store) {
+                    return res.status(403).json({ error: 'Boutique introuvable', message: 'Aucune boutique associée à ce compte vendeur.' });
+                }
                 // Forcer la boutique de l'utilisateur et le statut 'pending'
                 data.storeId = req.store.id;
                 data.moderation_status = 'pending';
@@ -125,12 +128,16 @@ class ProductController {
                 delete data.is_featured;
             } else if (req.user.role === 'admin' || req.user.role === 'gestionnaire') {
                 data.moderation_status = 'approved';
+                if (!data.storeId && req.store) {
+                    data.storeId = req.store.id;
+                }
             }
             const product = await this.productService.create(data);
             res.status(201).json(product);
         } catch (error) {
             console.error('❌ Controller Error [createProduct]:', error);
-            res.status(400).json({ error: 'Failed to create product', message: error.message });
+            const msg = error.errors ? error.errors.map(e => e.message).join(', ') : error.message;
+            res.status(400).json({ error: 'Failed to create product', message: msg, details: msg });
         }
     };
 

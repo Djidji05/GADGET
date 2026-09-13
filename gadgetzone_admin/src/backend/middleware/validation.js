@@ -138,36 +138,37 @@ export const validateProduct = (req, res, next) => {
     errors.push('Le nom du produit doit contenir au moins 2 caractères');
   }
 
-  // Validation de la description
+  // Validation de la description (min 10 caractères si fournie)
   if (!description || typeof description !== 'string' || description.trim().length < 10) {
     errors.push('La description doit contenir au moins 10 caractères');
   }
 
   // Validation du prix
-  if (price === undefined || price === null) {
+  if (price === undefined || price === null || price === '') {
     errors.push('Le prix est requis');
   } else if (isNaN(price) || parseFloat(price) < 0) {
     errors.push('Le prix doit être un nombre positif');
   }
 
   // Validation du stock
-  if (stock !== undefined && stock !== null) {
+  if (stock !== undefined && stock !== null && stock !== '') {
     if (isNaN(stock) || parseInt(stock) < 0) {
       errors.push('Le stock doit être un nombre entier positif');
     }
   }
 
   // Validation de la catégorie
-  if (category_id !== undefined && category_id !== null) {
+  if (category_id !== undefined && category_id !== null && category_id !== '') {
     if (isNaN(category_id) || parseInt(category_id) < 1) {
       errors.push('L\'ID de la catégorie doit être un nombre entier positif');
     }
   }
 
-  // Validation de l'URL de l'image si présente (Accepte URL complète ou chemin relatif /uploads)
+  // Validation de l'URL de l'image si présente (Accepte URL complète, chemin relatif /uploads ou data:image)
   if (req.body.image_url) {
-    const isRelativePath = req.body.image_url.startsWith('/');
-    if (!isRelativePath) {
+    const isDataUri = typeof req.body.image_url === 'string' && req.body.image_url.startsWith('data:image/');
+    const isRelativePath = typeof req.body.image_url === 'string' && req.body.image_url.startsWith('/');
+    if (!isDataUri && !isRelativePath) {
       try {
         new URL(req.body.image_url);
       } catch {
@@ -177,9 +178,11 @@ export const validateProduct = (req, res, next) => {
   }
 
   if (errors.length > 0) {
+    const detailedMessage = errors.join('. ');
     return res.status(400).json({
       error: 'Erreur de validation',
-      message: 'Les données du produit ne sont pas valides',
+      message: detailedMessage,
+      details: detailedMessage,
       errors
     });
   }

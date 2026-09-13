@@ -159,6 +159,12 @@ export default class ProductService extends BaseService {
     }
 
     async create(data, options = {}) {
+        // Garantir qu'un storeId est défini
+        if (!data.storeId) {
+            const defaultStore = await Store.findOne({ order: [['id', 'ASC']] });
+            data.storeId = defaultStore ? defaultStore.id : 1;
+        }
+
         // Traiter les images Base64 avant création
         if (data.image_url) {
             data.image_url = await LocalFileService.saveBase64Image(data.image_url, 'products', 'prod_main');

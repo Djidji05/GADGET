@@ -115,7 +115,7 @@
 
               <div class="lg:col-span-2">
                 <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300" for="description">
-                  Description
+                  Description (min 10 caractères) <span class="text-red-500">*</span>
                 </label>
                 <textarea
                   id="description"
@@ -751,6 +751,9 @@ const handleDrop = (e: DragEvent) => {
 
 const validateForm = () => {
   if (!produit.value.name?.trim()) return 'Le nom du produit est obligatoire.';
+  if (!produit.value.description?.trim() || produit.value.description.trim().length < 10) {
+    return 'La description du produit est obligatoire et doit contenir au moins 10 caractères.';
+  }
   if (!produit.value.price || produit.value.price <= 0) return 'Le prix doit être supérieur à 0.';
   if (produit.value.stock === null || produit.value.stock < 0) return 'Le stock ne peut pas être négatif.';
   if (!produit.value.category_id) return 'Veuillez sélectionner une catégorie.';
@@ -807,8 +810,11 @@ const submitForm = async () => {
     router.push('/liste-produits');
   } catch (error: any) {
     console.error('Erreur lors de la sauvegarde du produit :', error);
-    const message = error.response?.data?.details || error.response?.data?.error || error.message || 'Une erreur est survenue';
-    alert(`Erreur lors de la sauvegarde : ${message}`);
+    const errObj = error.response?.data;
+    const message = (errObj?.errors && Array.isArray(errObj.errors)) 
+      ? errObj.errors.join('\n• ') 
+      : (errObj?.details || errObj?.message || error.message || 'Une erreur est survenue');
+    alert(`Erreur lors de la sauvegarde :\n${message}`);
   } finally {
     loading.value = false;
   }
