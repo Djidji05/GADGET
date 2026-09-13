@@ -81,19 +81,23 @@
           </div>
 
           <!-- Carousel Indicators -->
-          <div class="absolute bottom-4 md:bottom-8 lg:bottom-56 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
+          <div class="absolute bottom-4 md:bottom-8 lg:bottom-56 left-1/2 transform -translate-x-1/2 flex space-x-1 z-20">
             <button
               v-for="(banner, index) in banners"
               :key="index"
               @click="goToBanner(index)"
               :aria-label="'Bannière ' + (index + 1)"
-              :class="[
-                'w-2 h-2 rounded-full transition-all shadow-sm',
-                currentBannerIndex === index
-                  ? 'bg-white w-6 md:w-8'
-                  : 'bg-white/50 hover:bg-white/80',
-              ]"
-            ></button>
+              class="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center focus:outline-none"
+            >
+              <span
+                :class="[
+                  'h-2 rounded-full transition-all shadow-sm block',
+                  currentBannerIndex === index
+                    ? 'bg-white w-6 md:w-8'
+                    : 'bg-white/50 hover:bg-white/80 w-2'
+                ]"
+              ></span>
+            </button>
           </div>
         </div>
       </div>

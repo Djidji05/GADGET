@@ -114,10 +114,10 @@ const acceptCookies = () => {
 }
 
 .cookie-link {
-  color: #3b82f6;
+  color: #93c5fd;
   text-decoration: underline;
-  font-size: 0.75rem;
-  font-weight: 500;
+  font-size: 0.8125rem;
+  font-weight: 600;
   transition: color 0.2s;
 }
 
