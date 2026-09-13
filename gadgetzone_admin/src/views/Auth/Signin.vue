@@ -5,7 +5,7 @@
         <div class="p-8 sm:p-10">
           <div class="flex flex-col items-center mb-8">
             <div class="mb-6">
-              <img src="/images/logo/logo-panyem.png" alt="Panyem logo" class="h-16 w-auto object-contain mx-auto" />
+              <img src="/images/logo/logo-panyem.png" alt="Panyem logo" width="256" height="64" fetchpriority="high" style="aspect-ratio: 256 / 64;" class="h-16 w-auto object-contain mx-auto" />
             </div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
               panyem admin
@@ -54,12 +54,14 @@
                   :type="showPassword ? 'text' : 'password'"
                   id="password"
                   placeholder="••••••••"
-                  class="block w-full px-4 py-3 rounded-lg border border-gray-300 bg-white dark:bg-gray-800 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-colors duration-200 outline-none text-sm pr-10"
+                  class="block w-full px-4 py-3 rounded-lg border border-gray-300 bg-white dark:bg-gray-800 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-colors duration-200 outline-none text-sm pr-12"
                 />
                 <button 
                   type="button"
                   @click="togglePasswordVisibility"
-                  class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                  aria-label="Afficher ou masquer le mot de passe"
+                  title="Afficher ou masquer le mot de passe"
+                  class="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition-colors"
                 >
                   <svg v-if="!showPassword" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
