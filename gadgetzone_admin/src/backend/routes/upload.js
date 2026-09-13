@@ -5,6 +5,9 @@ import s3Service from '../services/S3Service.js';
 import cloudinaryService from '../services/CloudinaryService.js';
 import fs from 'fs';
 
+import sharp from 'sharp';
+import path from 'path';
+
 const router = express.Router();
 
 
@@ -47,6 +50,29 @@ router.post('/', authenticateToken, (req, res, next) => {
         const backendUrl = process.env.BACKEND_URL || `http://localhost:${process.env.BACKEND_PORT || 3003}`;
 
         const uploadFileHelper = async (file, folder) => {
+            // Compress images using Sharp to WebP format for optimal performance
+            if (file.mimetype.startsWith('image/')) {
+                try {
+                    const ext = path.extname(file.filename);
+                    const nameWithoutExt = path.basename(file.filename, ext);
+                    const webpFilename = `${nameWithoutExt}.webp`;
+                    const webpPath = path.join(path.dirname(file.path), webpFilename);
+
+                    await sharp(file.path)
+                        .resize(1600, 1600, { fit: 'inside', withoutEnlargement: true })
+                        .webp({ quality: 80 })
+                        .toFile(webpPath);
+
+                    if (fs.existsSync(webpPath) && webpPath !== file.path) {
+                        try { fs.unlinkSync(file.path); } catch (e) {}
+                        file.filename = webpFilename;
+                        file.path = webpPath;
+                    }
+                } catch (sharpErr) {
+                    console.warn('⚠️ [Upload Route] Sharp image compression skipped:', sharpErr.message);
+                }
+            }
+
             let cloudinaryUrl = null;
             if (useCloudinary) {
                 try {
@@ -60,8 +86,8 @@ router.post('/', authenticateToken, (req, res, next) => {
             const localUrl = `${backendUrl}${localPath}`;
             console.log(`✅ Hybrid: Local fallback ready: ${localUrl}`);
             return {
-                url: cloudinaryUrl || localUrl,
-                fallback: localUrl
+                url: cloudinaryUrl || localPath,
+                fallback: localPath
             };
         };
 
