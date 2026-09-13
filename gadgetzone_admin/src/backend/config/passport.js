@@ -59,11 +59,22 @@ const configurePassport = () => {
 
                         // Create new user
                         user = await User.create({
-                            name: `${firstName} ${lastName}`,
+                            name: `${firstName || ''} ${lastName || ''}`.trim() || 'Utilisateur',
                             email,
-                            role: 'user',
+                            role: 'customer',
                             googleId
                         });
+
+                        // 📧 Envoi de l'email de bienvenue pour les nouveaux utilisateurs Google
+                        try {
+                            const { sendEmail, emailTemplates } = await import('../services/emailService.js');
+                            if (emailTemplates && emailTemplates.welcomeUser) {
+                                const welcome = emailTemplates.welcomeUser(firstName || user.name, email);
+                                sendEmail(email, welcome).catch(e => console.error('Error sending Google welcome email:', e));
+                            }
+                        } catch (e) {
+                            console.error('Could not send Google welcome email:', e);
+                        }
 
                         return done(null, user);
                     } catch (err) {
