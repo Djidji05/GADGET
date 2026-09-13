@@ -3,9 +3,10 @@ import axios from 'axios'
 const getApiBaseUrl = () => {
   if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
   if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-    return `${window.location.protocol}//${window.location.hostname}/api`;
+    const domain = window.location.hostname.replace(/^www\./, '');
+    return `${window.location.protocol}//manage.${domain}/api`;
   }
-  return 'http://localhost:3003/api';
+  return 'http://localhost:3001/api';
 };
 
 const API_BASE_URL = getApiBaseUrl();
