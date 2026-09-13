@@ -320,7 +320,7 @@
               :alt="vendor.name"
               class="max-w-full max-h-full object-contain"
             />
-            <div v-else class="text-sm md:text-base font-bold text-gray-400 dark:text-gray-500 group-hover:text-blue-600 text-center line-clamp-2 px-1">{{ vendor.name }}</div>
+            <div v-else class="text-sm md:text-base font-bold text-gray-600 dark:text-gray-300 group-hover:text-blue-600 text-center line-clamp-2 px-1">{{ vendor.name }}</div>
           </div>
         </router-link>
       </div>
