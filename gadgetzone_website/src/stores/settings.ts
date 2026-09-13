@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { settingsService } from '@/services/api'
+import { normalizeImageUrl } from '@/utils/urlHelper'
 
 export const useSettingsStore = defineStore('settings', () => {
     const general = ref({
@@ -27,10 +28,7 @@ export const useSettingsStore = defineStore('settings', () => {
     }
 
     const getImageUrl = (path: string) => {
-        if (!path) return ''
-        if (path.startsWith('http')) return path
-        const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:3003'
-        return `${baseUrl}${path}`
+        return normalizeImageUrl(path)
     }
 
     const logoUrl = computed(() => {

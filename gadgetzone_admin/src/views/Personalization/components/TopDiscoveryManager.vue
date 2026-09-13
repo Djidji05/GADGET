@@ -389,6 +389,7 @@ import PersonalizationService from '@/services/PersonalizationService';
 import { productService } from '@/services/api';
 import api from '@/services/api'; // For image upload
 import { useUIStore } from '@/stores/ui';
+import { normalizeImageUrl } from '@/utils/urlHelper';
 
 const uiStore = useUIStore();
 const loading = ref(false);
@@ -611,15 +612,9 @@ const uploadImage = async (file: File) => {
             // The uploads are likely served at `http://localhost:3003/uploads`.
             // Let's check if we need to prepend the base URL.
             
-            const url = response.data.urls[0];
-            // Provide a full URL for safety in dev environment if it starts with /
-            if (url.startsWith('/')) {
-                // Determine base URL from environment or hardcoded fallback
-                const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:3003';
-                itemForm.value.image = `${baseUrl}${url}`;
-            } else {
-                itemForm.value.image = url;
-            }
+        if (response.data.urls && response.data.urls.length > 0) {
+            itemForm.value.image = normalizeImageUrl(response.data.urls[0]);
+        }
         }
     } catch (error) {
         console.error(error);

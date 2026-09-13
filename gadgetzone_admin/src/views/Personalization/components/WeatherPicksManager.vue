@@ -442,6 +442,7 @@ import { ref, onMounted, computed, nextTick, watch, onUnmounted } from 'vue';
 import PersonalizationService from '@/services/PersonalizationService';
 import api, { productService } from '@/services/api';
 import { useUIStore } from '@/stores/ui';
+import { normalizeImageUrl } from '@/utils/urlHelper';
 
 const uiStore = useUIStore();
 const loading = ref(false);
@@ -658,13 +659,7 @@ const uploadImage = async (file: File) => {
         });
 
         if (response.data.urls && response.data.urls.length > 0) {
-            const url = response.data.urls[0];
-            if (url.startsWith('/')) {
-                const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:3003';
-                itemForm.value.image = `${baseUrl}${url}`;
-            } else {
-                itemForm.value.image = url;
-            }
+            itemForm.value.image = normalizeImageUrl(response.data.urls[0]);
         }
     } catch (error) {
         console.error('Upload failed', error);

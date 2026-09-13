@@ -419,6 +419,7 @@ import PersonalizationService from '@/services/PersonalizationService';
 import { productService } from '@/services/api';
 import api from '@/services/api';
 import { useUIStore } from '@/stores/ui';
+import { normalizeImageUrl } from '@/utils/urlHelper';
 
 const uiStore = useUIStore();
 const loading = ref(false);
@@ -744,9 +745,7 @@ const uploadImage = async (file: File) => {
     try {
         const response = await api.post('/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
         if (response.data.urls?.length) {
-            const url = response.data.urls[0];
-            const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:3003';
-            itemForm.value.image = url.startsWith('/') ? `${baseUrl}${url}` : url;
+            itemForm.value.image = normalizeImageUrl(response.data.urls[0]);
         }
     } catch (e) { 
         console.error(e); 

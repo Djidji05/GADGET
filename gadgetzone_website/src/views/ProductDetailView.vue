@@ -1429,10 +1429,7 @@ const loadReviews = async () => {
 }
 
 const getImageUrl = (path: string) => {
-  if (!path) return ''
-  if (path.startsWith('http')) return path
-  const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:3003'
-  return `${baseUrl}${path}`
+  return normalizeImageUrl(path)
 }
 
 const openReviewImage = (img: string) => {
@@ -1452,7 +1449,7 @@ const handleReviewImageUpload = async (e: Event) => {
     uploadingReviewImage.value = true
     const res = await uploadService.upload(Array.from(target.files))
     if (res.urls && res.urls.length > 0) {
-      newReviewImage.value = getImageUrl(res.urls[0])
+      newReviewImage.value = normalizeImageUrl(res.urls[0])
     }
   } catch (error) {
     console.error('Erreur upload photo avis:', error)
@@ -1477,7 +1474,7 @@ const submitReview = async () => {
       product_id: product.value.id,
       rating: newReview.value.rating,
       comment: newReview.value.comment,
-      images: newReviewImage.value ? [newReviewImage.value.replace(import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:3003', '')] : []
+      images: newReviewImage.value ? [normalizeImageUrl(newReviewImage.value)] : []
     })
     
     // Reset and reload

@@ -236,6 +236,7 @@ import { useSettingsStore } from '@/stores/settings';
 import { settingsService, uploadService } from '@/services/api';
 import { useI18n } from 'vue-i18n';
 import { Globe, Navigation, Save, Image, Upload, Settings2 } from 'lucide-vue-next';
+import { normalizeImageUrl } from '@/utils/urlHelper';
 
 const uiStore = useUIStore();
 const sidebar = useSidebar();
@@ -248,10 +249,7 @@ const fileInput = ref<HTMLInputElement | null>(null);
 const { locale } = useI18n();
 
 const getImageUrl = (path: string) => {
-  if (!path) return '';
-  if (path.startsWith('http')) return path;
-  const baseUrl = (import.meta.env.VITE_API_URL || 'http://localhost:3003/api').replace('/api', '');
-  return `${baseUrl}${path}`;
+  return normalizeImageUrl(path);
 };
 
 const settings = ref({
@@ -303,7 +301,7 @@ const handleLogoUpload = async (event: Event) => {
     uploading.value = true;
     const response = await uploadService.upload([input.files[0]]);
     if (response.urls && response.urls.length > 0) {
-      settings.value.site_logo = response.urls[0];
+      settings.value.site_logo = normalizeImageUrl(response.urls[0]);
       uiStore.addToast('Logo téléversé avec succès', 'success');
     }
   } catch (error) {

@@ -265,6 +265,7 @@ import api from '@/services/api';
 import SellerSidebar from '@/components/seller/SellerSidebar.vue';
 import { useAuthStore } from '@/stores/auth';
 import { useUiStore } from '@/stores/ui';
+import { normalizeImageUrl } from '@/utils/urlHelper';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -325,8 +326,7 @@ const handleUpload = async (file: File, type: 'logo' | 'banner') => {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
         
-        const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:3003';
-        const url = `${baseUrl}${uploadRes.data.urls[0]}`;
+        const url = normalizeImageUrl(uploadRes.data.urls[0]);
         
         if (type === 'logo') form.logoUrl = url;
         else form.bannerUrl = url;

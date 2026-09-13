@@ -186,6 +186,7 @@
 import { ref, onMounted, computed, watch } from 'vue'
 import { reviewService } from '@/services/api'
 import { useUIStore } from '@/stores/ui'
+import { normalizeImageUrl } from '@/utils/urlHelper'
 
 const uiStore = useUIStore()
 const reviews = ref<any[]>([])
@@ -211,10 +212,7 @@ const formatDate = (dateString: string) => {
 }
 
 const getImageUrl = (path: string) => {
-  if (!path) return ''
-  if (path.startsWith('http')) return path
-  const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:3003'
-  return `${baseUrl}${path}`
+  return normalizeImageUrl(path)
 }
 
 const openImage = (path: string) => {

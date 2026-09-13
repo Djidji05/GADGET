@@ -107,17 +107,24 @@ const initializeDatabase = async () => {
       console.warn('⚠️ Erreur mise à jour statut produits:', e.message);
     }
 
-    // Nettoyer les URLs d'images contenant localhost dans la base de données
-    try {
-      await sequelize.query(`
-        UPDATE products 
-        SET image_url = REGEXP_REPLACE(image_url, '^https?://localhost:[0-9]+', '') 
-        WHERE image_url LIKE '%localhost%'
-      `);
-      console.log('🧹 Nettoyage des URLs localhost effectué dans la base de données');
-    } catch (e) {
-      console.warn('⚠️ Note nettoyage URLs localhost:', e.message);
+    // Nettoyer les URLs d'images contenant localhost dans toutes les tables de la base de données
+    const cleanupQueries = [
+      `UPDATE products SET image_url = REGEXP_REPLACE(image_url, '^https?://localhost:[0-9]+', '') WHERE image_url LIKE '%localhost%'`,
+      `UPDATE banners SET image = REGEXP_REPLACE(image, '^https?://localhost:[0-9]+', '') WHERE image LIKE '%localhost%'`,
+      `UPDATE homepage_configs SET content = REGEXP_REPLACE(content::text, 'https?://localhost:[0-9]+', '', 'g')::jsonb WHERE content::text LIKE '%localhost%'`,
+      `UPDATE stores SET "logoUrl" = REGEXP_REPLACE("logoUrl", '^https?://localhost:[0-9]+', '') WHERE "logoUrl" LIKE '%localhost%'`,
+      `UPDATE stores SET "bannerUrl" = REGEXP_REPLACE("bannerUrl", '^https?://localhost:[0-9]+', '') WHERE "bannerUrl" LIKE '%localhost%'`,
+      `UPDATE settings SET value = REGEXP_REPLACE(value, '^https?://localhost:[0-9]+', '') WHERE value LIKE '%localhost%'`
+    ];
+
+    for (const q of cleanupQueries) {
+      try {
+        await sequelize.query(q);
+      } catch (e) {
+        // Silently skip missing tables/columns
+      }
     }
+    console.log('🧹 Nettoyage complet des URLs localhost effectué dans la base de données');
 
     // Créer les utilisateurs
     try {

@@ -149,6 +149,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { blogService, uploadService } from '@/services/api'
+import { normalizeImageUrl } from '@/utils/urlHelper'
 
 const route = useRoute()
 const router = useRouter()
@@ -165,9 +166,7 @@ const post = ref({
 })
 
 const getImageUrl = (url: string) => {
-  if (!url) return ''
-  if (url.startsWith('http')) return url
-  return `http://localhost:3003${url}`
+  return normalizeImageUrl(url)
 }
 
 const generateSlug = (text: string) => {

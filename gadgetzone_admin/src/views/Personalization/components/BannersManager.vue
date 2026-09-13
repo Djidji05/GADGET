@@ -31,7 +31,7 @@
       >
         <!-- Image Preview -->
         <div class="relative h-40 bg-gray-100">
-          <img :src="banner.image" :alt="banner.title" class="w-full h-full object-cover">
+          <img :src="normalizeImageUrl(banner.image)" :alt="banner.title" class="w-full h-full object-cover">
           
           <!-- Status Badge (Top Left) -->
           <div class="absolute top-2 left-2 flex gap-2">
@@ -97,7 +97,7 @@
             <div class="relative w-full aspect-[21/9] bg-gray-200 rounded-lg overflow-hidden shadow-lg group">
               <img alt="" 
                 v-if="form.image" 
-                :src="form.image" 
+                :src="normalizeImageUrl(form.image)" 
                 class="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
               >
               <div v-else class="w-full h-full flex items-center justify-center text-gray-400">
@@ -411,6 +411,7 @@ import { ref, onMounted, watch, onUnmounted } from 'vue';
 import PersonalizationService from '@/services/PersonalizationService';
 import api from '@/services/api';
 import { useUIStore } from '@/stores/ui';
+import { normalizeImageUrl } from '@/utils/urlHelper';
 
 const uiStore = useUIStore();
 const banners = ref<any[]>([]);
@@ -571,13 +572,7 @@ const uploadImage = async (file: File) => {
         });
 
         if (response.data.urls && response.data.urls.length > 0) {
-            const url = response.data.urls[0];
-            if (url.startsWith('/')) {
-                const baseUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:3003';
-                form.value.image = `${baseUrl}${url}`;
-            } else {
-                form.value.image = url;
-            }
+            form.value.image = normalizeImageUrl(response.data.urls[0]);
         }
     } catch (error) {
         console.error('Upload failed', error);
