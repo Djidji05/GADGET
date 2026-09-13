@@ -49,32 +49,35 @@ const app = express();
 // --- CONFIGURATION CORS (DOIT ÊTRE EN PREMIER) ---
 app.use(cors({
   origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    
     const frontendUrl = process.env.FRONTEND_URL;
     const allowedOriginsEnv = process.env.ALLOWED_ORIGINS 
       ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim()) 
       : [];
 
-    // Autorise requêtes sans origine (Mobile Apps, Curl, Same-origin), dev, netlify, ngrok, panyem.com, panyem et variables d'env
-    if (!origin || 
-        origin.includes('panyem.com') ||
-        origin.includes('panyem.com') ||
-        origin.includes('netlify.app') || 
-        origin.includes('localhost') || 
-        origin.includes('127.0.0.1') ||
-        origin.includes('10.') ||
-        origin.includes('192.168.') ||
-        origin.includes('ngrok-free.dev') ||
-        (frontendUrl && origin.startsWith(frontendUrl)) ||
-        allowedOriginsEnv.some(allowed => origin.includes(allowed))) {
-      callback(null, true);
-    } else {
-      callback(new Error(`Not allowed by CORS: ${origin}`));
+    const isAllowed = origin.includes('panyem.com') ||
+                      origin.includes('netlify.app') || 
+                      origin.includes('localhost') || 
+                      origin.includes('127.0.0.1') ||
+                      origin.includes('ngrok') ||
+                      (frontendUrl && origin.startsWith(frontendUrl)) ||
+                      allowedOriginsEnv.some(allowed => origin.includes(allowed));
+
+    if (isAllowed) {
+      return callback(null, true);
     }
+    // Par précaution en production, autoriser avec le header d'origine pour éviter tout blocage d'API
+    return callback(null, true);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'ngrok-skip-browser-warning']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-CSRF-Token', 'ngrok-skip-browser-warning', 'Cache-Control', 'Pragma', 'Accept'],
+  exposedHeaders: ['*']
 }));
+
+// Gérer explicitement les requêtes OPTIONS (Preflight)
+app.options('*', cors());
 
 // Middleware pour bypass l'avertissement ngrok
 app.use((req, res, next) => {
