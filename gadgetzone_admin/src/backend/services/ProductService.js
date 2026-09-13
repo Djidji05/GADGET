@@ -159,9 +159,22 @@ export default class ProductService extends BaseService {
     }
 
     async create(data, options = {}) {
-        // Garantir qu'un storeId est défini
+        // Garantir qu'un storeId valide existe en base de données
         if (!data.storeId) {
-            const defaultStore = await Store.findOne({ order: [['id', 'ASC']] });
+            let defaultStore = await Store.findOne({ order: [['id', 'ASC']] });
+            if (!defaultStore) {
+                const { User } = await import('../models/index.js');
+                const adminUser = await User.findOne({ where: { role: 'admin' } }) || await User.findOne();
+                if (adminUser) {
+                    defaultStore = await Store.create({
+                        name: 'Boutique Officielle GadgetZone',
+                        slug: 'gadgetzone-officiel',
+                        description: 'Boutique officielle GadgetZone',
+                        userId: adminUser.id,
+                        status: 'active'
+                    });
+                }
+            }
             data.storeId = defaultStore ? defaultStore.id : 1;
         }
 

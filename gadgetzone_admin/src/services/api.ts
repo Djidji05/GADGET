@@ -99,7 +99,7 @@ api.interceptors.response.use(
 
     // Ne pas logger les erreurs 401 qui ont déjà été traitées
     if (error.response?.status !== 401) {
-      console.error('API Error:', error.response?.data || error.message)
+      console.error('API Error:', error.response?.data?.details || error.response?.data?.message || error.response?.data || error.message)
     }
     return Promise.reject(error)
   }
