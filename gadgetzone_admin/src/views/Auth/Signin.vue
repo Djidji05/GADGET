@@ -5,10 +5,10 @@
         <div class="p-8 sm:p-10">
           <div class="flex flex-col items-center mb-8">
             <div class="mb-6">
-              <img src="/images/logo/logo htfasil.png" alt="htfasil logo" class="h-16 w-auto object-contain mx-auto" />
+              <img src="/images/logo/logo panyem.png" alt="panyem logo" class="h-16 w-auto object-contain mx-auto" />
             </div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              htfasil admin
+              panyem admin
             </h1>
             <p class="text-sm text-gray-500 dark:text-gray-400 text-center">
               Connectez-vous pour gérer votre boutique
@@ -40,7 +40,7 @@
                   v-model="email"
                   type="email"
                   id="email"
-                  placeholder="admin@htfasil.com"
+                  placeholder="admin@panyem.com"
                   class="block w-full px-4 py-3 rounded-lg border border-gray-300 bg-white dark:bg-gray-800 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-colors duration-200 outline-none text-sm"
                 />
               </div>

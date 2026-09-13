@@ -607,7 +607,7 @@ const exportToPDF = () => {
   const pageHeight = doc.internal.pageSize.height;
   doc.setFontSize(8);
   doc.setTextColor(150);
-  doc.text('Merci de votre confiance | HTFasil Market', 105, pageHeight - 10, { align: 'center' });
+  doc.text('Merci de votre confiance | Panyem Market', 105, pageHeight - 10, { align: 'center' });
 
   // Save the PDF
   doc.save(`Commande_${order.value.id}.pdf`);

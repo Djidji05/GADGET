@@ -51,7 +51,7 @@ const fetchPage = async () => {
     if (data && data.isPublished) {
       page.value = data
       // Update page title
-      document.title = `${data.metaTitle || data.title} - HTFasil`
+      document.title = `${data.metaTitle || data.title} - Panyem`
     } else {
       error.value = true
     }

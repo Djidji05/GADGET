@@ -135,7 +135,7 @@ class PaymentController {
 
             const { Setting } = await import('../models/index.js');
             const keySetting = await Setting.findOne({ where: { category: 'payment', key: 'stripe_secret_key' } });
-            const secretKey = (keySetting && keySetting.value) || process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder_key_gadgetzone';
+            const secretKey = (keySetting && keySetting.value) || process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder_key_panyem';
 
             const webhookSetting = await Setting.findOne({ where: { category: 'payment', key: 'stripe_webhook_secret' } });
             const webhookSecret = (webhookSetting && webhookSetting.value) || process.env.STRIPE_WEBHOOK_SECRET || 'whsec_placeholder_webhook_secret';

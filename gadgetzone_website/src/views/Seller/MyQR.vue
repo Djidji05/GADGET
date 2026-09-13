@@ -171,7 +171,7 @@ const onScanFailure = (error: any) => {
 };
 
 const shareToWhatsApp = () => {
-    const text = `Découvrez ma boutique sur HTFasil ! 🚀 Voici le lien : ${storeUrl.value}`;
+    const text = `Découvrez ma boutique sur Panyem ! 🚀 Voici le lien : ${storeUrl.value}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
 };
 
@@ -182,7 +182,7 @@ const downloadQR = async () => {
         const url = window.URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `HTFasil-QR-${store.value?.name || 'Boutique'}.png`;
+        link.download = `Panyem-QR-${store.value?.name || 'Boutique'}.png`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -256,7 +256,7 @@ onUnmounted(() => {
             <!-- SCANNER TAB CONTENT -->
             <div v-if="activeTab === 'scanner'" class="flex-1 flex flex-col items-center px-8 pt-6 animate-in fade-in duration-700">
                 <div class="text-center mb-8 relative">
-                    <h2 class="text-3xl font-black tracking-tighter mb-2 text-white drop-shadow-lg">HTFasil</h2>
+                    <h2 class="text-3xl font-black tracking-tighter mb-2 text-white drop-shadow-lg">Panyem</h2>
                     <p class="text-[12px] font-medium text-white/80 leading-relaxed max-w-[250px] mx-auto drop-shadow-md">
                         Placer le code QR du client dans le cadre ou téléverser une image.
                     </p>
@@ -298,7 +298,7 @@ onUnmounted(() => {
                             
                             <h3 class="text-xl font-black text-gray-900 dark:text-white tracking-tight uppercase">{{ store.name }}</h3>
                             <p class="text-gray-500 dark:text-gray-400 font-bold text-sm mt-1 mb-4">
-                                {{ store.phone || 'HTFasil Vendor' }}
+                                {{ store.phone || 'Panyem Vendor' }}
                             </p>
                         </div>
                     </div>

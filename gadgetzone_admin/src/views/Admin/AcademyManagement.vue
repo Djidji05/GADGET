@@ -3,7 +3,7 @@
     <div class="flex justify-between items-center mb-8">
       <div>
         <h1 class="text-3xl font-black text-gray-900 tracking-tight">Académie Vendeur</h1>
-        <p class="text-gray-500 mt-1">Gérez les vidéos, guides et ressources pour former les vendeurs HTFasil.</p>
+        <p class="text-gray-500 mt-1">Gérez les vidéos, guides et ressources pour former les vendeurs Panyem.</p>
       </div>
       <button @click="openCreateModal" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg shadow-blue-600/20 active:scale-95">
         <i class="fas fa-plus"></i> Nouveau Contenu

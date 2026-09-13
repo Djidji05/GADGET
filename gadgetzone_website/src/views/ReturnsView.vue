@@ -7,7 +7,7 @@
         <div class="space-y-8 text-gray-600 leading-relaxed">
           <section>
             <h2 class="text-xl font-bold text-gray-800 mb-4">Politique de Retour</h2>
-            <p>Chez HTFasil, nous voulons que vous soyez entièrement satisfait de vos achats. Vous disposez d'un délai de <strong>7 jours</strong> après réception de votre commande pour demander un retour si le produit ne correspond pas à vos attentes ou présente un défaut.</p>
+            <p>Chez Panyem, nous voulons que vous soyez entièrement satisfait de vos achats. Vous disposez d'un délai de <strong>7 jours</strong> après réception de votre commande pour demander un retour si le produit ne correspond pas à vos attentes ou présente un défaut.</p>
           </section>
 
           <section>

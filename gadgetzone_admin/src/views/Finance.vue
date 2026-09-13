@@ -1196,10 +1196,10 @@ const exportExpensesPDF = () => {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
 
-    // En-tête style HTFasil
+    // En-tête style Panyem
     doc.setFontSize(22);
     doc.setTextColor(220, 38, 38); // Red-600
-    doc.text('HTFasil', 14, 20);
+    doc.text('Panyem', 14, 20);
     
     doc.setFontSize(10);
     doc.setTextColor(107, 114, 128);
@@ -1311,7 +1311,7 @@ const exportExpenseDetailsPDF = () => {
     // Header
     doc.setFontSize(22);
     doc.setTextColor(220, 38, 38);
-    doc.text('HTFasil', 14, 20);
+    doc.text('Panyem', 14, 20);
     
     doc.setFontSize(14);
     doc.setTextColor(31, 41, 55);

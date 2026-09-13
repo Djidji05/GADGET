@@ -368,7 +368,7 @@
     <Modal v-model:isOpen="showPaymentModal" :title="$t('account.payment_methods')">
        <div class="space-y-6">
           <p class="text-sm text-gray-600 dark:text-gray-400">
-            Pour des raisons de sécurité maximale, <strong>HTFasil ne stocke aucune coordonnée bancaire</strong> sur ses serveurs. Les transactions sont traitées directement via nos partenaires de paiement sécurisés et chiffrés.
+            Pour des raisons de sécurité maximale, <strong>Panyem ne stocke aucune coordonnée bancaire</strong> sur ses serveurs. Les transactions sont traitées directement via nos partenaires de paiement sécurisés et chiffrés.
           </p>
           
           <div class="space-y-4">

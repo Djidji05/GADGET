@@ -93,7 +93,7 @@ const fetchStoreData = async () => {
         
         if (store.value) {
             isFollowing.value = !!store.value.isFollowing;
-            document.title = `${store.value.name} - Boutique HTFasil`;
+            document.title = `${store.value.name} - Boutique Panyem`;
         }
     } catch (e: any) {
         console.error("Error fetching store data", e);

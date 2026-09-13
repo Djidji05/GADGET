@@ -886,7 +886,7 @@ onUnmounted(() => {
 const handleImageError = (e: Event) => {
   const img = e.target as HTMLImageElement
   // Use a reliable fallback service
-  img.src = 'https://placehold.co/1200x500/e2e8f0/1e293b?text=HTFasil'
+  img.src = 'https://placehold.co/1200x500/e2e8f0/1e293b?text=Panyem'
 }
 </script>
 

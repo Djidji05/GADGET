@@ -714,7 +714,7 @@ const downloadQR = () => {
  if (img && img.src) {
  const link = document.createElement('a');
  link.href = img.src;
- link.download = `HTFasil-Order-${order.value?.id || 'QR'}.png`;
+ link.download = `Panyem-Order-${order.value?.id || 'QR'}.png`;
  document.body.appendChild(link);
  link.click();
  document.body.removeChild(link);

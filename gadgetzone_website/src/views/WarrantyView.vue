@@ -2,14 +2,14 @@
   <div class="min-h-screen bg-gray-50 py-12">
     <div class="container mx-auto px-4 max-w-4xl">
       <div class="bg-white rounded-2xl shadow-sm p-8 md:p-12">
-        <h1 class="text-3xl font-bold text-gray-900 mb-8 text-center text-green-600">Garantie HTFasil</h1>
+        <h1 class="text-3xl font-bold text-gray-900 mb-8 text-center text-green-600">Garantie Panyem</h1>
         
         <div class="space-y-8 text-gray-600 leading-relaxed">
           <section>
             <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
               <i class="fas fa-shield-alt text-green-500"></i> Garantie Standard
             </h2>
-            <p>Tous les produits électroniques vendus directement par HTFasil bénéficient d'une garantie constructeur ou HTFasil d'au moins <strong>6 mois</strong>, sauf mention contraire sur la fiche produit.</p>
+            <p>Tous les produits électroniques vendus directement par Panyem bénéficient d'une garantie constructeur ou Panyem d'au moins <strong>6 mois</strong>, sauf mention contraire sur la fiche produit.</p>
           </section>
 
           <section>
@@ -42,7 +42,7 @@
         </div>
 
         <div class="mt-12 p-6 bg-green-50 rounded-xl border border-green-100 text-center">
-          <p class="text-green-800 font-medium">HTFasil s'engage à vous fournir des produits de qualité supérieure.</p>
+          <p class="text-green-800 font-medium">Panyem s'engage à vous fournir des produits de qualité supérieure.</p>
         </div>
       </div>
     </div>

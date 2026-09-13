@@ -16,7 +16,7 @@
                 />
               </div>
               <div class="flex flex-col">
-                <span class="text-xs text-gray-500">{{ authStore.isFirstLogin ? 'Bienvenue sur HTFasil' : 'Bon retour sur HTFasil' }}</span>
+                <span class="text-xs text-gray-500">{{ authStore.isFirstLogin ? 'Bienvenue sur Panyem' : 'Bon retour sur Panyem' }}</span>
                 <span class="font-semibold text-gray-900 text-sm leading-tight">{{ customerName }}</span>
               </div>
             </div>
@@ -79,7 +79,7 @@
             <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
               <i class="fas fa-store text-white text-xl"></i>
             </div>
-            <span class="text-xl font-bold text-gray-900">{{ settingsStore.general.site_name || 'HTFasil' }}</span>
+            <span class="text-xl font-bold text-gray-900">{{ settingsStore.general.site_name || 'Panyem' }}</span>
           </template>
         </router-link>
         <!-- Logo (Desktop Only when Authenticated) -->
@@ -95,7 +95,7 @@
             <div class="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
               <i class="fas fa-store text-white text-xl"></i>
             </div>
-            <span class="text-xl font-bold text-gray-900">{{ settingsStore.general.site_name || 'HTFasil' }}</span>
+            <span class="text-xl font-bold text-gray-900">{{ settingsStore.general.site_name || 'Panyem' }}</span>
           </template>
         </router-link>
 

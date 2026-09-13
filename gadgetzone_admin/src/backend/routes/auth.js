@@ -982,7 +982,7 @@ router.post('/forgot-password', passwordResetLimiter, async (req, res) => {
 
     const message = `
       <h1>Réinitialisation de mot de passe</h1>
-      <p>Vous avez demandé une réinitialisation de mot de passe pour votre compte htfasil.</p>
+      <p>Vous avez demandé une réinitialisation de mot de passe pour votre compte panyem.</p>
       <p>Veuillez cliquer sur le lien ci-dessous pour créer un nouveau mot de passe :</p>
       <a href="${resetUrl}" style="padding: 10px 20px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 5px;">Réinitialiser mon mot de passe</a>
       <p>Ce lien expirera dans 15 minutes.</p>
@@ -991,7 +991,7 @@ router.post('/forgot-password', passwordResetLimiter, async (req, res) => {
 
     await sendEmail(
       user.email,
-      'Réinitialisation de mot de passe - htfasil',
+      'Réinitialisation de mot de passe - panyem',
       message
     );
 

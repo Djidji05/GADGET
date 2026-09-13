@@ -120,7 +120,7 @@
             <div class="mt-10 bg-gradient-to-br from-gray-900 to-indigo-900 rounded-[32px] p-8 text-white relative overflow-hidden shadow-xl">
                 <div class="relative z-10">
                     <h4 class="text-lg font-black mb-3">Conseil Marketing 💡</h4>
-                    <p class="text-indigo-100/80 text-xs leading-relaxed max-w-[280px]">Les remises de 20% sont les plus performantes sur HTFasil. Essayez de coupler une remise avec un code coupon limité !</p>
+                    <p class="text-indigo-100/80 text-xs leading-relaxed max-w-[280px]">Les remises de 20% sont les plus performantes sur Panyem. Essayez de coupler une remise avec un code coupon limité !</p>
                 </div>
                 <i class="fas fa-rocket absolute -right-6 -bottom-6 text-9xl text-white/5 -rotate-12"></i>
             </div>

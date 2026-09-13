@@ -27,7 +27,7 @@ export const sendEmail = async ({ to, subject, html }) => {
         });
 
         const mailOptions = {
-            from: `"${config.from_name || 'HTFasil'}" <${config.from_email || 'noreply@htfasil.com'}>`,
+            from: `"${config.from_name || 'Panyem'}" <${config.from_email || 'noreply@panyem.com'}>`,
             to,
             subject,
             html

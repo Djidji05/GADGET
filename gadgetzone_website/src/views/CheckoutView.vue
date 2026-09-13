@@ -406,7 +406,7 @@
                 class="premium-checkbox mt-0.5 shrink-0" 
               />
               <label for="age_check" class="text-xs text-gray-600 dark:text-gray-400 font-semibold cursor-pointer select-none">
-                J'accepte les conditions générales de vente de HTFasil.
+                J'accepte les conditions générales de vente de Panyem.
               </label>
             </div>
           </div>

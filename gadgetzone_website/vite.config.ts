@@ -15,9 +15,9 @@ export default defineConfig({
         enabled: false
       },
       manifest: {
-        name: 'HTFasil',
-        short_name: 'HTFasil',
-        description: 'La meilleure plateforme e-commerce multi-vendeurs en Haïti',
+        name: 'Panyem',
+        short_name: 'Panyem',
+        description: 'La meilleure marketplace e-commerce en Haïti',
         theme_color: '#2563eb', // Blue
         background_color: '#ffffff',
         display: 'standalone',

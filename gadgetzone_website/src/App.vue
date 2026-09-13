@@ -246,7 +246,7 @@ const setupInactivityTracking = () => {
           HT
         </div>
         <div>
-          <h4 class="font-bold text-sm leading-tight">HTFasil E-commerce</h4>
+          <h4 class="font-bold text-sm leading-tight">Panyem E-commerce</h4>
           <p class="text-xs text-blue-100">Rapide, léger et sécurisé</p>
         </div>
       </div>

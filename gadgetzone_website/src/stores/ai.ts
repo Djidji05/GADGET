@@ -30,7 +30,7 @@ export const useAIStore = defineStore('ai', () => {
     async function toggleChat() {
         isOpen.value = !isOpen.value;
         if (isOpen.value && messages.value.length === 0) {
-            addMessage('assistant', "Bonjour ! Je suis votre assistant HTFasil. Comment puis-je vous aider aujourd'hui ?");
+            addMessage('assistant', "Bonjour ! Je suis votre assistant Panyem. Comment puis-je vous aider aujourd'hui ?");
             await fetchSuggestions();
         }
     }

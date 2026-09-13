@@ -120,7 +120,7 @@
                         <input 
                             v-model="form.name" 
                             type="text" 
-                            placeholder="Ex: HTFasil Officiel"
+                            placeholder="Ex: Panyem Officiel"
                             class="w-full bg-gray-50 border-none rounded-xl py-3 px-4 text-sm font-medium text-gray-900 focus:ring-2 focus:ring-blue-500/20 transition-all placeholder-gray-400"
                         />
                     </div>

@@ -17,7 +17,7 @@
           <!-- Introduction Card -->
           <div class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-6 text-white shadow-xl shadow-blue-200 relative overflow-hidden">
               <div class="relative z-10">
-                  <h2 class="text-xl font-bold mb-2">Bienvenue sur HTFasil !</h2>
+                  <h2 class="text-xl font-bold mb-2">Bienvenue sur Panyem !</h2>
                   <p class="text-sm text-blue-100 leading-relaxed mb-4">
                       Vous faites désormais partie de la plus grande plateforme de vente de gadgets en Haïti. 
                       Ce guide vous explique comment réussir votre aventure.
@@ -117,7 +117,7 @@
                   </div>
               </div>
               <p class="text-sm text-gray-400 leading-relaxed mb-4">
-                  HTFasil prend une commission de <b>10%</b> sur vos ventes. Le reste est versé sur votre solde "Retirable".
+                  Panyem prend une commission de <b>10%</b> sur vos ventes. Le reste est versé sur votre solde "Retirable".
               </p>
               <div class="bg-white/5 border border-white/10 rounded-2xl p-4 flex justify-between items-center">
                   <div>

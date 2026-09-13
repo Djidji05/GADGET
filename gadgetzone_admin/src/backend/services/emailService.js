@@ -19,7 +19,7 @@ export const sendEmail = async (to, subject, textContent, htmlContent = null) =>
 
     try {
         const { data, error } = await resend.emails.send({
-            from: `HTFasil <${FROM_EMAIL}>`,
+            from: `Panyem <${FROM_EMAIL}>`,
             to: [to],
             subject: subject,
             text: textContent,
@@ -44,20 +44,20 @@ export const sendEmail = async (to, subject, textContent, htmlContent = null) =>
  */
 export const emailTemplates = {
     welcome: (name) => ({
-        subject: `Bienvenue sur HTFasil, ${name} !`,
-        text: `Bonjour ${name},\n\nMerci d'avoir créé votre compte sur HTFasil ! Nous sommes ravis de vous compter parmi nous.\n\nBon shopping !`,
+        subject: `Bienvenue sur Panyem, ${name} !`,
+        text: `Bonjour ${name},\n\nMerci d'avoir créé votre compte sur Panyem ! Nous sommes ravis de vous compter parmi nous.\n\nBon shopping !`,
         html: `
             <div style="font-family: sans-serif; padding: 20px; color: #1a1a1a;">
-                <h1 style="color: #3b82f6;">Bienvenue chez HTFasil !</h1>
+                <h1 style="color: #3b82f6;">Bienvenue chez Panyem !</h1>
                 <p>Bonjour <strong>${name}</strong>,</p>
                 <p>Merci d'avoir créé votre compte. Nous sommes ravis de vous accompagner dans vos achats.</p>
-                <a href="https://htfasil.com" style="display: inline-block; padding: 12px 24px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 8px; margin-top: 20px;">Commencer mon shopping</a>
-                <p style="margin-top: 30px; font-size: 0.8em; color: #666;">L'équipe HTFasil</p>
+                <a href="https://panyem.com" style="display: inline-block; padding: 12px 24px; background-color: #3b82f6; color: white; text-decoration: none; border-radius: 8px; margin-top: 20px;">Commencer mon shopping</a>
+                <p style="margin-top: 30px; font-size: 0.8em; color: #666;">L'équipe Panyem</p>
             </div>
         `
     }),
     twoFactor: (code) => ({
-        subject: `${code} est votre code de sécurité HTFasil`,
+        subject: `${code} est votre code de sécurité Panyem`,
         text: `Bonjour,\n\nVotre code de vérification est : ${code}\n\nCe code expirera dans 10 minutes.`,
         html: `
             <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 12px; max-width: 400px;">

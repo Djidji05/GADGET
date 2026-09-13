@@ -139,7 +139,7 @@
         <!-- Line 1: Avatar, Greeting, Cart -->
         <div class="mobile-top-bar">
           <div class="flex flex-col ml-0">
-            <span class="text-[10px] text-gray-500 font-medium">{{ authStore.isFirstLogin ? 'Bienvenue sur HTFasil' : 'Bon retour sur HTFasil' }}</span>
+            <span class="text-[10px] text-gray-500 font-medium">{{ authStore.isFirstLogin ? 'Bienvenue sur Panyem' : 'Bon retour sur Panyem' }}</span>
             <span class="font-bold text-gray-900 dark:text-white text-sm leading-tight max-w-[150px] truncate">
               {{ authStore.customer.firstName || authStore.customer.email }}
             </span>
@@ -220,7 +220,7 @@
         <!-- Top bar mobile -->
         <div class="mobile-top-bar">
           <router-link to="/" class="flex items-center gap-2">
-            <img src="/images/logo.png" alt="HTFasil" class="h-8 w-auto" />
+            <img src="/images/logo.png" alt="Panyem" class="h-8 w-auto" />
           </router-link>
           
           <div class="flex items-center gap-2">
@@ -343,7 +343,7 @@
         <!-- Logo -->
         <div class="flex items-center mr-6">
           <router-link to="/" class="flex items-center">
-            <img src="/images/logo.png" alt="HTFasil Logo" class="h-6 w-auto" />
+            <img src="/images/logo.png" alt="Panyem Logo" class="h-6 w-auto" />
           </router-link>
         </div>
 
@@ -885,7 +885,7 @@
              </div>
              
              <div v-else class="flex items-center gap-3">
-               <img src="/images/logo.png" class="h-10 w-auto" alt="HTFasil">
+               <img src="/images/logo.png" class="h-10 w-auto" alt="Panyem">
              </div>
           </div>
           
@@ -907,7 +907,7 @@
         
         <!-- Drawer Footer (Socials or Info) -->
         <div class="p-6 border-t border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 text-center text-xs text-gray-400 dark:text-gray-500">
-          <p>© 2024 HTFasil. Tous droits réservés.</p>
+          <p>© 2024 Panyem. Tous droits réservés.</p>
         </div>
       </div>
     </Transition>

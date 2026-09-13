@@ -9,7 +9,7 @@
         <!-- Logo/Brand -->
         <div class="mb-8">
           <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-            {{ is2FAPending ? 'Vérification' : 'Bon retour sur HTFasil !' }}
+            {{ is2FAPending ? 'Vérification' : 'Bon retour sur Panyem !' }}
           </h1>
           <p class="text-gray-500 dark:text-gray-400">
             {{ is2FAPending ? `Un code a été envoyé à ${form.email}` : 'Veuillez entrer vos identifiants.' }}

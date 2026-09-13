@@ -15,7 +15,7 @@ async function createDb() {
         await sequelize.authenticate();
         console.log('Connected to postgres database.');
 
-        const dbName = 'htfasil_test';
+        const dbName = 'panyem_test';
         await sequelize.query(`CREATE DATABASE ${dbName};`);
         console.log(`Database ${dbName} created successfully.`);
     } catch (error) {

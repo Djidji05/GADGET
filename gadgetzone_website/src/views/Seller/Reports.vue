@@ -188,7 +188,7 @@
                     <h3 class="text-3xl font-extrabold text-gray-900 mt-1">{{ formatPrice(stats.sales) }} <span class="text-sm opacity-50">HTG</span></h3>
                     <div class="mt-3 py-2 px-3 bg-red-50/50 rounded-xl border border-red-100/50">
                         <div class="flex justify-between items-center text-xs font-bold">
-                            <span class="text-gray-400 uppercase tracking-tighter">Commission GadgetZone</span>
+                            <span class="text-gray-400 uppercase tracking-tighter">Commission Panyem</span>
                             <span class="text-red-500 font-black">- {{ formatPrice(commissionAmount) }} HTG</span>
                         </div>
                     </div>

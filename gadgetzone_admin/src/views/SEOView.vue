@@ -68,7 +68,7 @@
                 v-model="seoData.metaTitle"
                 type="text"
                 class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none dark:text-white"
-                placeholder="Ex: HTFasil - La meilleure boutique de gadgets"
+                placeholder="Ex: Panyem - La meilleure boutique de gadgets"
               />
               <p class="text-xs text-gray-500">Recommandé : 50-60 caractères. Actuel : {{ (seoData.metaTitle || '').length }}</p>
             </div>
@@ -99,9 +99,9 @@
         <div class="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-200 dark:border-gray-800 mt-6">
           <h3 class="text-lg font-semibold mb-4 dark:text-white">Aperçu Google</h3>
           <div class="p-4 bg-gray-50 dark:bg-black rounded-lg border border-gray-200 dark:border-gray-800 max-w-xl">
-            <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">https://htfasil.com › ...</div>
+            <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">https://panyem.com › ...</div>
             <div class="text-xl text-blue-700 dark:text-blue-400 hover:underline cursor-pointer mb-1">
-              {{ seoData.metaTitle || 'Titre de votre site | Boutique HTFasil' }}
+              {{ seoData.metaTitle || 'Titre de votre site | Boutique Panyem' }}
             </div>
             <div class="text-sm text-gray-700 dark:text-gray-300 leading-snug">
               {{ seoData.metaDescription || 'Veuillez saisir une description méta pour voir comment votre site apparaîtra dans les résultats de recherche Google.' }}

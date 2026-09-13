@@ -440,7 +440,7 @@ const shareCart = async () => {
 const shareItem = async (item: any) => {
   const shareData = {
     title: item.product.name,
-    text: `Regarde ce produit sur HTFasil : ${item.product.name} à ${formatPrice(item.product.price)}`,
+    text: `Regarde ce produit sur Panyem : ${item.product.name} à ${formatPrice(item.product.price)}`,
     url: window.location.origin + '/products/' + (item.product.slug || item.product.id)
   }
 

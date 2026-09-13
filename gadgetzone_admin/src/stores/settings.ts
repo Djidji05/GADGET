@@ -5,7 +5,7 @@ import i18n from '@/i18n';
 
 export const useSettingsStore = defineStore('settings', () => {
     const general = ref({
-        site_name: 'HTFasil',
+        site_name: 'Panyem',
         site_logo: '',
         site_url: '',
         contact_email: '',
@@ -25,7 +25,7 @@ export const useSettingsStore = defineStore('settings', () => {
             const savedLanguage = localStorage.getItem('userLanguage');
 
             general.value = {
-                site_name: data.site_name || 'HTFasil',
+                site_name: data.site_name || 'Panyem',
                 site_logo: data.site_logo || '',
                 site_url: data.site_url || '',
                 contact_email: data.contact_email || '',
@@ -59,12 +59,12 @@ export const useSettingsStore = defineStore('settings', () => {
         if (general.value.site_logo) {
             return getImageUrl(general.value.site_logo);
         }
-        return '/images/logo/logo-htfasil.png'; // Default fallback
+        return '/images/logo/logo-panyem.png'; // Default fallback
     });
 
     const logoIconUrl = computed(() => {
         // Currently we don't have a specific icon upload, so we fallback to the default
-        return '/images/logo/logo htfasil.png';
+        return '/images/logo/logo panyem.png';
     });
 
     return {

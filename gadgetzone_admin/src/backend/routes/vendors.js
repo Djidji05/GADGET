@@ -1322,7 +1322,7 @@ router.get('/me/transactions', authenticateToken, isSeller, checkStoreActive, as
             amount: Number(p.amount),
             status: p.status,
             created_at: p.created_at,
-            partner_name: 'HTFasil',
+            partner_name: 'Panyem',
             is_credit: false
         }));
 

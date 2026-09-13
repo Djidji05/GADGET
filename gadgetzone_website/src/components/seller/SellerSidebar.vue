@@ -12,7 +12,7 @@
             HT
           </div>
           <span class="text-base font-black text-slate-800 dark:text-gray-100 tracking-tight">
-            HTFasil <span class="text-xs font-bold text-blue-600 bg-blue-50 dark:bg-blue-950/55 px-1.5 py-0.5 rounded-md ml-1">Vendeur</span>
+            Panyem <span class="text-xs font-bold text-blue-600 bg-blue-50 dark:bg-blue-950/55 px-1.5 py-0.5 rounded-md ml-1">Vendeur</span>
           </span>
         </router-link>
       </div>

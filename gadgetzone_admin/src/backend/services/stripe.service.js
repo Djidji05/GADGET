@@ -8,7 +8,7 @@ dotenv.config();
 const stripeInstances = {};
 
 async function getStripeKey() {
-  let secretKey = process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder_key_gadgetzone';
+  let secretKey = process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder_key_panyem';
   try {
     const keySetting = await Setting.findOne({ where: { category: 'payment', key: 'stripe_secret_key' } });
     if (keySetting && keySetting.value) {
@@ -42,7 +42,7 @@ const stripeService = {
   createPayment: async (orderId, amountHTG, exchangeRate, returnUrl = null) => {
     try {
       // 1. Récupérer l'email de l'utilisateur pour pré-remplir le formulaire Stripe Checkout
-      let customerEmail = 'client@htfasil.com';
+      let customerEmail = 'client@panyem.com';
       if (!String(orderId).startsWith('BOOST_') && !String(orderId).startsWith('QR_')) {
         try {
           const order = await Order.findByPk(orderId, { include: ['user'] });
@@ -91,7 +91,7 @@ const stripeService = {
                   ? `Parrainage / Boost de Produit` 
                   : String(orderId).startsWith('QR_')
                   ? `Paiement Direct QR Code`
-                  : `Commande #${orderId} - GadgetZone`,
+                  : `Commande #${orderId} - Panyem`,
                 description: `Paiement sécurisé par carte bancaire. Montant original : ${amountHTG} HTG (Taux de change appliqué : 1 USD = ${exchangeRateNum} HTG)`,
               },
               unit_amount: amountInCentimes,

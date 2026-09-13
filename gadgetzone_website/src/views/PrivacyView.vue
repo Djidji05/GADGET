@@ -7,7 +7,7 @@
         <div>
           <h2 class="text-2xl font-semibold text-gray-900 mb-4">Engagement de Confidentialité</h2>
           <p class="text-gray-600 leading-relaxed">
-            La protection de votre vie privée est une priorité absolue pour **HTFasil**. Dans le cadre de nos activités de marketplace en Haïti, nous sommes amenés à traiter des données à caractère personnel vous concernant. Cette politique détaille nos engagements en matière de transparence, de sécurité et de respect de vos droits, conformément aux standards internationaux de protection des données (RGPD et législations locales).
+            La protection de votre vie privée est une priorité absolue pour **Panyem**. Dans le cadre de nos activités de marketplace en Haïti, nous sommes amenés à traiter des données à caractère personnel vous concernant. Cette politique détaille nos engagements en matière de transparence, de sécurité et de respect de vos droits, conformément aux standards internationaux de protection des données (RGPD et législations locales).
           </p>
         </div>
 
@@ -141,7 +141,7 @@
             droits, veuillez nous contacter :
           </p>
           <div class="bg-gray-50 p-4 rounded-lg">
-            <p class="text-gray-700"><strong>Email :</strong> privacy@htfasil.ht</p>
+            <p class="text-gray-700"><strong>Email :</strong> privacy@panyem.ht</p>
             <p class="text-gray-700"><strong>Téléphone :</strong> +509 34 56 78 90</p>
             <p class="text-gray-700">
               <strong>Adresse :</strong> Delmas 32, #45, Port-au-Prince, Haïti

@@ -98,7 +98,7 @@ onMounted(() => {
                     <h2 class="text-4xl font-black">{{ formatPrice(totalAmount).replace('HTG', '').trim() }}</h2>
                     <span class="text-lg font-bold text-blue-200">HTG</span>
                 </div>
-                <p class="text-[10px] text-blue-100/60 mt-3 italic">* Fonds versés directement par l'administration HTFasil</p>
+                <p class="text-[10px] text-blue-100/60 mt-3 italic">* Fonds versés directement par l'administration Panyem</p>
             </div>
 
             <!-- Decorative element -->
@@ -227,7 +227,7 @@ onMounted(() => {
                 </div>
                 <p class="text-sm font-bold text-gray-400 uppercase tracking-wide">Total des Dépôts</p>
                 <h3 class="text-3xl font-extrabold text-gray-900 mt-1">{{ formatPrice(totalAmount).replace('HTG', '').trim() }} <span class="text-sm opacity-50">HTG</span></h3>
-                <p class="text-xs text-gray-400 mt-2 italic">* Fonds administratifs versés par l'administration HTFasil</p>
+                <p class="text-xs text-gray-400 mt-2 italic">* Fonds administratifs versés par l'administration Panyem</p>
               </div>
               <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-blue-50/50 rounded-full blur-2xl group-hover:bg-blue-100/50 transition-colors"></div>
             </div>

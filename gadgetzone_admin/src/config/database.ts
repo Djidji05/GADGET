@@ -17,7 +17,7 @@ const getEnv = (key: string, defaultValue?: string): string => {
 const dbConfig = {
   host: getEnv('DB_HOST', 'localhost'),
   port: parseInt(getEnv('DB_PORT', '5432'), 10),
-  database: getEnv('DB_NAME', 'htfasil'),
+  database: getEnv('DB_NAME', 'panyem'),
   username: getEnv('DB_USER', 'postgres'),
   password: getEnv('DB_PASSWORD', ''),
   nodeEnv: getEnv('NODE_ENV', 'development')

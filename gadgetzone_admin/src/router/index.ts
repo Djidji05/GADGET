@@ -611,8 +611,8 @@ router.beforeEach(async (to, from, next) => {
 // Gestion du titre de page
 router.afterEach((to) => {
   if (to.meta.title) {
-    document.title = `${to.meta.title} - htfasil Admin`
+    document.title = `${to.meta.title} - panyem Admin`
   } else {
-    document.title = 'htfasil Admin'
+    document.title = 'panyem Admin'
   }
 })

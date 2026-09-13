@@ -5,7 +5,7 @@ import type { Product, Category } from './products'
 export const fallbackBanners: Banner[] = [
   {
     id: 1,
-    title: 'Bienvenue sur HTFasil',
+    title: 'Bienvenue sur Panyem',
     subtitle: 'Découvrez nos derniers produits technologiques',
     image: '/images/Flyer_Gadget_Zone_High_Tech.png',
     link: '/products',

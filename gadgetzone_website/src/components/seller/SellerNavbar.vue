@@ -99,7 +99,7 @@ let unsubscribeSSE: (() => void) | null = null;
 
 const pageTitle = computed(() => {
   const title = (route.meta?.title as string) || '';
-  return title.replace(' - HTFasil', '').replace(' Vendeur', '');
+  return title.replace(' - Panyem', '').replace(' Vendeur', '');
 });
 
 const userInitials = computed(() => {

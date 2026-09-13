@@ -144,8 +144,8 @@
               <i class="las la-envelope text-primary-600 mt-1"></i>
               <div>
                 <h3 class="font-medium">Email</h3>
-                <p class="text-gray-600">contact@htfasil.ht</p>
-                <p class="text-gray-600">support@htfasil.ht</p>
+                <p class="text-gray-600">contact@panyem.ht</p>
+                <p class="text-gray-600">support@panyem.ht</p>
               </div>
             </div>
 
@@ -328,7 +328,7 @@ onMounted(() => {
             maxZoom: 20
         }).addTo(map);
 
-        // Custom HTFasil icon
+        // Custom Panyem icon
         const gzIcon = L.divIcon({
             className: 'custom-div-icon',
             html: `<div style="background-color: #2563EB; width: 30px; height: 30px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
@@ -341,11 +341,11 @@ onMounted(() => {
 
         // Ouanaminthe marker
         L.marker([19.5492, -71.7454], { icon: gzIcon }).addTo(map)
-            .bindPopup('<b>HTFasil Ouanaminthe</b><br>Cité la Lumière');
+            .bindPopup('<b>Panyem Ouanaminthe</b><br>Cité la Lumière');
 
         // Cap-Haitien marker
         L.marker([19.7570, -72.2081], { icon: gzIcon }).addTo(map)
-            .bindPopup('<b>HTFasil Cap-Haïtien</b><br>Rue 25H');
+            .bindPopup('<b>Panyem Cap-Haïtien</b><br>Rue 25H');
             
         // Fit bounds to show both markers
         const bounds = L.latLngBounds([

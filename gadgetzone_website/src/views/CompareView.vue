@@ -50,7 +50,7 @@
                 </button>
                 <img :src="product.image_url || '/placeholder.png'" :alt="product.name" class="w-full aspect-square object-cover rounded-xl mb-2">
                 <p class="font-bold text-gray-800 text-sm line-clamp-2 text-center">{{ product.name }}</p>
-                <p class="text-xs text-gray-400 text-center">{{ product.store?.name || 'HTFasil' }}</p>
+                <p class="text-xs text-gray-400 text-center">{{ product.store?.name || 'Panyem' }}</p>
               </div>
             </th>
           </tr>
@@ -79,7 +79,7 @@
           <tr class="hover:bg-white/60 transition-colors">
             <td class="py-4 pr-4 text-xs font-bold text-gray-500 uppercase">Vendeur</td>
             <td v-for="p in comparisonStore.items" :key="p.id" class="py-4 px-2 text-center">
-              <span class="text-sm font-medium text-gray-700">{{ p.store?.name || 'HTFasil' }}</span>
+              <span class="text-sm font-medium text-gray-700">{{ p.store?.name || 'Panyem' }}</span>
             </td>
           </tr>
           <!-- Catégorie -->

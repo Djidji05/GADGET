@@ -1,6 +1,6 @@
 <template>
   <router-link to="/" class="lg:hidden">
-    <img :src="settingsStore.logoUrl" alt="HTFasil" class="h-16 w-auto" />
+    <img :src="settingsStore.logoUrl" alt="Panyem" class="h-16 w-auto" />
   </router-link>
 </template>
 

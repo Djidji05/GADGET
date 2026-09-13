@@ -5,7 +5,7 @@
       <div class="flex items-center justify-between h-16">
         <!-- Logo -->
         <router-link to="/" class="flex items-center space-x-2">
-          <img src="/images/logo.png" alt="HTFasil Logo" class="h-8 w-auto" />
+          <img src="/images/logo.png" alt="Panyem Logo" class="h-8 w-auto" />
         </router-link>
 
         <!-- Navigation Links -->

@@ -4,7 +4,7 @@ import { settingsService } from '@/services/api'
 
 export const useSettingsStore = defineStore('settings', () => {
     const general = ref({
-        site_name: 'HTFasil',
+        site_name: 'Panyem',
         site_logo: '',
         maintenance_mode: 'false',
         usd_exchange_rate: '135.00',
@@ -15,7 +15,7 @@ export const useSettingsStore = defineStore('settings', () => {
         try {
             const data = await settingsService.get('general')
             general.value = {
-                site_name: data.site_name || 'HTFasil',
+                site_name: data.site_name || 'Panyem',
                 site_logo: data.site_logo || '',
                 maintenance_mode: String(data.maintenance_mode || 'false'),
                 usd_exchange_rate: String(data.usd_exchange_rate || '135.00'),

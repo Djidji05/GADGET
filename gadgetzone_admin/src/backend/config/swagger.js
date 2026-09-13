@@ -5,12 +5,12 @@ const options = {
     definition: {
         openapi: '3.0.0',
         info: {
-            title: 'htfasil Admin API',
+            title: 'panyem Admin API',
             version: '1.0.0',
-            description: 'API documentation for htfasil e-commerce admin platform',
+            description: 'API documentation for panyem e-commerce admin platform',
             contact: {
-                name: 'htfasil Team',
-                email: 'support@htfasil.com'
+                name: 'panyem Team',
+                email: 'support@panyem.com'
             },
             license: {
                 name: 'MIT',
@@ -23,7 +23,7 @@ const options = {
                 description: 'Development server'
             },
             {
-                url: 'https://api.htfasil.com',
+                url: 'https://api.panyem.com',
                 description: 'Production server'
             }
         ],

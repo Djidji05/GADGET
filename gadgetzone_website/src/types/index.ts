@@ -1,5 +1,5 @@
 /**
- * Global type definitions for HTFasil
+ * Global type definitions for Panyem
  */
 
 // Re-export all service types

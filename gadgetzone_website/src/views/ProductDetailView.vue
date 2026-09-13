@@ -884,16 +884,16 @@ const vendorLocation = computed(() => {
 const headData = computed(() => {
   if (!product.value) {
     return {
-      title: 'Chargement... - HTFasil'
+      title: 'Chargement... - Panyem'
     }
   }
 
   const p = product.value
   const ogImage = p.image || p.image_url || 'https://panyem.com/logo.png'
-  const shortDesc = p.description ? p.description.substring(0, 160) : 'Achetez sur GadgetZone'
+  const shortDesc = p.description ? p.description.substring(0, 160) : 'Achetez sur Panyem'
   
   return {
-    title: `${p.name} - HTFasil`,
+    title: `${p.name} - Panyem`,
     meta: [
       { name: 'description', content: shortDesc },
       { property: 'og:title', content: p.name },

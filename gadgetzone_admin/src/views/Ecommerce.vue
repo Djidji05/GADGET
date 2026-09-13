@@ -6,7 +6,7 @@
         <div>
           <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Panneau d'Administration</h1>
           <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Bienvenue dans l'interface de gestion HTFasil
+            Bienvenue dans l'interface de gestion Panyem
           </p>
         </div>
         

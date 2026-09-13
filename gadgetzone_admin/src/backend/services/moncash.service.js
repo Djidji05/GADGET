@@ -43,8 +43,8 @@ const monCashService = {
       const token = await monCashService.getAccessToken();
 
       // Récupération de l'email client si possible
-      let customerEmail = 'client@htfasil.com';
-      let customerName = 'Client HTFasil';
+      let customerEmail = 'client@panyem.com';
+      let customerName = 'Client Panyem';
       
       if (!String(orderId).startsWith('BOOST_')) {
           try {

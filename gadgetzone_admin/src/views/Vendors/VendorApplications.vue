@@ -327,7 +327,7 @@ const viewDetails = (application: VendorApplication) => {
 const approveApplication = async (id: number) => {
   const confirmed = await uiStore.confirm({
     title: 'Approbation Vendeur',
-    message: 'Êtes-vous sûr de vouloir autoriser ce vendeur à vendre sur HTFasil ? Un compte vendeur sera automatiquement créé.',
+    message: 'Êtes-vous sûr de vouloir autoriser ce vendeur à vendre sur Panyem ? Un compte vendeur sera automatiquement créé.',
     confirmText: 'Oui, Approuver',
     type: 'info'
   })

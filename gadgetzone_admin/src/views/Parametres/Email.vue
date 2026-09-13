@@ -66,11 +66,11 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label class="mb-2.5 block text-sm font-medium text-black dark:text-white">Nom affiché</label>
-              <input type="text" v-model="settings.from_name" placeholder="HTFasil Support" class="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-blue-600 dark:border-form-strokedark dark:bg-form-input" />
+              <input type="text" v-model="settings.from_name" placeholder="Panyem Support" class="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-blue-600 dark:border-form-strokedark dark:bg-form-input" />
             </div>
             <div>
               <label class="mb-2.5 block text-sm font-medium text-black dark:text-white">Email d'expédition</label>
-              <input type="email" v-model="settings.from_email" placeholder="noreply@htfasil.ht" class="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-blue-600 dark:border-form-strokedark dark:bg-form-input" />
+              <input type="email" v-model="settings.from_email" placeholder="noreply@panyem.ht" class="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-blue-600 dark:border-form-strokedark dark:bg-form-input" />
             </div>
           </div>
         </div>
@@ -179,8 +179,8 @@ const settings = ref({
   smtp_user: '',
   smtp_password: '',
   smtp_secure: 'false',
-  from_name: 'HTFasil',
-  from_email: 'noreply@htfasil.ht',
+  from_name: 'Panyem',
+  from_email: 'noreply@panyem.ht',
   welcome_email_enabled: 'true',
   order_confirmation_enabled: 'true',
   shipping_notification_enabled: 'true'
@@ -196,8 +196,8 @@ const loadSettings = async () => {
       smtp_user: data.smtp_user || '',
       smtp_password: data.smtp_password || '',
       smtp_secure: String(data.smtp_secure || 'false'),
-      from_name: data.from_name || 'HTFasil',
-      from_email: data.from_email || 'noreply@htfasil.ht',
+      from_name: data.from_name || 'Panyem',
+      from_email: data.from_email || 'noreply@panyem.ht',
       welcome_email_enabled: String(data.welcome_email_enabled || 'true'),
       order_confirmation_enabled: String(data.order_confirmation_enabled || 'true'),
       shipping_notification_enabled: String(data.shipping_notification_enabled || 'true')

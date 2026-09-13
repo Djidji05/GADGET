@@ -676,7 +676,7 @@
        </div>
        <h3 class="text-xl font-bold text-gray-900 mb-2">Configurez vos zones de livraison</h3>
        <p class="text-sm text-gray-500 mb-6 leading-relaxed">
-         Pour commencer à vendre sur HTFasil, vous devez configurer vos zones de livraison et vos tarifs. Les clients verront les frais de livraison correspondants lors du paiement.
+         Pour commencer à vendre sur Panyem, vous devez configurer vos zones de livraison et vos tarifs. Les clients verront les frais de livraison correspondants lors du paiement.
        </p>
        <div class="flex flex-col gap-3">
          <button 

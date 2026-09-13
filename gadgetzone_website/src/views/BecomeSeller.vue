@@ -3,7 +3,7 @@
     <!-- HERO SECTION MARKETING -->
     <section v-if="!submitted && !existingApplication" class="bg-[#0A1A2F] text-white pt-20 pb-24 relative">
       <div class="container mx-auto px-4 text-center relative z-10">
-        <h1 class="text-4xl md:text-5xl font-extrabold mb-6">Faites décoller vos ventes avec HTFasil</h1>
+        <h1 class="text-4xl md:text-5xl font-extrabold mb-6">Faites décoller vos ventes avec Panyem</h1>
         <p class="text-xl md:text-2xl text-gray-300 mb-10 max-w-3xl mx-auto">
           Rejoignez la marketplace n°1 et accédez instantanément à des milliers de clients prêts à acheter vos produits.
         </p>

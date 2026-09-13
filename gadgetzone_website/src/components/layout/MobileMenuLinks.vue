@@ -10,14 +10,14 @@
       <span class="flex items-center gap-2"><i class="fas fa-th-large text-gray-500 dark:text-gray-400"></i> Tous les produits</span>
     </router-link>
 
-    <!-- Vendre sur HTFasil / Ma Boutique (Mobile) -->
+    <!-- Vendre sur Panyem / Ma Boutique (Mobile) -->
     <router-link
       v-if="!isSeller"
       to="/become-seller"
       class="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-200 font-medium border border-gray-100 dark:border-gray-800"
       @click="$emit('close')"
     >
-      <span class="flex items-center gap-2"><i class="fas fa-store text-gray-500 dark:text-gray-400"></i> Vendre sur HTFasil</span>
+      <span class="flex items-center gap-2"><i class="fas fa-store text-gray-500 dark:text-gray-400"></i> Vendre sur Panyem</span>
     </router-link>
 
     <router-link

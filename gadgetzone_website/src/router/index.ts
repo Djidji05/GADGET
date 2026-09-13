@@ -9,32 +9,32 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
-      meta: { title: 'Accueil - HTFasil' },
+      meta: { title: 'Accueil - Panyem' },
     },
     {
       path: '/products',
       name: 'products',
       component: () => import('../views/ProductsView.vue'),
-      meta: { title: 'Produits - HTFasil' },
+      meta: { title: 'Produits - Panyem' },
     },
     {
       path: '/products/:id',
       name: 'product-detail',
       component: () => import('../views/ProductDetailView.vue'),
-      meta: { title: 'Détail Produit - HTFasil' },
+      meta: { title: 'Détail Produit - Panyem' },
     },
     {
       path: '/cart',
       name: 'cart',
       component: () => import('../views/CartView.vue'),
-      meta: { title: 'Panier - HTFasil', hideNavSearch: true },
+      meta: { title: 'Panier - Panyem', hideNavSearch: true },
     },
     {
       path: '/checkout',
       name: 'checkout',
       component: () => import('../views/CheckoutView.vue'),
       meta: {
-        title: 'Commande - HTFasil',
+        title: 'Commande - Panyem',
         requiresAuth: true,
       },
     },
@@ -42,38 +42,38 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: () => import('../views/auth/LoginView.vue'),
-      meta: { title: 'Connexion - HTFasil', guestOnly: true },
+      meta: { title: 'Connexion - Panyem', guestOnly: true },
     },
     {
       path: '/register',
       name: 'register',
       component: () => import('../views/auth/RegisterView.vue'),
-      meta: { title: 'Inscription - HTFasil', guestOnly: true },
+      meta: { title: 'Inscription - Panyem', guestOnly: true },
     },
     {
       path: '/forgot-password',
       name: 'forgot-password',
       component: () => import('../views/auth/ForgotPasswordView.vue'),
-      meta: { title: 'Mot de passe oublié - HTFasil', guestOnly: true },
+      meta: { title: 'Mot de passe oublié - Panyem', guestOnly: true },
     },
     {
       path: '/reset-password',
       name: 'reset-password',
       component: () => import('../views/auth/ResetPasswordView.vue'),
-      meta: { title: 'Réinitialisation mot de passe - HTFasil', guestOnly: true },
+      meta: { title: 'Réinitialisation mot de passe - Panyem', guestOnly: true },
     },
     {
       path: '/auth/callback',
       name: 'auth-callback',
       component: () => import('../views/auth/AuthCallback.vue'),
-      meta: { title: 'Connexion... - HTFasil', guestOnly: true },
+      meta: { title: 'Connexion... - Panyem', guestOnly: true },
     },
     {
       path: '/account',
       name: 'account',
       component: () => import('../views/AccountView.vue'),
       meta: {
-        title: 'Mon Compte - HTFasil',
+        title: 'Mon Compte - Panyem',
         requiresAuth: true,
         hideNavSearch: true,
       },
@@ -83,7 +83,7 @@ const router = createRouter({
       name: 'browsing-history',
       component: () => import('../views/Account/HistoryView.vue'),
       meta: {
-        title: 'Historique de navigation - HTFasil',
+        title: 'Historique de navigation - Panyem',
         requiresAuth: true,
       },
     },
@@ -92,7 +92,7 @@ const router = createRouter({
       name: 'orders',
       component: () => import('../views/OrdersView.vue'),
       meta: {
-        title: 'Mes Commandes - HTFasil',
+        title: 'Mes Commandes - Panyem',
         requiresAuth: true,
       },
     },
@@ -101,7 +101,7 @@ const router = createRouter({
       name: 'pay-qr',
       component: () => import('../views/PayQR.vue'),
       meta: {
-        title: 'Paiement en Magasin - HTFasil',
+        title: 'Paiement en Magasin - Panyem',
         requiresAuth: true,
         hideBottomNav: true,
       },
@@ -111,7 +111,7 @@ const router = createRouter({
       name: 'order-detail',
       component: () => import('../views/OrderDetailView.vue'),
       meta: {
-        title: 'Détail Commande - HTFasil',
+        title: 'Détail Commande - Panyem',
         requiresAuth: true,
         hideNavSearch: true,
         hideMobileNav: true,
@@ -122,7 +122,7 @@ const router = createRouter({
       name: 'wishlist',
       component: () => import('../views/WishlistView.vue'),
       meta: {
-        title: "Liste d'envies - HTFasil",
+        title: "Liste d'envies - Panyem",
         requiresAuth: true,
       },
     },
@@ -131,7 +131,7 @@ const router = createRouter({
       name: 'delivery-scan',
       component: () => import('../views/Seller/DeliveryScanView.vue'),
       meta: {
-        title: 'Scanner de Livraison - HTFasil',
+        title: 'Scanner de Livraison - Panyem',
         requiresAuth: false,
         hideNavSearch: true,
         hideBottomNav: true,
@@ -144,7 +144,7 @@ const router = createRouter({
       name: 'loyalty',
       component: () => import('../views/Account/LoyaltyView.vue'),
       meta: {
-        title: 'Mes Points HTF - HTFasil',
+        title: 'Mes Points HTF - Panyem',
         requiresAuth: true,
         hideNavSearch: true,
         hideMobileNav: true,
@@ -155,7 +155,7 @@ const router = createRouter({
       name: 'notifications',
       component: () => import('../views/NotificationsView.vue'),
       meta: {
-        title: 'Notifications - HTFasil',
+        title: 'Notifications - Panyem',
         requiresAuth: true,
       },
     },
@@ -164,7 +164,7 @@ const router = createRouter({
       name: 'addresses',
       component: () => import('../views/AddressesView.vue'),
       meta: {
-        title: 'Mes Adresses - HTFasil',
+        title: 'Mes Adresses - Panyem',
         requiresAuth: true,
         hideNavSearch: true,
         hideBottomNav: true
@@ -174,92 +174,92 @@ const router = createRouter({
       path: '/promotions',
       name: 'promotions',
       component: () => import('../views/PromotionsView.vue'),
-      meta: { title: 'Promotions - HTFasil' },
+      meta: { title: 'Promotions - Panyem' },
     },
     {
       path: '/contact',
       name: 'contact',
       component: () => import('../views/ContactView.vue'),
-      meta: { title: 'Contact - HTFasil', hideBottomNav: true, hideNavSearch: true },
+      meta: { title: 'Contact - Panyem', hideBottomNav: true, hideNavSearch: true },
     },
     {
       path: '/report-issue',
       name: 'report-issue',
       component: () => import('../views/ContactView.vue'),
-      meta: { title: 'Signaler un problème - HTFasil', hideBottomNav: true, hideNavSearch: true },
+      meta: { title: 'Signaler un problème - Panyem', hideBottomNav: true, hideNavSearch: true },
     },
     {
       path: '/about',
       name: 'about',
       component: () => import('../views/AboutView.vue'),
-      meta: { title: 'À Propos - HTFasil', hideBottomNav: true, hideNavSearch: true },
+      meta: { title: 'À Propos - Panyem', hideBottomNav: true, hideNavSearch: true },
     },
     {
       path: '/faq',
       name: 'faq',
       component: () => import('../views/FaqView.vue'),
-      meta: { title: 'FAQ - HTFasil', hideBottomNav: true, hideNavSearch: true },
+      meta: { title: 'FAQ - Panyem', hideBottomNav: true, hideNavSearch: true },
     },
     {
       path: '/privacy',
       name: 'privacy',
       component: () => import('../views/PrivacyView.vue'),
-      meta: { title: 'Confidentialité - HTFasil', hideBottomNav: true, hideNavSearch: true },
+      meta: { title: 'Confidentialité - Panyem', hideBottomNav: true, hideNavSearch: true },
     },
     {
       path: '/terms',
       name: 'terms',
       component: () => import('../views/TermsView.vue'),
-      meta: { title: 'Conditions - HTFasil', hideBottomNav: true, hideNavSearch: true },
+      meta: { title: 'Conditions - Panyem', hideBottomNav: true, hideNavSearch: true },
     },
     {
       path: '/sitemap',
       name: 'sitemap',
       component: () => import('../views/SitemapView.vue'),
-      meta: { title: 'Plan du site - HTFasil', hideBottomNav: true, hideNavSearch: true },
+      meta: { title: 'Plan du site - Panyem', hideBottomNav: true, hideNavSearch: true },
     },
     {
       path: '/shipping',
       name: 'shipping',
       component: () => import('../views/ShippingView.vue'),
-      meta: { title: 'Livraison - HTFasil', hideBottomNav: true, hideNavSearch: true },
+      meta: { title: 'Livraison - Panyem', hideBottomNav: true, hideNavSearch: true },
     },
     {
       path: '/returns',
       name: 'returns',
       component: () => import('../views/ReturnsView.vue'),
-      meta: { title: 'Retours - HTFasil', hideBottomNav: true, hideNavSearch: true },
+      meta: { title: 'Retours - Panyem', hideBottomNav: true, hideNavSearch: true },
     },
     {
       path: '/warranty',
       name: 'warranty',
       component: () => import('../views/WarrantyView.vue'),
-      meta: { title: 'Garantie - HTFasil', hideBottomNav: true, hideNavSearch: true },
+      meta: { title: 'Garantie - Panyem', hideBottomNav: true, hideNavSearch: true },
     },
     {
       path: '/payment/success',
       name: 'payment-success',
       component: () => import('../views/payment/PaymentSuccessView.vue'),
-      meta: { title: 'Paiement Réussi - HTFasil', hideBottomNav: true },
+      meta: { title: 'Paiement Réussi - Panyem', hideBottomNav: true },
     },
     {
       path: '/payment/cancelled',
       name: 'payment-cancelled',
       component: () => import('../views/payment/PaymentCancelledView.vue'),
-      meta: { title: 'Paiement Annulé - HTFasil', hideBottomNav: true },
+      meta: { title: 'Paiement Annulé - Panyem', hideBottomNav: true },
     },
     {
       path: '/payment/callback',
       name: 'payment-callback',
       component: () => import('../views/payment/MonCashCallbackView.vue'),
-      meta: { title: 'Vérification du Paiement - HTFasil', hideBottomNav: true },
+      meta: { title: 'Vérification du Paiement - Panyem', hideBottomNav: true },
     },
     {
       path: '/become-seller',
       name: 'become-seller',
       component: () => import('../views/BecomeSeller.vue'),
       meta: {
-        title: 'Devenir Vendeur - HTFasil',
+        title: 'Devenir Vendeur - Panyem',
         requiresAuth: true
       },
     },
@@ -272,7 +272,7 @@ const router = createRouter({
           name: 'seller-dashboard',
           component: () => import('../views/Seller/Dashboard.vue'),
           meta: {
-            title: 'Tableau de Bord Vendeur - HTFasil',
+            title: 'Tableau de Bord Vendeur - Panyem',
             requiresAuth: true
           },
         },
@@ -281,7 +281,7 @@ const router = createRouter({
           name: 'seller-products',
           component: () => import('../views/Seller/Products.vue'),
           meta: {
-            title: 'Mes Produits - HTFasil',
+            title: 'Mes Produits - Panyem',
             requiresAuth: true
           },
         },
@@ -290,7 +290,7 @@ const router = createRouter({
           name: 'seller-add-product',
           component: () => import('../views/Seller/AddProduct.vue'),
           meta: {
-            title: 'Ajouter un Produit - HTFasil',
+            title: 'Ajouter un Produit - Panyem',
             requiresAuth: true,
             hideBottomNav: true
           },
@@ -300,7 +300,7 @@ const router = createRouter({
           name: 'seller-edit-product',
           component: () => import('../views/Seller/AddProduct.vue'),
           meta: {
-            title: 'Modifier un Produit - HTFasil',
+            title: 'Modifier un Produit - Panyem',
             requiresAuth: true,
             hideBottomNav: true
           },
@@ -310,7 +310,7 @@ const router = createRouter({
           name: 'seller-orders',
           component: () => import('../views/Seller/Orders.vue'),
           meta: {
-            title: 'Commandes Vendeur - HTFasil',
+            title: 'Commandes Vendeur - Panyem',
             requiresAuth: true
           }
         },
@@ -319,7 +319,7 @@ const router = createRouter({
           name: 'seller-order-detail',
           component: () => import('../views/Seller/OrderDetail.vue'),
           meta: {
-            title: 'Détail Commande - HTFasil',
+            title: 'Détail Commande - Panyem',
             requiresAuth: true,
             hideBottomNav: true
           }
@@ -329,7 +329,7 @@ const router = createRouter({
           name: 'seller-reports',
           component: () => import('../views/Seller/Reports.vue'),
           meta: {
-            title: 'Rapports Vendeur - HTFasil',
+            title: 'Rapports Vendeur - Panyem',
             requiresAuth: true,
             hideBottomNav: true
           }
@@ -339,7 +339,7 @@ const router = createRouter({
           name: 'seller-transactions',
           component: () => import('../views/Seller/Transactions.vue'),
           meta: {
-            title: 'Transactions Vendeur - HTFasil',
+            title: 'Transactions Vendeur - Panyem',
             requiresAuth: true,
             hideBottomNav: true
           }
@@ -349,7 +349,7 @@ const router = createRouter({
           name: 'seller-payments',
           component: () => import('../views/Seller/Payments.vue'),
           meta: {
-            title: 'Paiements Vendeur - HTFasil',
+            title: 'Paiements Vendeur - Panyem',
             requiresAuth: true,
             hideBottomNav: true
           }
@@ -359,7 +359,7 @@ const router = createRouter({
           name: 'seller-deposits',
           component: () => import('../views/Seller/Deposits.vue'),
           meta: {
-            title: 'Dépôts Vendeur - HTFasil',
+            title: 'Dépôts Vendeur - Panyem',
             requiresAuth: true,
             hideBottomNav: true
           }
@@ -369,7 +369,7 @@ const router = createRouter({
           name: 'seller-settings',
           component: () => import('../views/Seller/Settings.vue'),
           meta: {
-            title: 'Paramètres Vendeur - HTFasil',
+            title: 'Paramètres Vendeur - Panyem',
             requiresAuth: true,
             hideBottomNav: true
           }
@@ -379,7 +379,7 @@ const router = createRouter({
           name: 'seller-shipping',
           component: () => import('../views/Seller/ShippingRates.vue'),
           meta: {
-            title: 'Tarifs et Zones de Livraison - HTFasil',
+            title: 'Tarifs et Zones de Livraison - Panyem',
             requiresAuth: true,
             hideBottomNav: true
           }
@@ -389,7 +389,7 @@ const router = createRouter({
           name: 'seller-notifications',
           component: () => import('../views/Seller/Notifications.vue'),
           meta: {
-            title: 'Notifications Vendeur - HTFasil',
+            title: 'Notifications Vendeur - Panyem',
             requiresAuth: true,
             hideBottomNav: true
           }
@@ -399,7 +399,7 @@ const router = createRouter({
           name: 'seller-messages',
           component: () => import('../views/Seller/Messages.vue'),
           meta: {
-            title: 'Messages Vendeur - HTFasil',
+            title: 'Messages Vendeur - Panyem',
             requiresAuth: true,
             hideBottomNav: true
           }
@@ -409,7 +409,7 @@ const router = createRouter({
           name: 'seller-my-qr',
           component: () => import('../views/Seller/MyQR.vue'),
           meta: {
-            title: 'Mon QR Code - HTFasil',
+            title: 'Mon QR Code - Panyem',
             requiresAuth: true,
             hideBottomNav: true
           }
@@ -419,7 +419,7 @@ const router = createRouter({
           name: 'seller-academy',
           component: () => import('../views/Seller/SellerAcademy.vue'),
           meta: {
-            title: 'Académie Vendeur - HTFasil',
+            title: 'Académie Vendeur - Panyem',
             requiresAuth: true,
             hideBottomNav: true
           }
@@ -429,7 +429,7 @@ const router = createRouter({
           name: 'seller-ambassador',
           component: () => import('../views/Ambassador/Dashboard.vue'),
           meta: {
-            title: 'Ambassadeur Vendeur - HTFasil',
+            title: 'Ambassadeur Vendeur - Panyem',
             requiresAuth: true,
             hideBottomNav: true
           }
@@ -439,7 +439,7 @@ const router = createRouter({
           name: 'seller-help',
           component: () => import('../views/Seller/SellerHelp.vue'),
           meta: {
-            title: "Centre d'Aide - HTFasil",
+            title: "Centre d'Aide - Panyem",
             requiresAuth: true,
             hideBottomNav: true
           }
@@ -449,7 +449,7 @@ const router = createRouter({
           name: 'seller-boost',
           component: () => import('../views/Seller/SellerBoost.vue'),
           meta: {
-            title: 'Booster Visibilité - HTFasil',
+            title: 'Booster Visibilité - Panyem',
             requiresAuth: true,
             hideBottomNav: true
           }
@@ -459,7 +459,7 @@ const router = createRouter({
           name: 'seller-community',
           component: () => import('../views/Seller/SellerCommunity.vue'),
           meta: {
-            title: 'Communauté Vendeur - HTFasil',
+            title: 'Communauté Vendeur - Panyem',
             requiresAuth: true,
             hideBottomNav: true
           }
@@ -469,7 +469,7 @@ const router = createRouter({
           name: 'seller-trust',
           component: () => import('../views/Seller/SellerTrust.vue'),
           meta: {
-            title: 'Confiance & Sécurité - HTFasil',
+            title: 'Confiance & Sécurité - Panyem',
             requiresAuth: true,
             hideBottomNav: true
           }
@@ -479,7 +479,7 @@ const router = createRouter({
           name: 'seller-services',
           component: () => import('../views/Seller/SellerServices.vue'),
           meta: {
-            title: 'Nos Services Vendeur - HTFasil',
+            title: 'Nos Services Vendeur - Panyem',
             requiresAuth: true,
             hideBottomNav: true
           }
@@ -489,7 +489,7 @@ const router = createRouter({
           name: 'seller-promotions',
           component: () => import('../views/Seller/Promotions.vue'),
           meta: {
-            title: 'Mes Promotions - HTFasil',
+            title: 'Mes Promotions - Panyem',
             requiresAuth: true,
             hideBottomNav: true
           }
@@ -500,19 +500,19 @@ const router = createRouter({
       path: '/store/:id',
       name: 'store-view',
       component: () => import('../views/StoreView.vue'),
-      meta: { title: 'Boutique - HTFasil', hideNavSearch: true },
+      meta: { title: 'Boutique - Panyem', hideNavSearch: true },
     },
     {
       path: '/maintenance',
       name: 'maintenance',
       component: () => import('../views/MaintenanceView.vue'),
-      meta: { title: 'Maintenance en cours - HTFasil', hideBottomNav: true, hideNavSearch: true },
+      meta: { title: 'Maintenance en cours - Panyem', hideBottomNav: true, hideNavSearch: true },
     },
     {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
       component: () => import('../views/NotFoundView.vue'),
-      meta: { title: 'Page Non Trouvée - HTFasil' },
+      meta: { title: 'Page Non Trouvée - Panyem' },
     },
   ],
   scrollBehavior(to, from, savedPosition) {

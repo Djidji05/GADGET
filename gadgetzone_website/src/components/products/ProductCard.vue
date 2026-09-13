@@ -67,7 +67,7 @@
             <i class="fas fa-store text-[8px] text-blue-500"></i>
           </div>
           <span class="text-[10px] md:text-xs font-medium text-gray-500 dark:text-gray-400 truncate">
-            {{ product.store?.name || 'HTFasil' }}
+            {{ product.store?.name || 'Panyem' }}
           </span>
         </div>
 

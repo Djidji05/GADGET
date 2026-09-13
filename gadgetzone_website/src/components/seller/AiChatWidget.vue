@@ -28,7 +28,7 @@
             <i class="fas fa-headset text-xs"></i>
           </div>
           <div class="bg-white p-3 rounded-2xl rounded-tl-sm shadow-sm border border-gray-100 text-sm text-gray-700">
-            Bonjour ! Mwen se asistan IA vendè HTFasil ou. Kijan m ka ede w jodi a ? 🇭🇹
+            Bonjour ! Mwen se asistan IA vendè Panyem ou. Kijan m ka ede w jodi a ? 🇭🇹
           </div>
         </div>
 

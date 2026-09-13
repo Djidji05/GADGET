@@ -534,10 +534,10 @@ const exportPDF = (period: string = 'all') => {
     doc.setFontSize(8);
     doc.setTextColor(150);
     doc.text(`Page ${i} sur ${pageCount}`, 105, 285, { align: 'center' });
-    doc.text('HTFasil Market - Système d\'Administration', 196, 285, { align: 'right' });
+    doc.text('Panyem Market - Système d\'Administration', 196, 285, { align: 'right' });
   }
 
-  doc.save(`commandes_htfasil_${new Date().toISOString().slice(0,10)}.pdf`);
+  doc.save(`commandes_panyem_${new Date().toISOString().slice(0,10)}.pdf`);
 }
 
 onMounted(() => {

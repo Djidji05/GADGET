@@ -9,7 +9,7 @@
             <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
               <i class="fas fa-truck text-blue-500"></i> Zone de Livraison
             </h2>
-            <p>HTFasil livre actuellement dans toutes les zones du Cap-Haïtien et de Ouanaminthe. Nous étendons progressivement notre réseau à d'autres villes d'Haïti.</p>
+            <p>Panyem livre actuellement dans toutes les zones du Cap-Haïtien et de Ouanaminthe. Nous étendons progressivement notre réseau à d'autres villes d'Haïti.</p>
           </section>
 
           <section>

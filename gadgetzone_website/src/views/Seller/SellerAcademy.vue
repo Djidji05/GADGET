@@ -54,7 +54,7 @@
                   </span>
               </div>
               <h2 class="text-3xl lg:text-4xl font-black mb-3 leading-tight">{{ featuredCourse.title }}</h2>
-              <p class="text-blue-100/90 mb-8 max-w-lg text-sm leading-relaxed">{{ featuredCourse.description || "Apprenez à configurer un studio maison, gérer l'éclairage et retoucher vos photos pour doubler vos ventes et attirer plus de clients sur HTFasil." }}</p>
+              <p class="text-blue-100/90 mb-8 max-w-lg text-sm leading-relaxed">{{ featuredCourse.description || "Apprenez à configurer un studio maison, gérer l'éclairage et retoucher vos photos pour doubler vos ventes et attirer plus de clients sur Panyem." }}</p>
               
               <div class="flex items-center gap-4">
                   <button @click="openVideo(featuredCourse)" class="bg-white text-blue-600 px-8 py-3.5 rounded-2xl font-black text-sm hover:bg-blue-50 hover:scale-105 active:scale-95 transition-all shadow-lg flex items-center gap-3">

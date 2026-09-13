@@ -68,7 +68,7 @@
               <input 
                 type="text" 
                 v-model="settings.site_name" 
-                placeholder="HTFasil" 
+                placeholder="Panyem" 
                 class="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-blue-600 dark:border-form-strokedark dark:bg-form-input" 
               />
             </div>
@@ -78,7 +78,7 @@
               <input 
                 type="url" 
                 v-model="settings.site_url" 
-                placeholder="https://htfasil.ht" 
+                placeholder="https://panyem.ht" 
                 class="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-blue-600 dark:border-form-strokedark dark:bg-form-input" 
               />
             </div>
@@ -98,7 +98,7 @@
               <input 
                 type="email" 
                 v-model="settings.contact_email" 
-                placeholder="contact@htfasil.ht" 
+                placeholder="contact@panyem.ht" 
                 class="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-blue-600 dark:border-form-strokedark dark:bg-form-input" 
               />
             </div>

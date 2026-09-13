@@ -907,10 +907,10 @@ const handleExport = () => {
     const doc = new jsPDF()
     const timestamp = new Date().toISOString().split('T')[0]
     
-    // Header Style HTFasil
+    // Header Style Panyem
     doc.setFontSize(22)
     doc.setTextColor(220, 38, 38)
-    doc.text('HTFasil', 14, 20)
+    doc.text('Panyem', 14, 20)
     
     doc.setFontSize(10)
     doc.setTextColor(100)

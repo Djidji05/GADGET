@@ -44,19 +44,19 @@
             <div class="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
               <i class="fas fa-bolt text-white text-xl"></i>
             </div>
-            <span class="text-2xl font-bold text-white tracking-tight">HTFasil</span>
+            <span class="text-2xl font-bold text-white tracking-tight">Panyem</span>
           </div>
           <p class="text-gray-400 leading-relaxed">
             {{ $t('footer.description') }}
           </p>
           <div class="flex gap-4">
-            <a href="https://www.tiktok.com/@htfasilhightech" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-black hover:text-white transition-all duration-300 group">
+            <a href="https://www.tiktok.com/@panyemhightech" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-black hover:text-white transition-all duration-300 group">
               <i class="fab fa-tiktok text-lg group-hover:scale-110 transition-transform"></i>
             </a>
             <a href="https://wa.me/50941393544" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-green-500 hover:text-white transition-all duration-300 group">
               <i class="fab fa-whatsapp text-lg group-hover:scale-110 transition-transform"></i>
             </a>
-            <a href="https://www.instagram.com/htfasilhightech" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-pink-600 hover:text-white transition-all duration-300 group">
+            <a href="https://www.instagram.com/panyemhightech" target="_blank" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-pink-600 hover:text-white transition-all duration-300 group">
               <i class="fab fa-instagram text-lg group-hover:scale-110 transition-transform"></i>
             </a>
           </div>
@@ -189,7 +189,7 @@
               <div class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center flex-shrink-0 text-blue-500">
                 <i class="fas fa-envelope"></i>
               </div>
-              <span class="hover:text-blue-400 transition-colors cursor-pointer">htfasil308@gmail.com</span>
+              <span class="hover:text-blue-400 transition-colors cursor-pointer">panyem308@gmail.com</span>
             </li>
             <li class="flex items-start gap-3">
               <div class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center flex-shrink-0 text-blue-500">

@@ -76,13 +76,13 @@ router.post('/', contactLimiter, [
         });
 
         const mailOptions = {
-            from: `"HTFasil Contact" <${process.env.EMAIL_USER || 'contact@htfasil.ht'}>`,
-            to: process.env.CONTACT_EMAIL || "contact@htfasil.ht",
+            from: `"Panyem Contact" <${process.env.EMAIL_USER || 'contact@panyem.ht'}>`,
+            to: process.env.CONTACT_EMAIL || "contact@panyem.ht",
             subject: `[Ticket #${ticketId}] Nouveau Message: ${subject}`,
             text: `Vous avez reçu un nouveau message (Ticket #${ticketId}).\n\nNom: ${firstName} ${lastName}\nEmail: ${email}\n\nMessage:\n${message}`,
             replyTo: email,
             html: `
-                <h3>Nouveau message de contact - HTFasil (Ticket #${ticketId})</h3>
+                <h3>Nouveau message de contact - Panyem (Ticket #${ticketId})</h3>
                 <p><strong>Nom:</strong> ${firstName} ${lastName}</p>
                 <p><strong>Email:</strong> ${email}</p>
                 <p><strong>Téléphone:</strong> ${phone || 'Non renseigné'}</p>

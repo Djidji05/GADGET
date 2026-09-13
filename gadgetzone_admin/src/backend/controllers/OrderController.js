@@ -76,7 +76,7 @@ class OrderController {
     createOrder = async (req, res) => {
         try {
             console.log('📦 Create Order Request:', JSON.stringify(req.body, null, 2));
-            fs.appendFileSync('C:\\Users\\ndjiv\\OneDrive\\Desktop\\Gadget\\gadgetzone_admin\\scratch\\debug.log', '📦 Create Order Request: ' + JSON.stringify(req.body) + '\n');
+            fs.appendFileSync('C:\\Users\\ndjiv\\OneDrive\\Desktop\\Gadget\\panyem_admin\\scratch\\debug.log', '📦 Create Order Request: ' + JSON.stringify(req.body) + '\n');
             
             // 🛡️ SÉCURISATION : Forcer l'ID utilisateur à celui de la session pour éviter l'usurpation
             const orderData = {
@@ -89,7 +89,7 @@ class OrderController {
         } catch (error) {
             console.error('❌ Controller Error [createOrder]:', error); // Log full error object (includes stack)
             try {
-                fs.appendFileSync('C:\\Users\\ndjiv\\OneDrive\\Desktop\\Gadget\\gadgetzone_admin\\scratch\\debug.log', '❌ Controller Error [createOrder]: ' + error.message + '\n' + error.stack + '\n');
+                fs.appendFileSync('C:\\Users\\ndjiv\\OneDrive\\Desktop\\Gadget\\panyem_admin\\scratch\\debug.log', '❌ Controller Error [createOrder]: ' + error.message + '\n' + error.stack + '\n');
             } catch (e) {}
             res.status(400).json({ error: error.message, stack: error.stack });
         }

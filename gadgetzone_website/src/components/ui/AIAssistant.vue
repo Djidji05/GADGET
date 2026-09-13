@@ -36,7 +36,7 @@
             </div>
             <div>
               <h3 class="font-bold text-sm tracking-wide flex items-center gap-1.5">
-                Assistant HTFasil 
+                Assistant Panyem 
                 <i class="fas fa-star text-[10px] text-yellow-300"></i>
               </h3>
               <p class="text-[10px] text-blue-100 flex items-center gap-1.5 font-medium mt-0.5">

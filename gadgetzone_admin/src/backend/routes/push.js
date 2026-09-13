@@ -89,7 +89,7 @@ router.post('/test', authenticateToken, async (req, res) => {
     try {
         const sent = await webPushService.sendToUser(
             req.user.id,
-            '🔔 Test HTFasil',
+            '🔔 Test Panyem',
             'Les notifications push fonctionnent !',
             { url: '/', type: 'test' }
         );

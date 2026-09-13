@@ -527,7 +527,7 @@ const getTransactionCategory = (tx: any) => {
                                 <span class="text-gray-900 line-through">{{ formatPrice(selectedTransaction.gross_amount) }} HTG</span>
                             </div>
                             <div class="flex justify-between items-center text-sm font-bold">
-                                <span class="text-gray-300">Commission GadgetZone</span>
+                                <span class="text-gray-300">Commission Panyem</span>
                                 <span class="text-red-500">- {{ formatPrice(selectedTransaction.fee) }} HTG</span>
                             </div>
                         </template>

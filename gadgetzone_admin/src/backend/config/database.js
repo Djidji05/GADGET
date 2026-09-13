@@ -8,7 +8,7 @@ dotenv.config({ path: '.env.backend' });
 const dbConfig = {
   host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT || '5432', 10),
-  database: process.env.DB_NAME || 'htfasil',
+  database: process.env.DB_NAME || 'panyem',
   username: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || '',
   dialect: 'postgres',
@@ -83,7 +83,7 @@ export const initDatabase = async () => {
           console.log('💡 Solution: Vérifiez les identifiants de connexion à la base de données');
           break;
         case '3D000':
-          console.log('💡 Solution: Créez la base de données avec: CREATE DATABASE htfasil;');
+          console.log('💡 Solution: Créez la base de données avec: CREATE DATABASE panyem;');
           break;
         default:
           console.log('💡 Solution: Vérifiez votre configuration PostgreSQL');

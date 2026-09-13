@@ -66,7 +66,7 @@ const startAbandonedCartCron = () => {
                 }
                 itemsHtml += '</ul>';
 
-                const subject = `Vous avez oublié quelque chose sur HTFasil, ${user.firstname} ? 😱`;
+                const subject = `Vous avez oublié quelque chose sur Panyem, ${user.firstname} ? 😱`;
                 const html = `
                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
                         <h2 style="color: #2563eb;">Oups... Un oubli !</h2>
@@ -77,7 +77,7 @@ const startAbandonedCartCron = () => {
                         <div style="background-color: #fef08a; padding: 10px; border-radius: 8px; text-align: center; margin: 20px 0;">
                             <h3 style="margin: 0; color: #854d0e;">RETOUR5</h3>
                         </div>
-                        <a href="https://htfasil.com/cart" style="display: block; width: 100%; text-align: center; background-color: #2563eb; color: white; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold;">
+                        <a href="https://panyem.com/cart" style="display: block; width: 100%; text-align: center; background-color: #2563eb; color: white; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: bold;">
                             Finaliser ma commande 🚀
                         </a>
                         <p style="font-size: 11px; color: #888; margin-top: 30px;">Si vous avez besoin d'aide avec votre commande, n'hésitez pas à nous contacter.</p>

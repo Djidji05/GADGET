@@ -561,7 +561,7 @@ const loadProduits = async () => {
       description: p.description,
       is_featured: p.is_featured,
       is_new: p.is_new,
-      store_name: p.store?.name || 'HTFasil'
+      store_name: p.store?.name || 'Panyem'
     }));
 
     // Si admin, charger aussi les produits en attente

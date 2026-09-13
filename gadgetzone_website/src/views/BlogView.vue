@@ -3,7 +3,7 @@
     <div class="container mx-auto px-4 max-w-5xl">
       <!-- Header -->
       <div class="mb-10 text-center">
-        <h1 class="text-4xl font-bold text-gray-900 mb-3">Blog HTFasil</h1>
+        <h1 class="text-4xl font-bold text-gray-900 mb-3">Blog Panyem</h1>
         <p class="text-gray-500 text-lg">Actualités, conseils et nouveautés tech</p>
       </div>
 

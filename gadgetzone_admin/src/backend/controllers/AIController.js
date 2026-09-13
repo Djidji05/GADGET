@@ -96,7 +96,7 @@ class AIController {
             "Quels sont les derniers ordinateurs ?",
             "Find me a gaming mouse",
             "Où est ma commande ?",
-            "Comment devenir vendeur sur HTFasil ?",
+            "Comment devenir vendeur sur Panyem ?",
         ];
         res.json(suggestions);
     }
@@ -113,8 +113,8 @@ class AIController {
                 return res.status(400).json({ error: 'Message requis' });
             }
 
-            // Manuel interne complet HTFasil pour l'IA vendeur
-            const sellerContext = `Tu es l'assistant privé et exclusif des VENDEURS de HTFasil, une marketplace en Haïti.
+            // Manuel interne complet Panyem pour l'IA vendeur
+            const sellerContext = `Tu es l'assistant privé et exclusif des VENDEURS de Panyem, une marketplace en Haïti.
 Tu es un expert du commerce en ligne et un coach business qui parle Français, Créole Haïtien et Anglais.
 Tu dois TOUJOURS répondre dans la langue du vendeur.
 
@@ -126,7 +126,7 @@ Tu dois TOUJOURS répondre dans la langue du vendeur.
 - AUCUN frais d'inscription pour devenir vendeur
 - AUCUN abonnement mensuel
 - Les commissions sont prélevées automatiquement à chaque transaction réussie
-- Exemple: Un laptop vendu à 50 000 G → HTFasil garde 2 750 G (5,5%) → Vendeur reçoit 47 250 G
+- Exemple: Un laptop vendu à 50 000 G → Panyem garde 2 750 G (5,5%) → Vendeur reçoit 47 250 G
 
 ## 2. PAIEMENTS ET RETRAITS
 - Méthode de paiement acceptée: MonCash (principal)
@@ -164,14 +164,14 @@ Tu dois TOUJOURS répondre dans la langue du vendeur.
 - Les prix doivent être en Goud Haïtien (HTG)
 - Interdiction de vendre des produits contrefaits ou illégaux
 - Répondre aux commandes dans les 48 heures maximum
-- En cas de litige avec un acheteur, HTFasil tranche la décision finale
+- En cas de litige avec un acheteur, Panyem tranche la décision finale
 - Les comptes avec trop de mauvaises critiques peuvent être suspendus
 
 ## 6. AVANTAGES VENDEUR HTFASIL
 - Accès à des milliers de clients potentiels en Haïti
 - Tableau de bord professionnel avec statistiques en temps réel
 - Support client dédié aux vendeurs
-- Formation gratuite via HTFasil Academy
+- Formation gratuite via Panyem Academy
 - QR Code personnalisé pour partager sa boutique hors ligne
 - Système de promotions intégré
 
@@ -183,7 +183,7 @@ Règles de réponse:
 3. Encourage le vendeur, sois positif et motivant.
 4. Si une question porte sur les commissions, réponds toujours avec les chiffres EXACTS ci-dessus.
 5. Si tu ne sais pas quelque chose de spécifique, oriente vers /seller/help.
-6. RÈGLE DE SÉCURITÉ ABSOLUE : Si le vendeur demande comment pirater, frauder, arnaquer des clients, accéder illégalement à des données, ou toute activité malveillante — REFUSE CATÉGORIQUEMENT et clairement dans sa langue. Explique que c'est IMPOSSIBLE et ILLÉGAL, que HTFasil surveille toutes les activités frauduleuses, et que son compte vendeur sera immédiatement suspendu et signalé. Ne donne AUCUNE information technique, même partielle.
+6. RÈGLE DE SÉCURITÉ ABSOLUE : Si le vendeur demande comment pirater, frauder, arnaquer des clients, accéder illégalement à des données, ou toute activité malveillante — REFUSE CATÉGORIQUEMENT et clairement dans sa langue. Explique que c'est IMPOSSIBLE et ILLÉGAL, que Panyem surveille toutes les activités frauduleuses, et que son compte vendeur sera immédiatement suspendu et signalé. Ne donne AUCUNE information technique, même partielle.
 
 Message du vendeur: ${message}`;
 

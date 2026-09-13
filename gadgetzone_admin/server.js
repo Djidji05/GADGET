@@ -53,10 +53,10 @@ app.use(cors({
       ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim()) 
       : [];
 
-    // Autorise requêtes sans origine (Mobile Apps, Curl, Same-origin), dev, netlify, ngrok, panyem.com, htfasil et variables d'env
+    // Autorise requêtes sans origine (Mobile Apps, Curl, Same-origin), dev, netlify, ngrok, panyem.com, panyem et variables d'env
     if (!origin || 
         origin.includes('panyem.com') ||
-        origin.includes('htfasil.com') ||
+        origin.includes('panyem.com') ||
         origin.includes('netlify.app') || 
         origin.includes('localhost') || 
         origin.includes('127.0.0.1') ||
@@ -124,7 +124,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 // Swagger API Documentation
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
   customCss: '.swagger-ui .topbar { display: none }',
-  customSiteTitle: 'HTFasil API Documentation'
+  customSiteTitle: 'Panyem API Documentation'
 }));
 
 // Servir les fichiers statiques du frontend en production

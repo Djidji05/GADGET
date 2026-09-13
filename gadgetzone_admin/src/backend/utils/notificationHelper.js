@@ -161,7 +161,7 @@ export async function notifyNewOrder(order) {
             if (owner.email) {
                 try {
                     const subject = `🎉 Nouvelle vente sur votre boutique ! (Commande #${order.order_number || order.id})`;
-                    const text = `Bonjour ${owner.name},\n\nFélicitations ! Vous venez de recevoir une nouvelle commande d'une valeur de ${order.total_amount} HTG de la part de ${order.user?.name || 'un client'}.\n\nMerci de vous connecter rapidement à votre tableau de bord vendeur pour préparer et expédier cette commande.\n\nL'équipe HTFasil.`;
+                    const text = `Bonjour ${owner.name},\n\nFélicitations ! Vous venez de recevoir une nouvelle commande d'une valeur de ${order.total_amount} HTG de la part de ${order.user?.name || 'un client'}.\n\nMerci de vous connecter rapidement à votre tableau de bord vendeur pour préparer et expédier cette commande.\n\nL'équipe Panyem.`;
                     sendEmail(owner.email, subject, text);
                 } catch (e) {
                     console.error('Error sending order email to seller:', e);
@@ -171,7 +171,7 @@ export async function notifyNewOrder(order) {
             // WhatsApp Vendeur
             const ownerPhone = owner.whatsapp || owner.phone;
             if (ownerPhone) {
-                sendWhatsApp(ownerPhone, `🎉 Félicitations ${owner.name} ! Nouvelle vente de ${order.total_amount} HTG (Commande #${order.order_number || order.id}). Connectez-vous à HTFasil pour la préparer.`);
+                sendWhatsApp(ownerPhone, `🎉 Félicitations ${owner.name} ! Nouvelle vente de ${order.total_amount} HTG (Commande #${order.order_number || order.id}). Connectez-vous à Panyem pour la préparer.`);
             }
         }
     } catch (err) {
@@ -230,7 +230,7 @@ export async function notifyOrderCreated(order) {
         if (order.user.email) {
             try {
                 const subject = `Votre commande #${order.order_number || order.id} est en attente de paiement`;
-                const text = `Bonjour ${order.user.name},\n\nVotre commande a été bien enregistrée. Veuillez procéder au paiement de ${order.total_amount} HTG pour valider la commande.\n\nMerci,\nL'équipe HTFasil.`;
+                const text = `Bonjour ${order.user.name},\n\nVotre commande a été bien enregistrée. Veuillez procéder au paiement de ${order.total_amount} HTG pour valider la commande.\n\nMerci,\nL'équipe Panyem.`;
                 sendEmail(order.user.email, subject, text);
             } catch (e) {
                 console.error('Error sending order created email:', e);
@@ -281,7 +281,7 @@ export async function notifyPartialPayment(order, amountPaid, remainingAmount) {
             });
             if (owner.email) {
                 const subject = `Paiement partiel sur commande #${order.order_number || order.id}`;
-                const text = `Bonjour,\n\nUn paiement partiel a été reçu pour la commande #${order.order_number || order.id}. Le client doit encore régler ${remainingAmount} HTG dans les prochaines 24h.\n\n⚠️ Veuillez ne pas expédier la commande pour le moment.\n\nL'équipe HTFasil.`;
+                const text = `Bonjour,\n\nUn paiement partiel a été reçu pour la commande #${order.order_number || order.id}. Le client doit encore régler ${remainingAmount} HTG dans les prochaines 24h.\n\n⚠️ Veuillez ne pas expédier la commande pour le moment.\n\nL'équipe Panyem.`;
                 sendEmail(owner.email, subject, text);
             }
         }
@@ -299,7 +299,7 @@ export async function notifyPartialPayment(order, amountPaid, remainingAmount) {
         if (order.user.email) {
             try {
                 const subject = `Action requise: Finalisez le paiement de votre commande #${order.order_number || order.id}`;
-                const text = `Bonjour ${order.user.name},\n\nNous avons bien reçu votre premier versement de ${amountPaid} HTG pour la commande #${order.order_number || order.id}.\n\n⚠️ Important : Vous avez 24 heures pour régler le solde restant de ${remainingAmount} HTG. Si le solde n'est pas réglé, la commande sera annulée et votre versement sera remboursé.\n\nMerci,\nL'équipe HTFasil.`;
+                const text = `Bonjour ${order.user.name},\n\nNous avons bien reçu votre premier versement de ${amountPaid} HTG pour la commande #${order.order_number || order.id}.\n\n⚠️ Important : Vous avez 24 heures pour régler le solde restant de ${remainingAmount} HTG. Si le solde n'est pas réglé, la commande sera annulée et votre versement sera remboursé.\n\nMerci,\nL'équipe Panyem.`;
                 sendEmail(order.user.email, subject, text);
             } catch (e) {
                 console.error('Error sending partial payment email:', e);
@@ -349,7 +349,7 @@ export async function notifyOrderCancelledRefundPending(order, refundedAmount) {
             });
             if (owner.email) {
                 const subject = `Commande annulée #${order.order_number || order.id}`;
-                const text = `Bonjour,\n\nLa commande #${order.order_number || order.id} a été annulée car le solde n'a pas été réglé dans les 24 heures.\n\nL'équipe HTFasil.`;
+                const text = `Bonjour,\n\nLa commande #${order.order_number || order.id} a été annulée car le solde n'a pas été réglé dans les 24 heures.\n\nL'équipe Panyem.`;
                 sendEmail(owner.email, subject, text);
             }
         }
@@ -367,7 +367,7 @@ export async function notifyOrderCancelledRefundPending(order, refundedAmount) {
         if (order.user.email) {
             try {
                 const subject = `Commande annulée - Délai expiré #${order.order_number || order.id}`;
-                const text = `Bonjour ${order.user.name},\n\nNous vous informons que votre commande #${order.order_number || order.id} a été annulée car le solde n'a pas été réglé dans le délai de 24 heures imparti.\n\nUn remboursement de ${refundedAmount} HTG est actuellement en attente de traitement.\n\nMerci,\nL'équipe HTFasil.`;
+                const text = `Bonjour ${order.user.name},\n\nNous vous informons que votre commande #${order.order_number || order.id} a été annulée car le solde n'a pas été réglé dans le délai de 24 heures imparti.\n\nUn remboursement de ${refundedAmount} HTG est actuellement en attente de traitement.\n\nMerci,\nL'équipe Panyem.`;
                 sendEmail(order.user.email, subject, text);
             } catch (e) {
                 console.error('Error sending cancelled refund pending email:', e);

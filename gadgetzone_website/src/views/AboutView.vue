@@ -8,7 +8,7 @@
       <div class="container mx-auto px-4 text-center relative z-10">
         <h1 class="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight">L'Excellence du Commerce en <span class="text-indigo-400">Haïti</span></h1>
         <p class="text-xl md:text-2xl opacity-80 max-w-3xl mx-auto leading-relaxed">
-          HTFasil redéfinit les standards de la distribution et du service client pour bâtir une marketplace de confiance, accessible à tous.
+          Panyem redéfinit les standards de la distribution et du service client pour bâtir une marketplace de confiance, accessible à tous.
         </p>
       </div>
     </section>
@@ -21,7 +21,7 @@
             <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-8">Notre Engagement</h2>
             <div class="space-y-6 text-lg text-slate-600 leading-relaxed">
               <p>
-                Fondée avec la volonté de digitaliser le commerce haïtien, **HTFasil** est devenue bien plus qu'une simple boutique en ligne. Nous sommes une plateforme technologique dédiée à connecter les meilleurs vendeurs locaux et internationaux avec une clientèle exigeante, en quête de fiabilité et de qualité.
+                Fondée avec la volonté de digitaliser le commerce haïtien, **Panyem** est devenue bien plus qu'une simple boutique en ligne. Nous sommes une plateforme technologique dédiée à connecter les meilleurs vendeurs locaux et internationaux avec une clientèle exigeante, en quête de fiabilité et de qualité.
               </p>
               <p>
                 Notre approche repose sur trois piliers fondamentaux : **Transparence, Rapidité et Proximité**. En intégrant des solutions de paiement adaptées comme MonCash et Natcash, nous facilitons l'accès aux produits essentiels et aux dernières innovations technologiques, du cœur de Port-au-Prince jusqu'aux zones les plus reculées du pays.
@@ -36,7 +36,7 @@
               <div class="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-slate-900 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
               <img
                 src="https://images.unsplash.com/photo-1557821552-17105176677c?auto=format&fit=crop&q=80&w=1000"
-                alt="L'univers HTFasil"
+                alt="L'univers Panyem"
                 class="relative rounded-2xl shadow-2xl w-full object-cover aspect-[4/3]"
               />
             </div>
@@ -131,7 +131,7 @@
           <div class="space-y-8">
             <h2 class="text-3xl md:text-5xl font-bold tracking-tight">Plus qu'un simple achat, une <span class="text-indigo-400">expérience</span></h2>
             <p class="text-xl text-slate-300 leading-relaxed">
-              Nous croyons que chaque interaction avec HTFasil doit être mémorable. De la navigation fluide sur notre site à l'ouverture de votre colis, nous peaufinons chaque détail pour vous offrir le luxe de la simplicité.
+              Nous croyons que chaque interaction avec Panyem doit être mémorable. De la navigation fluide sur notre site à l'ouverture de votre colis, nous peaufinons chaque détail pour vous offrir le luxe de la simplicité.
             </p>
             <div class="flex flex-col sm:flex-row gap-6">
               <router-link to="/products" class="px-8 py-4 bg-indigo-600 text-white rounded-full font-bold hover:bg-indigo-700 transition-all text-center">

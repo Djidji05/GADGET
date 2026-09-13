@@ -7,7 +7,7 @@ config({ path: '.env.test' });
 // Variables d'environnement par défaut pour les tests
 process.env.NODE_ENV = 'test';
 process.env.BACKEND_PORT = '3002';
-process.env.DB_NAME = 'htfasil_test';
+process.env.DB_NAME = 'panyem_test';
 process.env.JWT_SECRET = 'test-jwt-secret-key';
 process.env.JWT_EXPIRES_IN = '1h';
 

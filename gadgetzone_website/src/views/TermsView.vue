@@ -7,14 +7,14 @@
         <div>
           <h2 class="text-2xl font-semibold text-gray-900 mb-4">1. Préambule et Acceptation</h2>
           <p class="text-gray-600 leading-relaxed">
-            Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation de la plateforme **HTFasil**, éditée par **GadgetZone S.A.**, enregistrée au registre du commerce de Port-au-Prince. En accédant à nos services, vous reconnaissez avoir pris connaissance et accepté sans réserve l'intégralité de ces conditions. HTFasil se réserve le droit de modifier ces termes à tout moment pour les adapter aux évolutions législatives ou techniques.
+            Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation de la plateforme **Panyem**, éditée par **Panyem S.A.**, enregistrée au registre du commerce de Port-au-Prince. En accédant à nos services, vous reconnaissez avoir pris connaissance et accepté sans réserve l'intégralité de ces conditions. Panyem se réserve le droit de modifier ces termes à tout moment pour les adapter aux évolutions législatives ou techniques.
           </p>
         </div>
 
         <div>
           <h2 class="text-2xl font-semibold text-gray-900 mb-4">2. Nature des Services</h2>
           <p class="text-gray-600 leading-relaxed">
-            HTFasil est une marketplace (place de marché) mettant en relation des vendeurs professionnels et des acheteurs résidant en Haïti. Notre rôle est de faciliter les transactions, d'assurer la sécurité des paiements et de superviser la qualité de service. Nous proposons :
+            Panyem est une marketplace (place de marché) mettant en relation des vendeurs professionnels et des acheteurs résidant en Haïti. Notre rôle est de faciliter les transactions, d'assurer la sécurité des paiements et de superviser la qualité de service. Nous proposons :
           </p>
           <ul class="list-disc list-inside text-gray-600 space-y-2 mt-4">
             <li>Une plateforme technique de mise en relation sécurisée</li>
@@ -176,7 +176,7 @@
         <div>
           <h2 class="text-2xl font-semibold text-gray-900 mb-4">9. Propriété Intellectuelle</h2>
           <p class="text-gray-600 leading-relaxed">
-            Tout le contenu du site HTFasil, y compris les textes, images, logos, et logiciels,
+            Tout le contenu du site Panyem, y compris les textes, images, logos, et logiciels,
             est protégé par les lois sur la propriété intellectuelle. Vous ne pouvez pas utiliser,
             copier ou reproduire notre contenu sans autorisation écrite.
           </p>
@@ -187,7 +187,7 @@
             10. Limitation de Responsabilité
           </h2>
           <p class="text-gray-600 leading-relaxed">
-            En aucun cas HTFasil ne pourra être tenue responsable des dommages directs,
+            En aucun cas Panyem ne pourra être tenue responsable des dommages directs,
             indirects, spéciaux ou consécutifs découlant de l'utilisation ou de l'impossibilité
             d'utiliser notre site ou nos services.
           </p>
