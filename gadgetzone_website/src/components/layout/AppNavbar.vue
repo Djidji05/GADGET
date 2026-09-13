@@ -980,6 +980,16 @@
         </div>
       </div>
     </Transition>
+
+    <!-- Modal de Recadrage & Recherche Visuelle -->
+    <ImageCropperModal
+      :is-open="isCropperOpen"
+      :image-src="cropperImageSrc"
+      :is-searching="isImageSearching"
+      @close="isCropperOpen = false"
+      @retake="triggerImageSearch"
+      @confirm="performCroppedImageSearch"
+    />
   </div>
 </template>
 
@@ -998,6 +1008,7 @@ import { useThemeStore } from '@/stores/theme'
 import MobileMenuLinks from './MobileMenuLinks.vue'
 import ProductFilterDrawer from '../products/ProductFilterDrawer.vue'
 import MobileCategories from './MobileCategories.vue'
+import ImageCropperModal from '../modals/ImageCropperModal.vue'
 import { useHistoryStore } from '@/stores/history'
 import i18n from '@/i18n'
 
@@ -1161,6 +1172,8 @@ const cameraInput = ref<HTMLInputElement | null>(null)
 const galleryInput = ref<HTMLInputElement | null>(null)
 const showImageSearchModal = ref(false)
 const isImageSearching = ref(false)
+const isCropperOpen = ref(false)
+const cropperImageSrc = ref('')
 
 const triggerImageSearch = () => {
   if (isImageSearching.value) return
@@ -1188,48 +1201,50 @@ const handleImageSearch = async (event: Event) => {
         return
     }
 
-    // Convert to Base64
+    // Convert to Base64 and open Cropper Modal
     const reader = new FileReader();
     reader.readAsDataURL(file);
     
-    reader.onload = async () => {
-        const base64Image = reader.result;
-        
-        try {
-            isImageSearching.value = true
-            
-            // Show loading state (optional: could use a toast)
-            console.log("Analysant l'image...")
-            
-            const response = await api.post('/products/search/image', { image: base64Image });
-            
-            if (response.data && response.data.ids && response.data.ids.length > 0) {
-                console.log("Produits trouvés:", response.data.ids)
-                // Redirect to filtered results
-                await router.push({
-                    name: 'products',
-                    query: { ids: response.data.ids.join(',') }
-                });
-                closeMobileMenu();
-            } else {
-                uiStore.showToast("Aucun produit similaire trouvé.", 'info')
-            }
-        } catch (error: any) {
-            console.error("Erreur recherche image:", error);
-            const msg = error.response?.data?.error || "Erreur lors de la recherche par image.";
-            uiStore.showToast(msg, 'error')
-        } finally {
-            isImageSearching.value = false;
-            // Reset inputs so same file can be selected again
-            if (cameraInput.value) cameraInput.value.value = '';
-            if (galleryInput.value) galleryInput.value.value = '';
-        }
+    reader.onload = () => {
+        cropperImageSrc.value = reader.result as string
+        isCropperOpen.value = true
     };
     
     reader.onerror = () => {
         uiStore.showToast("Erreur lors de la lecture du fichier.", 'error')
-        isImageSearching.value = false;
     }
+  }
+}
+
+const performCroppedImageSearch = async (croppedBase64: string) => {
+  try {
+      isImageSearching.value = true
+      console.log("Analysant l'image recadrée...")
+      
+      const response = await api.post('/products/search/image', { image: croppedBase64 });
+      
+      if (response.data && response.data.ids && response.data.ids.length > 0) {
+          console.log("Produits trouvés:", response.data.ids)
+          isCropperOpen.value = false
+          await router.push({
+              name: 'products',
+              query: { ids: response.data.ids.join(',') }
+          });
+          closeMobileMenu();
+          uiStore.showToast(`Recherche visuelle : ${response.data.ids.length} produit(s) correspondant(s).`, 'success')
+      } else {
+          uiStore.showToast("Aucun produit similaire trouvé.", 'info')
+          isCropperOpen.value = false
+          await router.push({ name: 'products' })
+      }
+  } catch (error: any) {
+      console.error("Erreur recherche image:", error);
+      const msg = error.response?.data?.error || "Erreur lors de la recherche par image.";
+      uiStore.showToast(msg, 'error')
+  } finally {
+      isImageSearching.value = false;
+      if (cameraInput.value) cameraInput.value.value = '';
+      if (galleryInput.value) galleryInput.value.value = '';
   }
 }
 let notificationInterval: number | undefined
