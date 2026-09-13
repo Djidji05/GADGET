@@ -50,7 +50,7 @@ export async function notifyAllAdmins(type, title, message, options = {}) {
     try {
         const admins = await User.findAll({
             where: { role: 'admin' },
-            attributes: ['id']
+            attributes: ['id', 'email', 'name']
         });
 
         // Create notifications in parallel
@@ -60,6 +60,23 @@ export async function notifyAllAdmins(type, title, message, options = {}) {
 
         const results = await Promise.all(promises);
         const count = results.filter(n => n !== null).length;
+
+        // Envoi d'email d'alerte aux administrateurs
+        try {
+            const { sendEmail, emailTemplates } = await import('../services/emailService.js');
+            for (const admin of admins) {
+                if (admin.email) {
+                    if (options.emailTemplateName && emailTemplates[options.emailTemplateName]) {
+                        const template = emailTemplates[options.emailTemplateName](...(options.emailData || []));
+                        sendEmail(admin.email, template);
+                    } else if (options.sendEmailAlert || type === 'vendor_application' || type === 'order') {
+                        sendEmail(admin.email, `🚨 Alerte Panyem : ${title}`, `${message}\n\nConsultez l'administration : https://manage.panyem.com`);
+                    }
+                }
+            }
+        } catch (mailErr) {
+            console.error('❌ Erreur envoi email d\'alerte admin:', mailErr);
+        }
 
         console.log(`✅ ${count} admin(s) notifié(s): ${title}`);
         return count;
@@ -489,12 +506,14 @@ export async function notifyLowStock(product) {
  * @returns {Promise<number>}
  */
 export async function notifyNewVendorApplication(store, user) {
-    const title = `🏪 Nouvelle candidature vendeur`;
-    const message = `${user.name} souhaite ouvrir une boutique "${store.name}"`;
+    const title = `🏪 Nouvelle candidature vendeur : ${store.name}`;
+    const message = `${user.name} (${user.email}) a soumis une demande d'ouverture de boutique pour "${store.name}".`;
 
     return await notifyAllAdmins('vendor_application', title, message, {
         relatedId: store.id,
         relatedType: 'store',
+        emailTemplateName: 'adminVendorApplication',
+        emailData: [store.name, user.name, user.email],
         metadata: {
             storeId: store.id,
             storeName: store.name,

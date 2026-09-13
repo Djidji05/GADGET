@@ -268,5 +268,57 @@ export const emailTemplates = {
                 <div style="font-size: 13px; color: #64748b; margin-top: 8px;">Moyen de paiement : <strong>${paymentMethod}</strong></div>
             </div>
         `
+    }),
+
+    // 8. Alerte Admin : Nouvelle Candidature Vendeur
+    adminVendorApplication: (storeName, applicantName, applicantEmail) => ({
+        subject: `🚨 Alerte Admin : Nouvelle candidature boutique "${storeName}"`,
+        text: `Bonjour Admin,\n\n${applicantName} (${applicantEmail}) vient de soumettre une demande d'ouverture de boutique pour "${storeName}".\n\nConsultez la candidature : https://manage.panyem.com/vendors/applications`,
+        html: `
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="display: inline-block; padding: 8px 16px; background-color: #dbeafe; color: #1e40af; font-weight: 700; font-size: 12px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 1px;">
+                    📋 Candidature Vendeur Reçue
+                </div>
+            </div>
+            <h2 style="color: #0f172a; font-size: 20px; font-weight: 800; margin: 0 0 12px 0; text-align: center;">Nouvelle Demande de Boutique</h2>
+            <p style="text-align: center; color: #475569;">Un vendeur a soumis son dossier pour rejoindre Panyem :</p>
+
+            <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin: 24px 0;">
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 10px;">
+                    <span style="color: #64748b;">Nom de la boutique</span>
+                    <strong style="color: #0f172a;">${storeName}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; margin-bottom: 10px;">
+                    <span style="color: #64748b;">Nom du candidat</span>
+                    <strong style="color: #0f172a;">${applicantName}</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #64748b;">Email</span>
+                    <strong style="color: #2563eb;">${applicantEmail}</strong>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 28px;">
+                <a href="https://manage.panyem.com/vendors/applications" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: #ffffff; text-decoration: none; font-weight: 700; border-radius: 10px;">Examiner la candidature</a>
+            </div>
+        `
+    }),
+
+    // 9. Alerte Admin : Nouveau Message / Ticket de Contact
+    adminContactTicket: (ticketId, name, email, subject, message) => ({
+        subject: `📩 [Ticket #${ticketId}] Nouveau message : ${subject}`,
+        text: `Bonjour Admin,\n\nVous avez reçu un nouveau message de ${name} (${email}) - Ticket #${ticketId}.\n\nMessage:\n${message}`,
+        html: `
+            <h2 style="color: #0f172a; font-size: 20px; font-weight: 800; margin: 0 0 12px 0;">Nouveau Message Support (Ticket #${ticketId})</h2>
+            <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin: 20px 0;">
+                <p style="margin: 0 0 8px 0;"><strong>Expéditeur :</strong> ${name} (<a href="mailto:${email}" style="color: #2563eb;">${email}</a>)</p>
+                <p style="margin: 0 0 12px 0;"><strong>Sujet :</strong> ${subject}</p>
+                <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 12px 0;">
+                <div style="font-size: 14px; color: #334155; white-space: pre-wrap;">${message}</div>
+            </div>
+            <div style="text-align: center; margin-top: 24px;">
+                <a href="https://manage.panyem.com/support/tickets" style="display: inline-block; padding: 12px 28px; background-color: #0f172a; color: #ffffff; text-decoration: none; font-weight: 700; border-radius: 8px;">Répondre au ticket</a>
+            </div>
+        `
     })
 };

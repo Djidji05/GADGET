@@ -65,42 +65,30 @@ router.post('/', contactLimiter, [
 
         const ticketId = ticketResult[0].id;
 
-        // 2. Configure and send Email
-        let transporter = nodemailer.createTransport({
-            host: process.env.SMTP_HOST || "smtp.gmail.com",
-            port: process.env.SMTP_PORT || 587,
-            auth: {
-                user: process.env.EMAIL_USER || process.env.SMTP_USER,
-                pass: process.env.EMAIL_PASSWORD || process.env.SMTP_PASS,
-            },
-        });
-
-        const mailOptions = {
-            from: `"Panyem Contact" <${process.env.EMAIL_USER || 'contact@panyem.ht'}>`,
-            to: process.env.CONTACT_EMAIL || "contact@panyem.ht",
-            subject: `[Ticket #${ticketId}] Nouveau Message: ${subject}`,
-            text: `Vous avez reçu un nouveau message (Ticket #${ticketId}).\n\nNom: ${firstName} ${lastName}\nEmail: ${email}\n\nMessage:\n${message}`,
-            replyTo: email,
-            html: `
-                <h3>Nouveau message de contact - Panyem (Ticket #${ticketId})</h3>
-                <p><strong>Nom:</strong> ${firstName} ${lastName}</p>
-                <p><strong>Email:</strong> ${email}</p>
-                <p><strong>Téléphone:</strong> ${phone || 'Non renseigné'}</p>
-                <p><strong>Sujet:</strong> ${subject}</p>
-                <hr>
-                <p><strong>Message:</strong></p>
-                <p>${message.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\n/g,'<br>')}</p>
-            `
-        };
-
+        // 2. Send Admin Email Alert via Resend
         try {
-            if (process.env.SMTP_HOST || process.env.EMAIL_HOST) {
-                await transporter.sendMail(mailOptions);
-            } else {
-                console.log("Mock sending email:", mailOptions.subject);
+            const { sendEmail, emailTemplates } = await import('../services/emailService.js');
+            const adminTemplate = emailTemplates.adminContactTicket(
+                ticketId,
+                `${firstName} ${lastName}`,
+                email,
+                subject,
+                message
+            );
+
+            const recipientEmail = process.env.CONTACT_EMAIL || process.env.RESEND_FROM_EMAIL || "notifications@panyem.com";
+            await sendEmail(recipientEmail, adminTemplate);
+
+            // Also notify all admin users
+            const { User } = await import('../models/index.js');
+            const admins = await User.findAll({ where: { role: 'admin' }, attributes: ['email'] });
+            for (const admin of admins) {
+                if (admin.email && admin.email !== recipientEmail) {
+                    await sendEmail(admin.email, adminTemplate);
+                }
             }
         } catch (mailError) {
-            console.warn("Mail sending failed:", mailError.message);
+            console.warn("Contact Email alert failed:", mailError.message);
         }
 
         res.status(200).json({
