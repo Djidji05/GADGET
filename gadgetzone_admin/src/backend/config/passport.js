@@ -37,13 +37,26 @@ const configurePassport = () => {
                         console.log('Google Profile:', profile);
                         const email = profile.emails[0].value;
                         const googleId = profile.id;
-                        const firstName = profile.name.givenName;
-                        const lastName = profile.name.familyName;
+                        const firstName = profile.name?.givenName || '';
+                        const lastName = profile.name?.familyName || '';
+                        const displayName = `${firstName} ${lastName}`.trim() || profile.displayName || 'Utilisateur';
 
                         // Check if user exists by googleId
                         let user = await User.findOne({ where: { googleId } });
 
                         if (user) {
+                            // 🔔 Notification in-app pour connexion Google
+                            try {
+                                const { createNotification } = await import('../utils/notificationHelper.js');
+                                await createNotification(
+                                    user.id,
+                                    'info',
+                                    'Connexion Google réussie 🔐',
+                                    `Vous vous êtes connecté à votre compte Panyem via Google.`
+                                );
+                            } catch (nErr) {
+                                console.error('❌ [Google Auth] Notification in-app erreur:', nErr.message);
+                            }
                             return done(null, user);
                         }
 
@@ -55,37 +68,68 @@ const configurePassport = () => {
                             const firstTimeGoogle = !user.googleId;
                             await user.update({ googleId });
 
+                            // 🔔 Notification In-App
+                            try {
+                                const { createNotification } = await import('../utils/notificationHelper.js');
+                                await createNotification(
+                                    user.id,
+                                    'info',
+                                    'Compte Google associé 🔗',
+                                    `Votre compte Google (${email}) a été associé avec succès à votre compte Panyem.`
+                                );
+                            } catch (nErr) {
+                                console.error('❌ [Google Auth] Notification in-app erreur:', nErr.message);
+                            }
+
                             if (firstTimeGoogle) {
                                 try {
                                     const { sendEmail, emailTemplates } = await import('../services/emailService.js');
                                     if (emailTemplates && emailTemplates.welcomeUser) {
-                                        console.log('📧 [Google Auth] First time Google link, sending welcome email to:', email);
+                                        console.log('📧 [Google Auth] Association Google, envoi email de bienvenue à:', email);
                                         const welcome = emailTemplates.welcomeUser(firstName || user.name || 'Client', email);
-                                        await sendEmail(email, welcome);
+                                        const result = await sendEmail(email, welcome);
+                                        console.log('📧 [Google Auth] Résultat envoi email:', result ? 'SUCCÈS' : 'ÉCHEC');
                                     }
                                 } catch (e) {
-                                    console.error('❌ [Google Auth] Error sending Google welcome email:', e.message);
+                                    console.error('❌ [Google Auth] Erreur lors de l\'envoi de l\'email Google:', e.message);
                                 }
                             }
 
                             return done(null, user);
                         }
 
-                        // Create new user
+                        // Create new user (Email jamais enregistré dans la base)
                         user = await User.create({
-                            name: `${firstName || ''} ${lastName || ''}`.trim() || 'Utilisateur',
+                            name: displayName,
                             email,
                             role: 'customer',
                             googleId
                         });
 
-                        // 📧 Envoi de l'email de bienvenue pour les nouveaux utilisateurs Google
+                        console.log(`✅ [Google Auth] Nouvel utilisateur créé: ${user.name} (${user.email}, ID: ${user.id})`);
+
+                        // 🔔 1. Notification In-App de bienvenue
+                        try {
+                            const { createNotification, notifyNewSystemUser } = await import('../utils/notificationHelper.js');
+                            await createNotification(
+                                user.id,
+                                'info',
+                                'Bienvenue sur Panyem ! 🎉',
+                                `Votre compte Panyem a été créé avec succès via Google. Bienvenue dans notre marché numérique !`
+                            );
+                            await notifyNewSystemUser(user);
+                        } catch (notifErr) {
+                            console.error('❌ [Google Auth] Erreur création notification in-app:', notifErr.message);
+                        }
+
+                        // 📧 2. Envoi de l'email de bienvenue
                         try {
                             const { sendEmail, emailTemplates } = await import('../services/emailService.js');
                             if (emailTemplates && emailTemplates.welcomeUser) {
-                                console.log('📧 [Google Auth] Envoi de l\'email de bienvenue à:', email);
+                                console.log('📧 [Google Auth] Tentative d\'envoi de l\'email de bienvenue à:', email);
                                 const welcome = emailTemplates.welcomeUser(firstName || user.name || 'Client', email);
-                                await sendEmail(email, welcome);
+                                const result = await sendEmail(email, welcome);
+                                console.log('📧 [Google Auth] Statut envoi email de bienvenue:', result ? 'SUCCÈS' : 'ÉCHEC/SIMULATION');
                             }
                         } catch (e) {
                             console.error('❌ [Google Auth] Erreur lors de l\'envoi de l\'email de bienvenue:', e.message);
