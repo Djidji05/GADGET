@@ -143,6 +143,7 @@
                       <img 
                         v-if="card.promoStyle !== 'color' && card.image" 
                         :src="normalizeImageUrl(card.image)" 
+                        :alt="card.title || 'Offres promotionnelles de la semaine'"
                         width="600"
                         height="338"
                         loading="lazy"
