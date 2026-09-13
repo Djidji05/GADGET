@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
     const offset = (page - 1) * limit;
 
     const whereClause = {
-      role: { [Op.in]: ['customer', 'seller'] } // Clients et vendeurs
+      role: { [Op.in]: ['customer', 'user', 'seller'] } // Clients et vendeurs
     };
 
     // Filtrer par recherche (utiliser Op.like pour MySQL)
@@ -152,7 +152,7 @@ router.put('/:id', async (req, res) => {
 
     const user = await User.findByPk(id);
 
-    if (!user || !['customer', 'seller'].includes(user.role)) {
+    if (!user || !['customer', 'user', 'seller'].includes(user.role)) {
       return res.status(404).json({ error: 'Client non trouvé' });
     }
 
@@ -199,7 +199,7 @@ router.delete('/:id', async (req, res) => {
 
     const user = await User.findByPk(id);
 
-    if (!user || !['customer', 'seller'].includes(user.role)) {
+    if (!user || !['customer', 'user', 'seller'].includes(user.role)) {
       return res.status(404).json({ error: 'Client non trouvé' });
     }
 

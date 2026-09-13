@@ -497,6 +497,15 @@ const nameToKey: Record<string, string> = {
   "Analytics": "analytics",
 };
 
+const translateNav = (name: string) => {
+  const key = nameToKey[name] || name.toLowerCase().replace(/ & /g, '').replace(/ /g, '');
+  const translated = t(`nav.${key}`);
+  if (!translated || translated === `nav.${key}` || translated.startsWith('nav.')) {
+    return name;
+  }
+  return translated;
+};
+
 const menuGroups = computed(() => {
   const role = authStore.userRole || authStore.user?.role;
   
@@ -515,16 +524,14 @@ const menuGroups = computed(() => {
 
   return filteredGroups.map(group => {
     // Translate group title
-    const groupKey = nameToKey[group.title] || group.title.toLowerCase();
-    const translatedTitle = t(`nav.${groupKey}`);
+    const translatedTitle = translateNav(group.title);
 
     const translatedItems = group.items.map(item => {
       // Special case for Sellers: Rename "Messages" to "Litiges"
       if (item.name === 'Messages' && role === 'seller') {
-        const itemKey = nameToKey['Litiges'] || 'disputes';
         return { 
           ...item, 
-          name: t(`nav.${itemKey}`), 
+          name: translateNav('Litiges'), 
           path: '/messages?view=disputes',
           badge: notificationStats.value.unreadMessagesCount
         };
@@ -532,10 +539,9 @@ const menuGroups = computed(() => {
       
       // Special case for Sellers: Add badge to "Commandes"
       if (item.name === 'Commandes' && role === 'seller') {
-        const itemKey = nameToKey['Commandes'] || 'orders';
         return {
           ...item,
-          name: t(`nav.${itemKey}`),
+          name: translateNav('Commandes'),
           badge: notificationStats.value.pendingOrdersCount
         };
       }
@@ -549,11 +555,9 @@ const menuGroups = computed(() => {
         }
       }
       
-      const itemKey = nameToKey[item.name] || item.name.toLowerCase();
-      const translatedName = t(`nav.${itemKey}`);
+      const translatedName = translateNav(item.name);
 
       const translatedSubItems = item.subItems?.map(sub => {
-        const subKey = nameToKey[sub.name] || sub.name.toLowerCase().replace(/ & /g, '').replace(/ /g, '');
         let subItemBadge = sub.badge;
         
         if (role !== 'seller') {
@@ -576,7 +580,7 @@ const menuGroups = computed(() => {
         
         return {
           ...sub,
-          name: t(`nav.${subKey}`),
+          name: translateNav(sub.name),
           badge: subItemBadge
         };
       });
