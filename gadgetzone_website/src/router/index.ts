@@ -516,9 +516,11 @@ router.beforeEach(async (to, from, next) => {
   const uiStore = useUiStore()
   const settingsStore = useSettingsStore()
 
-  // Ensure settings are loaded on first navigation to protect the whole site
-  if (!settingsStore.general.isLoaded) {
-    await settingsStore.fetchGeneralSettings()
+  // Fetch settings asynchronously in background without blocking initial navigation
+  if (!settingsStore.general.site_logo && !settingsStore.general.isLoaded) {
+    settingsStore.fetchGeneralSettings()
+  } else if (settingsStore.general.isLoaded && !settingsStore.general.site_name) {
+    settingsStore.fetchGeneralSettings()
   }
 
   // Check Maintenance Mode (Only visible to non-admins and if route is not login/admin pages)

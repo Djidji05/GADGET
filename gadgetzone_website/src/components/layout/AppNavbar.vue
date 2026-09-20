@@ -150,10 +150,11 @@
             </span>
           </div>
           
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-1 sm:gap-2">
             <button 
               @click="themeStore.toggleTheme"
-              class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors p-1"
+              class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors p-2.5 min-w-[44px] min-h-[44px] inline-flex items-center justify-center"
+              :aria-label="themeStore.isDark ? 'Mode clair' : 'Mode sombre'"
               :title="themeStore.isDark ? 'Mode clair' : 'Mode sombre'"
             >
               <i :class="themeStore.isDark ? 'fas fa-sun text-xl' : 'fas fa-moon text-xl'"></i>
@@ -162,15 +163,16 @@
             <router-link 
               v-if="authStore.isAuthenticated"
               to="/notifications" 
-              class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors relative p-1"
+              aria-label="Notifications"
+              class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors relative p-2.5 min-w-[44px] min-h-[44px] inline-flex items-center justify-center"
             >
               <i class="fas fa-bell text-xl"></i>
-              <span v-if="notificationsStore.unreadCount > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full leading-none">{{ notificationsStore.unreadCount }}</span>
+              <span v-if="notificationsStore.unreadCount > 0" class="absolute top-1 right-1 bg-red-500 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full leading-none">{{ notificationsStore.unreadCount }}</span>
             </router-link>
 
-            <router-link to="/wishlist" aria-label="Ma liste d'envies" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors relative p-1">
+            <router-link to="/wishlist" aria-label="Ma liste d'envies" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors relative p-2.5 min-w-[44px] min-h-[44px] inline-flex items-center justify-center">
               <i class="fas fa-heart text-xl"></i>
-              <span v-if="wishlistStore.itemCount > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full leading-none">{{ wishlistStore.itemCount }}</span>
+              <span v-if="wishlistStore.itemCount > 0" class="absolute top-1 right-1 bg-red-500 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full leading-none">{{ wishlistStore.itemCount }}</span>
             </router-link>
           </div>
         </div>
@@ -220,10 +222,11 @@
             <img src="/images/logo.webp" alt="Panyem" width="120" height="32" class="h-8 w-auto" />
           </router-link>
           
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-1 sm:gap-2">
             <button 
               @click="themeStore.toggleTheme"
-              class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors p-1"
+              class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors p-2.5 min-w-[44px] min-h-[44px] inline-flex items-center justify-center"
+              :aria-label="themeStore.isDark ? 'Mode clair' : 'Mode sombre'"
               :title="themeStore.isDark ? 'Mode clair' : 'Mode sombre'"
             >
               <i :class="themeStore.isDark ? 'fas fa-sun text-xl' : 'fas fa-moon text-xl'"></i>
@@ -232,15 +235,16 @@
             <router-link 
               v-if="authStore.isAuthenticated"
               to="/notifications" 
-              class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors relative p-1"
+              aria-label="Notifications"
+              class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors relative p-2.5 min-w-[44px] min-h-[44px] inline-flex items-center justify-center"
             >
               <i class="fas fa-bell text-xl"></i>
-              <span v-if="notificationsStore.unreadCount > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full leading-none">{{ notificationsStore.unreadCount }}</span>
+              <span v-if="notificationsStore.unreadCount > 0" class="absolute top-1 right-1 bg-red-500 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full leading-none">{{ notificationsStore.unreadCount }}</span>
             </router-link>
 
-            <router-link to="/wishlist" aria-label="Ma liste d'envies" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors relative p-1">
+            <router-link to="/wishlist" aria-label="Ma liste d'envies" class="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors relative p-2.5 min-w-[44px] min-h-[44px] inline-flex items-center justify-center">
               <i class="fas fa-heart text-xl"></i>
-              <span v-if="wishlistStore.itemCount > 0" class="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full leading-none">{{ wishlistStore.itemCount }}</span>
+              <span v-if="wishlistStore.itemCount > 0" class="absolute top-1 right-1 bg-red-500 text-white text-[9px] w-3.5 h-3.5 flex items-center justify-center rounded-full leading-none">{{ wishlistStore.itemCount }}</span>
             </router-link>
           </div>
         </div>

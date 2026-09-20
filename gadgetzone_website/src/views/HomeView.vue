@@ -529,10 +529,10 @@ const mainDiscoveryCards = computed(() => {
       title: 'Smartphones & High-Tech',
       cols: 2,
       items: [
-        { name: 'Smartphones', image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&auto=format&fit=crop&q=80', link: '/products?search=phone' },
-        { name: 'Écouteurs', image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&auto=format&fit=crop&q=80', link: '/products?search=audio' },
-        { name: 'Smartwatches', image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&auto=format&fit=crop&q=80', link: '/products?search=watch' },
-        { name: 'Accessoires', image: 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=200&auto=format&fit=crop&q=80', link: '/products?search=accessories' }
+        { name: 'Smartphones', image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&auto=format&fit=crop&q=70&fm=webp', link: '/products?search=phone' },
+        { name: 'Écouteurs', image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&auto=format&fit=crop&q=70&fm=webp', link: '/products?search=audio' },
+        { name: 'Smartwatches', image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&auto=format&fit=crop&q=70&fm=webp', link: '/products?search=watch' },
+        { name: 'Accessoires', image: 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=200&auto=format&fit=crop&q=70&fm=webp', link: '/products?search=accessories' }
       ],
       link: '/products',
       linkText: 'Découvrir la catégorie'
@@ -556,7 +556,7 @@ const mainDiscoveryCards = computed(() => {
       cols: 2,
       items: (productsStore.activeVendors || []).slice(0, 4).map((v: any) => ({
         name: v.name,
-        image: v.logoUrl || 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=200&auto=format&fit=crop&q=80',
+        image: v.logoUrl || 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=200&auto=format&fit=crop&q=70&fm=webp',
         link: `/store/${v.slug || v.id}`
       })),
       link: '/products',
@@ -712,7 +712,7 @@ const itemsYouMayLikeCards = computed(() => {
     type: 'banner',
     title: t('home.tech_news'),
     subtitle: t('home.tech_subtitle'),
-    image: 'https://images.unsplash.com/photo-1522204523234-8729aa6e3d5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=70',
+    image: 'https://images.unsplash.com/photo-1522204523234-8729aa6e3d5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=350&q=70&fm=webp',
     link: '/products'
   })
   

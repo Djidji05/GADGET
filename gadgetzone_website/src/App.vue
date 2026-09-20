@@ -117,6 +117,7 @@ onMounted(() => {
   authStore.initAuth()
   historyStore.init()
   personalizationStore.loadAds()
+  settingsStore.fetchGeneralSettings()
   window.addEventListener('scroll', handleScroll)
   handleScroll() // Vérifier la position initiale
 

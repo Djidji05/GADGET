@@ -9,7 +9,7 @@ export const useSettingsStore = defineStore('settings', () => {
         site_logo: '',
         maintenance_mode: 'false',
         usd_exchange_rate: '135.00',
-        isLoaded: false
+        isLoaded: true
     })
 
     const fetchGeneralSettings = async () => {
