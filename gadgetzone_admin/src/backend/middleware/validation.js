@@ -285,12 +285,27 @@ export const validateOrder = (req, res, next) => {
 /**
  * Valide le changement de mot de passe
  */
-export const validatePasswordChange = (req, res, next) => {
+export const validatePasswordChange = async (req, res, next) => {
   const { currentPassword, newPassword } = req.body;
   const errors = [];
 
-  // Validation du mot de passe actuel
-  if (!currentPassword || typeof currentPassword !== 'string') {
+  // Vérifier si l'utilisateur possède déjà un mot de passe
+  let hasExistingPassword = true;
+  const userId = req.user?.id || req.user?.userId;
+  if (userId) {
+    try {
+      const { User } = await import('../models/index.js');
+      const userObj = await User.findByPk(userId);
+      if (userObj && !userObj.password) {
+        hasExistingPassword = false;
+      }
+    } catch (e) {
+      console.warn('Error checking existing password in validation:', e.message);
+    }
+  }
+
+  // Validation du mot de passe actuel (requis seulement si un mot de passe existe déjà)
+  if (hasExistingPassword && (!currentPassword || typeof currentPassword !== 'string')) {
     errors.push('Le mot de passe actuel est requis');
   }
 

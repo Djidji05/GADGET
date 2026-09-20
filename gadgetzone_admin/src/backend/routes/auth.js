@@ -195,8 +195,9 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
     // Vérifier si le compte est créé via OAuth Google sans mot de passe
     if (!user.password) {
       return res.status(401).json({
-        error: 'Compte Google',
-        message: 'Ce compte a été créé via Google. Veuillez utiliser la connexion avec Google.'
+        error: 'Mot de passe non configuré',
+        message: 'Ce compte a été créé via Google et n\'a pas encore de mot de passe. Veuillez utiliser "Mot de passe oublié ?" pour définir un mot de passe et vous connecter sans Google, ou connectez-vous avec Google.',
+        isGoogleAccountWithoutPassword: true
       });
     }
 
@@ -291,7 +292,8 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
       referral_code: user.referral_code,
       created_at: user.created_at,
       storeStatus: store ? store.status : null,
-      storeId: store ? store.id : null
+      storeId: store ? store.id : null,
+      hasPassword: Boolean(user.password)
     };
 
     // Set HttpOnly Cookie
@@ -475,13 +477,16 @@ router.post('/2fa/disable', authenticateToken, async (req, res) => {
  */
 router.get('/profile', authenticateToken, async (req, res) => {
   try {
-    const user = req.user.toJSON ? req.user.toJSON() : req.user;
+    const fullUser = await User.findByPk(req.user.id);
+    const user = fullUser ? fullUser.toJSON() : (req.user.toJSON ? req.user.toJSON() : req.user);
+    const hasPassword = Boolean(fullUser?.password);
+    delete user.password;
     const [firstName, ...lastNameParts] = user.name ? user.name.split(' ') : ['', ''];
     const lastName = lastNameParts.join(' ');
 
     res.json({
       message: 'Profil récupéré avec succès',
-      user: { ...user, firstName, lastName }
+      user: { ...user, firstName, lastName, hasPassword }
     });
   } catch (error) {
     console.error('Erreur profil:', error);
@@ -530,14 +535,22 @@ router.put('/profile', authenticateToken, validateProfileUpdate, async (req, res
 
     // Check if user wants to update password
     if (password) {
-      const user = await User.findByPk(userId);
-      // Verify current password
-      const isValidPassword = await bcrypt.compare(currentPassword, user.password);
-      if (!isValidPassword) {
-        return res.status(401).json({
-          error: 'Invalid password',
-          message: 'Le mot de passe actuel est incorrect'
-        });
+      const dbUser = await User.findByPk(userId);
+      // Verify current password only if user already has a password set
+      if (dbUser && dbUser.password) {
+        if (!currentPassword) {
+          return res.status(400).json({
+            error: 'Mot de passe actuel requis',
+            message: 'Veuillez renseigner votre mot de passe actuel'
+          });
+        }
+        const isValidPassword = await bcrypt.compare(currentPassword, dbUser.password);
+        if (!isValidPassword) {
+          return res.status(401).json({
+            error: 'Invalid password',
+            message: 'Le mot de passe actuel est incorrect'
+          });
+        }
       }
 
       // Hash new password
@@ -578,7 +591,7 @@ router.put('/profile', authenticateToken, validateProfileUpdate, async (req, res
  * POST /api/auth/change-password
  * Changer le mot de passe
  */
-router.post('/change-password', validatePasswordChange, authenticateToken, async (req, res) => {
+router.post('/change-password', authenticateToken, validatePasswordChange, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
     const userId = req.user.id;
@@ -586,13 +599,21 @@ router.post('/change-password', validatePasswordChange, authenticateToken, async
     // Récupérer l'utilisateur avec mot de passe
     const user = await User.findByPk(userId);
 
-    // Vérifier le mot de passe actuel
-    const isValidPassword = await bcrypt.compare(currentPassword, user.password);
-    if (!isValidPassword) {
-      return res.status(401).json({
-        error: 'Mot de passe incorrect',
-        message: 'Le mot de passe actuel est incorrect'
-      });
+    // Si l'utilisateur possède déjà un mot de passe, vérifier le mot de passe actuel
+    if (user && user.password) {
+      if (!currentPassword) {
+        return res.status(400).json({
+          error: 'Mot de passe actuel requis',
+          message: 'Veuillez renseigner votre mot de passe actuel'
+        });
+      }
+      const isValidPassword = await bcrypt.compare(currentPassword, user.password);
+      if (!isValidPassword) {
+        return res.status(401).json({
+          error: 'Mot de passe incorrect',
+          message: 'Le mot de passe actuel est incorrect'
+        });
+      }
     }
 
     // Hasher le nouveau mot de passe

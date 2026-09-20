@@ -399,14 +399,14 @@
     </Modal>
 
     <!-- Change Password Modal -->
-    <Modal v-model:isOpen="showPasswordModal" :title="$t('account.change_password') || 'Changer le mot de passe'">
+    <Modal v-model:isOpen="showPasswordModal" :title="authStore.customer?.hasPassword === false ? 'Créer un mot de passe' : ($t('account.change_password') || 'Changer le mot de passe')">
        <form @submit.prevent="savePasswordChange" class="space-y-4">
           <p class="text-xs text-gray-500 dark:text-gray-400">
-             Pour des raisons de sécurité, veuillez entrer votre mot de passe actuel ainsi que votre nouveau mot de passe.
+             {{ authStore.customer?.hasPassword === false ? 'Définissez un mot de passe pour pouvoir vous connecter directement par email sans passer par Google.' : 'Pour des raisons de sécurité, veuillez entrer votre mot de passe actuel ainsi que votre nouveau mot de passe.' }}
           </p>
-          <div>
+          <div v-if="authStore.customer?.hasPassword !== false">
              <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Mot de passe actuel</label>
-             <Input v-model="passwordForm.currentPassword" type="password" placeholder="••••••••" required />
+             <Input v-model="passwordForm.currentPassword" type="password" placeholder="••••••••" :required="authStore.customer?.hasPassword !== false" />
           </div>
           <div>
              <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Nouveau mot de passe</label>
@@ -422,7 +422,7 @@
              </button>
              <button type="submit" :disabled="isSavingPassword" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 text-sm font-bold shadow-sm flex items-center gap-2">
                 <i v-if="isSavingPassword" class="fas fa-spinner fa-spin text-xs"></i>
-                {{ isSavingPassword ? $t('common.loading') : 'Modifier le mot de passe' }}
+                {{ isSavingPassword ? $t('common.loading') : (authStore.customer?.hasPassword === false ? 'Créer le mot de passe' : 'Modifier le mot de passe') }}
              </button>
           </div>
        </form>
@@ -744,7 +744,8 @@ const openPasswordChange = () => {
 }
 
 const savePasswordChange = async () => {
-  if (!passwordForm.value.currentPassword) {
+  const userHasPassword = authStore.customer?.hasPassword !== false
+  if (userHasPassword && !passwordForm.value.currentPassword) {
     uiStore.showToast("Veuillez saisir votre mot de passe actuel", 'warning')
     return
   }
@@ -759,13 +760,18 @@ const savePasswordChange = async () => {
 
   try {
     isSavingPassword.value = true
-    await authStore.updateProfile({
-      currentPassword: passwordForm.value.currentPassword,
+    const payload: any = {
       password: passwordForm.value.newPassword
-    } as any)
+    }
+    if (userHasPassword) {
+      payload.currentPassword = passwordForm.value.currentPassword
+    }
+
+    await authStore.updateProfile(payload)
+    await authStore.fetchUserProfile()
     showPasswordModal.value = false
     passwordForm.value = { currentPassword: '', newPassword: '', confirmPassword: '' }
-    uiStore.showToast("Votre mot de passe a été modifié avec succès !", 'success')
+    uiStore.showToast("Votre mot de passe a été enregistré avec succès !", 'success')
   } catch (err: any) {
     const errorMsg = err.response?.data?.message || err.response?.data?.error || "Erreur lors de la modification du mot de passe"
     uiStore.showToast(errorMsg, 'error')

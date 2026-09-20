@@ -18,6 +18,7 @@ export interface Customer {
   notif_push?: boolean
   notif_sms?: boolean
   storeId?: number
+  hasPassword?: boolean
 }
 
 export interface LoginCredentials {
