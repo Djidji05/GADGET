@@ -1,11 +1,11 @@
 <template>
-<div v-if="activeBanners.length > 0" class="ad-banners-slider relative group max-w-7xl mx-auto px-4 my-8 sm:my-12 overflow-hidden">
-    <!-- Section Header (Optional, if multiple banners and they share a theme) -->
-    <div v-if="activeBanners.length > 1 && adsConfig?.sliderTitle" class="text-center mb-6 md:mb-10">
-        <h2 class="text-2xl md:text-3xl font-bold text-gray-900">{{ adsConfig.sliderTitle }}</h2>
+  <div v-if="activeBanners.length > 0" class="ad-banners-slider relative group max-w-7xl mx-auto px-4 my-4 sm:my-8 overflow-hidden w-full">
+    <!-- Section Header (Optional) -->
+    <div v-if="activeBanners.length > 1 && adsConfig?.sliderTitle" class="text-center mb-4 md:mb-8">
+      <h2 class="text-xl md:text-3xl font-bold text-gray-900 dark:text-white">{{ adsConfig.sliderTitle }}</h2>
     </div>
 
-    <!-- Desktop Dual/Triple Banner Grid (PC Only when 2+ banners available) -->
+    <!-- Desktop Dual Grid (LG only when 2+ banners) -->
     <div v-if="activeBanners.length >= 2" class="hidden lg:grid lg:grid-cols-2 gap-6">
       <div 
         v-for="(banner, index) in activeBanners.slice(0, 2)" 
@@ -21,7 +21,7 @@
           :alt="banner.title || 'Promotion'"
         >
         <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
-        <div class="absolute inset-0 z-10 flex flex-col justify-center p-8 text-white">
+        <div class="absolute inset-0 z-10 flex flex-col justify-center p-6 md:p-8 text-white">
           <h3 class="text-xl md:text-2xl font-extrabold mb-2" :style="{ color: banner.titleColor || '#ffffff' }">
             {{ banner.title }}
           </h3>
@@ -41,56 +41,47 @@
     </div>
 
     <!-- Mobile & Single Banner Slider Track -->
-    <div :class="{ 'lg:hidden': activeBanners.length >= 2 }" class="relative overflow-hidden rounded-3xl shadow-xl bg-gray-100">
+    <div :class="{ 'lg:hidden': activeBanners.length >= 2 }" class="relative overflow-hidden rounded-2xl sm:rounded-3xl shadow-xl bg-gray-900 w-full">
       <div 
-        class="flex transition-transform duration-700 ease-in-out" 
+        class="flex transition-transform duration-700 ease-in-out w-full" 
         :style="{ transform: `translateX(-${currentIndex * 100}%)` }"
       >
         <div 
           v-for="(banner, index) in activeBanners" 
           :key="banner.id || index" 
-          class="w-full flex-shrink-0 relative aspect-[16/4.5] min-h-[200px] sm:min-h-[300px]"
-          style="aspect-ratio: 16 / 4.5;"
+          class="w-full flex-shrink-0 flex-grow-0 basis-full relative h-48 sm:h-64 md:h-80 lg:h-[320px] overflow-hidden"
         >
           <!-- Background Image -->
           <img 
             :src="normalizeImageUrl(banner.image)" 
-            width="1280"
-            height="360"
             loading="lazy"
             class="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
             :alt="banner.title || 'Promotion'"
           >
           
-          <!-- Gradient Overlay -->
-          <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent"></div>
+          <!-- Dark Overlay -->
+          <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
 
           <!-- Content Overlay -->
           <div 
-            class="absolute inset-0 z-10 flex flex-col justify-center px-8 md:px-16 text-white"
+            class="absolute inset-0 z-10 flex flex-col justify-center px-4 sm:px-8 md:px-16 text-white"
             :class="[
               banner.textAlign === 'text-right' ? 'items-end text-right' : 
               banner.textAlign === 'text-center' ? 'items-center text-center' : 
               'items-start text-left'
             ]"
           >
-            <div class="max-w-xl">
+            <div class="max-w-xl w-full">
               <h3 
                 v-if="banner.title"
-                class="mb-2 transition-all duration-500 delay-100 transform"
-                :class="[
-                  currentIndex === index ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0',
-                  banner.titleSize || 'text-2xl md:text-4xl',
-                  banner.titleWeight || 'font-extrabold'
-                ]"
+                class="mb-1.5 sm:mb-2 transition-all duration-500 delay-100 transform text-lg sm:text-2xl md:text-4xl font-black leading-tight drop-shadow-md"
                 :style="{ color: banner.titleColor || '#ffffff' }"
               >
                 {{ banner.title }}
               </h3>
               <p 
                 v-if="banner.subtitle"
-                class="text-sm md:text-lg mb-6 opacity-90 transition-all duration-500 delay-200 transform"
-                :class="currentIndex === index ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'"
+                class="text-xs sm:text-sm md:text-base mb-3 sm:mb-6 opacity-90 transition-all duration-500 delay-200 transform line-clamp-2 drop-shadow"
                 :style="{ color: banner.subtitleColor || '#ffffff' }"
               >
                 {{ banner.subtitle }}
@@ -99,14 +90,13 @@
               <div 
                 v-if="banner.link"
                 class="transition-all duration-500 delay-300 transform"
-                :class="currentIndex === index ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'"
               >
                 <router-link 
                   :to="banner.link" 
-                  class="inline-flex items-center gap-2 bg-white text-gray-900 hover:bg-blue-600 hover:text-white px-6 py-2.5 rounded-full text-sm font-bold transition-all shadow-lg hover:shadow-blue-200"
+                  class="inline-flex items-center gap-1.5 sm:gap-2 bg-white text-gray-900 hover:bg-blue-600 hover:text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all shadow-lg hover:shadow-blue-200"
                 >
                   {{ banner.buttonText || 'Découvrir' }}
-                  <i class="fas fa-arrow-right text-[10px]"></i>
+                  <i class="fas fa-arrow-right text-[9px]"></i>
                 </router-link>
               </div>
             </div>
@@ -114,33 +104,36 @@
         </div>
       </div>
 
-      <!-- Navigation Arrows -->
+      <!-- Navigation Arrows (Shown when 2+ banners) -->
       <template v-if="activeBanners.length > 1">
         <button 
           @click="prevSlide" 
-          class="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-white hover:text-blue-600 z-20 shadow-lg"
+          class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white opacity-80 sm:opacity-0 group-hover:opacity-100 transition-all hover:bg-white hover:text-blue-600 z-20 shadow-lg text-xs sm:text-base"
+          aria-label="Bannière précédente"
         >
           <i class="fas fa-chevron-left"></i>
         </button>
         <button 
           @click="nextSlide" 
-          class="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-all hover:bg-white hover:text-blue-600 z-20 shadow-lg"
+          class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white opacity-80 sm:opacity-0 group-hover:opacity-100 transition-all hover:bg-white hover:text-blue-600 z-20 shadow-lg text-xs sm:text-base"
+          aria-label="Bannière suivante"
         >
           <i class="fas fa-chevron-right"></i>
         </button>
 
-        <!-- Indicators -->
-        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+        <!-- Slide Indicators -->
+        <div class="absolute bottom-3 sm:bottom-5 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-3 z-20">
           <button 
             v-for="(_, index) in activeBanners" 
             :key="index"
             @click="currentIndex = Number(index)"
-            class="h-1.5 rounded-full transition-all duration-500 bg-white/40 overflow-hidden"
-            :class="currentIndex === index ? 'w-8 bg-white' : 'w-4 hover:bg-white/60'"
+            class="h-1.5 rounded-full transition-all duration-300 bg-white/40 overflow-hidden"
+            :class="currentIndex === index ? 'w-6 sm:w-8 bg-white' : 'w-2.5 sm:w-4 hover:bg-white/60'"
+            :aria-label="`Bannière ${index + 1}`"
           >
             <div 
               v-if="currentIndex === index"
-              class="h-full bg-blue-500 transition-all duration-[5000ms] linear"
+              class="h-full bg-blue-500"
               :style="{ width: '100%' }"
             ></div>
           </button>
@@ -162,7 +155,6 @@ let intervalId: number | null = null;
 
 const activeBanners = computed(() => {
   const banners = adsConfig.value?.interBanners || [];
-  // Also check old single banner format for compatibility
   const single = adsConfig.value?.interBanner;
   
   let list = banners;
@@ -221,17 +213,3 @@ onUnmounted(() => {
   stopAutoSlide();
 });
 </script>
-
-<style scoped>
-.ad-banners-slider img {
-  min-height: 120px;
-  max-height: 450px;
-}
-
-@media (max-width: 640px) {
-  .ad-banners-slider img {
-    min-height: 80px;
-    max-height: 250px;
-  }
-}
-</style>
