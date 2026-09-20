@@ -688,6 +688,8 @@ const confirmDisable2FA = async () => {
   } catch (err) {
     uiStore.showToast(t('account.two_fa_pass_error'), 'error')
   }
+}
+
 const passwordForm = ref({
   currentPassword: '',
   newPassword: '',
