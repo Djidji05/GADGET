@@ -881,7 +881,7 @@ router.get('/customer-demographics', cacheMiddleware(5), async (req, res) => {
             WHEN role = 'admin' THEN 'Administrateurs'
             WHEN role = 'gestionnaire' THEN 'Gestionnaires'
             WHEN role = 'seller' THEN 'Vendeurs'
-            WHEN is_ambassador = 1 OR role = 'ambassador' THEN 'Ambassadeurs'
+            WHEN is_ambassador = true OR role = 'ambassador' THEN 'Ambassadeurs'
             ELSE 'Clients'
           END as category,
           COUNT(*) as count
@@ -891,7 +891,7 @@ router.get('/customer-demographics', cacheMiddleware(5), async (req, res) => {
             WHEN role = 'admin' THEN 'Administrateurs'
             WHEN role = 'gestionnaire' THEN 'Gestionnaires'
             WHEN role = 'seller' THEN 'Vendeurs'
-            WHEN is_ambassador = 1 OR role = 'ambassador' THEN 'Ambassadeurs'
+            WHEN is_ambassador = true OR role = 'ambassador' THEN 'Ambassadeurs'
             ELSE 'Clients'
           END
         ORDER BY count DESC
