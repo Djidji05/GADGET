@@ -5,7 +5,7 @@
     <!-- Mobile Banner Carousel (Infinite Loop) -->
     <!-- Unified Banner Section (Mobile & Desktop) -->
     <section class="relative px-4 md:px-0">
-      <div v-if="promotionsStore.isLoading" key="banner-skeleton" class="relative w-full aspect-[16/9] md:aspect-[21/9] min-h-[220px] md:min-h-[420px] lg:min-h-[580px] xl:min-h-[620px] bg-gray-200 dark:bg-gray-800 rounded-2xl md:rounded-none animate-pulse"></div>
+      <div v-if="promotionsStore.isLoading && banners.length === 0" key="banner-skeleton" class="relative w-full aspect-[16/9] md:aspect-[21/9] min-h-[220px] md:min-h-[420px] lg:min-h-[580px] xl:min-h-[620px] bg-gray-200 dark:bg-gray-800 rounded-2xl md:rounded-none animate-pulse"></div>
       <div v-else key="banner-content" class="relative w-full aspect-[16/9] md:aspect-[21/9] min-h-[220px] md:min-h-[420px] lg:min-h-[580px] xl:min-h-[620px] bg-gray-900 rounded-2xl overflow-hidden shadow-md md:mt-0 md:rounded-none md:shadow-none md:w-full">
         <!-- Carousel Container -->
         <div class="relative w-full h-full overflow-hidden">

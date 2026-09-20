@@ -18,8 +18,8 @@ const normalizeBannerItem = (b: any) => ({
 
 export const usePromotionsStore = defineStore('promotions', () => {
   // State
-  const activeBanners = ref<Banner[]>([])
-  const activePromotions = ref<Promotion[]>([])
+  const activeBanners = ref<Banner[]>(fallbackBanners.map(normalizeBannerItem))
+  const activePromotions = ref<Promotion[]>(fallbackPromotions)
   const activeRequests = ref(0)
   const isLoading = computed(() => activeRequests.value > 0)
   

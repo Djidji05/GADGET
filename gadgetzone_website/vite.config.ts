@@ -30,10 +30,23 @@ function fontDisplaySwapPlugin() {
   }
 }
 
+function asyncCssPlugin() {
+  return {
+    name: 'async-css-plugin',
+    transformIndexHtml(html: string) {
+      return html.replace(
+        /<link rel="stylesheet"([^>]*)\s+href="([^"]+\.css)"([^>]*)>/g,
+        '<link rel="preload"$1 href="$2"$3 as="style" onload="this.onload=null;this.rel=\'stylesheet\'"><noscript><link rel="stylesheet"$1 href="$2"$3></noscript>'
+      );
+    }
+  }
+}
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     fontDisplaySwapPlugin(),
+    asyncCssPlugin(),
     vue(),
     VitePWA({
       registerType: 'autoUpdate',

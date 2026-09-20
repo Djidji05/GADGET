@@ -18,6 +18,18 @@ app.use(head)
 
 app.mount('#app')
 
+// 🎨 Non-blocking FontAwesome loader (loaded from local bundle after initial render)
+if (typeof window !== 'undefined') {
+  const loadFontAwesome = () => {
+    import('@fortawesome/fontawesome-free/css/all.min.css')
+  }
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(loadFontAwesome, { timeout: 3000 })
+  } else {
+    setTimeout(loadFontAwesome, 2000)
+  }
+}
+
 // 📱 PWA — Enregistrement/Désenregistrement du Service Worker
 if ('serviceWorker' in navigator) {
     if (import.meta.env.DEV) {
