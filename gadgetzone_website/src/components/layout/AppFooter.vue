@@ -108,59 +108,53 @@
           </ul>
         </div>
 
-        <!-- Support Links -->
+        <!-- Support & Information Links -->
         <div>
           <h4 class="text-white text-lg font-bold mb-6 relative inline-block">
             {{ $t('footer.support') }}
             <span class="absolute -bottom-2 left-0 w-1/2 h-1 bg-blue-500 rounded-full"></span>
           </h4>
-          <ul class="space-y-3">
-            <li>
-              <router-link to="/account" class="hover:text-blue-400 transition-colors flex items-center gap-2 group">
-                <i class="fas fa-chevron-right text-xs text-gray-600 group-hover:text-blue-500 transition-colors"></i>
-                {{ $t('nav.your_account') }}
-              </router-link>
-            </li>
-            <li>
-              <router-link to="/orders" class="hover:text-blue-400 transition-colors flex items-center gap-2 group">
-                <i class="fas fa-chevron-right text-xs text-gray-600 group-hover:text-blue-500 transition-colors"></i>
-                {{ $t('nav.your_orders') }}
-              </router-link>
-            </li>
-            <li>
-              <router-link to="/wishlist" class="hover:text-blue-400 transition-colors flex items-center gap-2 group">
-                <i class="fas fa-chevron-right text-xs text-gray-600 group-hover:text-blue-500 transition-colors"></i>
-                {{ $t('nav.your_wishlist') }}
-              </router-link>
-            </li>
-            <li>
-              <router-link to="/notifications" class="hover:text-blue-400 transition-colors flex items-center gap-2 group">
-                <i class="fas fa-chevron-right text-xs text-gray-600 group-hover:text-blue-500 transition-colors"></i>
-                {{ $t('nav.your_notifications') }}
-              </router-link>
-            </li>
-            <li>
-              <router-link to="/addresses" class="hover:text-blue-400 transition-colors flex items-center gap-2 group">
-                <i class="fas fa-chevron-right text-xs text-gray-600 group-hover:text-blue-500 transition-colors"></i>
-                {{ $t('nav.your_addresses') }}
-              </router-link>
-            </li>
+          <ul class="space-y-2.5 text-sm">
             <li>
               <router-link to="/about" class="hover:text-blue-400 transition-colors flex items-center gap-2 group">
-                <i class="fas fa-chevron-right text-xs text-gray-600 group-hover:text-blue-500 transition-colors"></i>
+                <i class="fas fa-chevron-right text-[10px] text-gray-600 group-hover:text-blue-500 transition-colors"></i>
                 {{ $t('common.about') || 'À Propos' }}
               </router-link>
             </li>
             <li>
+              <router-link to="/faq" class="hover:text-blue-400 transition-colors flex items-center gap-2 group">
+                <i class="fas fa-chevron-right text-[10px] text-gray-600 group-hover:text-blue-500 transition-colors"></i>
+                {{ $t('common.faq') || 'FAQ / Aide' }}
+              </router-link>
+            </li>
+            <li>
+              <router-link to="/shipping" class="hover:text-blue-400 transition-colors flex items-center gap-2 group">
+                <i class="fas fa-chevron-right text-[10px] text-gray-600 group-hover:text-blue-500 transition-colors"></i>
+                Livraison & Expédition
+              </router-link>
+            </li>
+            <li>
+              <router-link to="/returns" class="hover:text-blue-400 transition-colors flex items-center gap-2 group">
+                <i class="fas fa-chevron-right text-[10px] text-gray-600 group-hover:text-blue-500 transition-colors"></i>
+                Retours & Remboursements
+              </router-link>
+            </li>
+            <li>
+              <router-link to="/warranty" class="hover:text-blue-400 transition-colors flex items-center gap-2 group">
+                <i class="fas fa-chevron-right text-[10px] text-gray-600 group-hover:text-blue-500 transition-colors"></i>
+                Garantie Panyem
+              </router-link>
+            </li>
+            <li>
               <router-link to="/contact" class="hover:text-blue-400 transition-colors flex items-center gap-2 group">
-                <i class="fas fa-chevron-right text-xs text-gray-600 group-hover:text-blue-500 transition-colors"></i>
+                <i class="fas fa-chevron-right text-[10px] text-gray-600 group-hover:text-blue-500 transition-colors"></i>
                 {{ $t('common.contact') || 'Contact' }}
               </router-link>
             </li>
             <li>
-              <router-link to="/faq" class="hover:text-blue-400 transition-colors flex items-center gap-2 group">
-                <i class="fas fa-chevron-right text-xs text-gray-600 group-hover:text-blue-500 transition-colors"></i>
-                {{ $t('common.faq') || 'FAQ' }}
+              <router-link to="/become-seller" class="hover:text-blue-400 transition-colors flex items-center gap-2 group font-semibold text-blue-400">
+                <i class="fas fa-store text-xs"></i>
+                Devenir Vendeur
               </router-link>
             </li>
           </ul>
@@ -177,27 +171,27 @@
               <div class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center flex-shrink-0 text-blue-500">
                 <i class="fas fa-map-marker-alt"></i>
               </div>
-              <span>Cap-Haitien<br>Ouanaminthe, Haïti</span>
+              <span class="text-sm">Delmas 32, #45, Port-au-Prince<br>Cap-Haïtien & Ouanaminthe</span>
             </li>
             <li class="flex items-center gap-3">
               <div class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center flex-shrink-0 text-blue-500">
                 <i class="fas fa-phone-alt"></i>
               </div>
-              <span class="font-semibold text-white">+509 41 39 35 44</span>
+              <span class="font-semibold text-white text-sm">+509 34 56 78 90</span>
             </li>
             <li class="flex items-center gap-3">
               <div class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center flex-shrink-0 text-blue-500">
                 <i class="fas fa-envelope"></i>
               </div>
-              <span class="hover:text-blue-400 transition-colors cursor-pointer">panyem308@gmail.com</span>
+              <span class="hover:text-blue-400 transition-colors text-sm">support@panyem.ht</span>
             </li>
             <li class="flex items-start gap-3">
               <div class="w-8 h-8 rounded bg-gray-800 flex items-center justify-center flex-shrink-0 text-blue-500">
                 <i class="fas fa-clock"></i>
               </div>
-              <span class="text-sm">
-                {{ $t('footer.working_days') }}<br>
-                {{ $t('footer.weekend') }}
+              <span class="text-xs text-gray-400">
+                Lundi - Samedi : 8h00 - 18h00<br>
+                Dimanche : Support d'urgence WhatsApp
               </span>
             </li>
           </ul>
@@ -222,17 +216,20 @@
               <i class="fab fa-cc-mastercard"></i>
             </div>
             <div class="bg-white px-2 py-1 rounded h-8 flex items-center">
-              <span class="text-xs font-bold text-gray-800">{{ $t('footer.moncash') }}</span>
+              <span class="text-xs font-bold text-gray-800">MonCash</span>
             </div>
             <div class="bg-white px-2 py-1 rounded h-8 flex items-center">
-              <span class="text-xs font-bold text-gray-800">{{ $t('footer.natcash') }}</span>
+              <span class="text-xs font-bold text-gray-800">Natcash</span>
             </div>
           </div>
 
-          <div class="flex gap-6 text-sm">
+          <div class="flex flex-wrap justify-center gap-4 text-xs">
             <router-link to="/privacy" class="text-gray-400 hover:text-white transition-colors">{{ $t('footer.privacy') }}</router-link>
             <router-link to="/terms" class="text-gray-400 hover:text-white transition-colors">{{ $t('footer.terms') }}</router-link>
             <router-link to="/faq" class="text-gray-400 hover:text-white transition-colors">{{ $t('common.faq') || 'FAQ' }}</router-link>
+            <router-link to="/shipping" class="text-gray-400 hover:text-white transition-colors">Livraison</router-link>
+            <router-link to="/returns" class="text-gray-400 hover:text-white transition-colors">Retours</router-link>
+            <router-link to="/warranty" class="text-gray-400 hover:text-white transition-colors">Garantie</router-link>
             <router-link to="/sitemap" class="text-gray-400 hover:text-white transition-colors">{{ $t('footer.sitemap') }}</router-link>
           </div>
         </div>
