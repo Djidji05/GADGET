@@ -241,20 +241,43 @@
        <div class="space-y-4">
           <p class="text-gray-600 dark:text-gray-400 text-sm">{{ $t('account.tracking_hint') }}</p>
           <div class="flex gap-2">
-             <Input v-model="trackingId" :placeholder="$t('account.tracking_placeholder')" class="flex-1" />
-             <button @click="trackOrder" class="bg-blue-600 text-white px-4 rounded-lg hover:bg-blue-700">{{ $t('account.follow_order') }}</button>
+             <Input v-model="trackingId" :placeholder="$t('account.tracking_placeholder')" class="flex-1" @keyup.enter="trackOrder" />
+             <button @click="trackOrder" :disabled="isTracking || !trackingId" class="bg-blue-600 text-white px-5 rounded-lg hover:bg-blue-700 disabled:opacity-50 font-medium text-sm flex items-center gap-2">
+                <i v-if="isTracking" class="fas fa-spinner fa-spin text-xs"></i>
+                {{ $t('account.follow_order') }}
+             </button>
           </div>
-          <div v-if="trackedOrder" class="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-lg border border-blue-100 dark:border-blue-900/30">
-             <div class="flex justify-between items-center mb-2">
-                <h4 class="font-bold text-blue-900 dark:text-blue-400">{{ $t('account.order') }} {{ trackedOrder.orderNumber }}</h4>
-                <span :class="['px-2 py-0.5 rounded-full text-[10px] uppercase font-bold', trackedOrder.status === 'delivered' ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400']">
-                   {{ trackedOrder.status }}
+
+          <!-- Loading State -->
+          <div v-if="isTracking" class="bg-gray-50 dark:bg-gray-900/60 p-6 rounded-xl flex flex-col items-center justify-center text-gray-500">
+             <i class="fas fa-circle-notch fa-spin text-blue-500 text-3xl mb-2"></i>
+             <span class="text-xs">Recherche des informations de livraison...</span>
+          </div>
+
+          <!-- Tracking Result Card -->
+          <div v-else-if="trackedOrder" class="bg-blue-50/70 dark:bg-blue-950/30 p-4 rounded-xl border border-blue-100 dark:border-blue-900/40 space-y-3">
+             <div class="flex justify-between items-center pb-2 border-b border-blue-100 dark:border-blue-900/40">
+                <div>
+                   <h4 class="font-bold text-blue-900 dark:text-blue-300 text-base">Commande {{ trackedOrder.orderNumber }}</h4>
+                   <span class="text-xs text-blue-700/80 dark:text-blue-400">Statut actuel : <strong>{{ trackedStatus }}</strong></span>
+                </div>
+                <span :class="['px-3 py-1 rounded-full text-[10px] uppercase font-bold tracking-wider', trackedOrder.status === 'delivered' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400']">
+                   {{ trackedStatus }}
                 </span>
              </div>
-             <p class="text-sm text-blue-800 dark:text-blue-300">Status: {{ trackedStatus }}</p>
-          </div>
-          <div v-else-if="isTracking" class="bg-gray-50 dark:bg-gray-900 p-6 rounded-lg flex flex-col items-center justify-center">
-             <i class="fas fa-spinner fa-spin text-blue-500 text-2xl mb-2"></i>
+
+             <!-- Timeline Events if available -->
+             <div v-if="trackingEvents.length > 0" class="space-y-3 pt-1">
+                <h5 class="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">Historique d'acheminement :</h5>
+                <div class="relative pl-4 space-y-3 border-l-2 border-blue-200 dark:border-blue-800 ml-1">
+                   <div v-for="(event, idx) in trackingEvents" :key="idx" class="relative">
+                      <div class="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-blue-500 ring-4 ring-blue-100 dark:ring-blue-950"></div>
+                      <div class="text-xs font-bold text-gray-900 dark:text-white">{{ event.status }}</div>
+                      <div v-if="event.location" class="text-[11px] text-gray-500 dark:text-gray-400"><i class="fas fa-map-marker-alt text-[10px] mr-1"></i>{{ event.location }}</div>
+                      <div class="text-[10px] text-gray-400 dark:text-gray-500">{{ new Date(event.created_at || event.createdAt).toLocaleString() }}</div>
+                   </div>
+                </div>
+             </div>
           </div>
        </div>
     </Modal>
@@ -606,6 +629,8 @@ const saveNotifSettings = async () => {
   }
 }
 
+const trackingEvents = ref<any[]>([])
+
 const openTracking = () => {
   showTrackingModal.value = true
 }
@@ -614,7 +639,10 @@ const trackOrder = async () => {
   if (!trackingId.value) return
   try {
     isTracking.value = true
-    const order = await ordersService.trackOrder(trackingId.value)
+    trackedOrder.value = null
+    trackingEvents.value = []
+
+    const order = await ordersService.trackOrder(trackingId.value.trim())
     trackedOrder.value = order
     const statuses: any = {
       'pending': t('account.status_pending'),
@@ -625,6 +653,16 @@ const trackOrder = async () => {
       'cancelled': t('account.status_cancelled')
     }
     trackedStatus.value = statuses[order.status] || order.status
+
+    // Charger les événements de livraison détaillés (si disponibles)
+    try {
+      const trackingData = await ordersService.getOrderTracking(order.id)
+      if (trackingData && trackingData.trackings) {
+        trackingEvents.value = trackingData.trackings
+      }
+    } catch (e) {
+      // Ignorer si pas d'historique avancé
+    }
   } catch (error) {
     uiStore.showToast(t('account.tracking_not_found'), 'error')
   } finally {
