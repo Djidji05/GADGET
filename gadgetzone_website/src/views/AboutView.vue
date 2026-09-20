@@ -1,147 +1,147 @@
 <template>
-<div class="min-h-screen bg-gray-50">
-    <!-- Hero Section -->
-    <section class="bg-slate-950 text-white py-24 relative overflow-hidden">
-      <!-- Subtle Gradient Overlay -->
-      <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-transparent"></div>
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+    <!-- Hero Banner -->
+    <section class="relative bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 text-white py-20 md:py-28 px-4 overflow-hidden border-b border-gray-800">
+      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.15),transparent_70%)]"></div>
       
-      <div class="container mx-auto px-4 text-center relative z-10">
-        <h1 class="text-4xl md:text-6xl font-extrabold mb-6 tracking-tight">L'Excellence du Commerce en <span class="text-indigo-400">Haïti</span></h1>
-        <p class="text-xl md:text-2xl opacity-80 max-w-3xl mx-auto leading-relaxed">
-          Panyem redéfinit les standards de la distribution et du service client pour bâtir une marketplace de confiance, accessible à tous.
+      <div class="container mx-auto max-w-5xl text-center relative z-10 space-y-6">
+        <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 tracking-wide uppercase">
+          <i class="fas fa-rocket text-indigo-400"></i> Première Marketplace d'Haïti
+        </span>
+        <h1 class="text-4xl md:text-6xl font-black tracking-tight leading-tight">
+          L'Excellence du E-Commerce <br class="hidden sm:block" />
+          <span class="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-blue-400 to-teal-300">
+            Accessible à Tous en Haïti
+          </span>
+        </h1>
+        <p class="text-gray-300 text-base md:text-xl max-w-3xl mx-auto leading-relaxed">
+          Panyem redéfinit les standards de la distribution, de la logistique et de la sécurité des paiements pour connecter les meilleurs vendeurs haïtiens et internationaux avec une clientèle exigeante.
         </p>
       </div>
     </section>
 
-    <!-- Our Story -->
-    <section class="py-20 bg-white">
-      <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          <div class="order-2 lg:order-1">
-            <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-8">Notre Engagement</h2>
-            <div class="space-y-6 text-lg text-slate-600 leading-relaxed">
-              <p>
-                Fondée avec la volonté de digitaliser le commerce haïtien, **Panyem** est devenue bien plus qu'une simple boutique en ligne. Nous sommes une plateforme technologique dédiée à connecter les meilleurs vendeurs locaux et internationaux avec une clientèle exigeante, en quête de fiabilité et de qualité.
-              </p>
-              <p>
-                Notre approche repose sur trois piliers fondamentaux : **Transparence, Rapidité et Proximité**. En intégrant des solutions de paiement adaptées comme MonCash et Natcash, nous facilitons l'accès aux produits essentiels et aux dernières innovations technologiques, du cœur de Port-au-Prince jusqu'aux zones les plus reculées du pays.
-              </p>
-              <p>
-                Chaque jour, nos équipes travaillent à sécuriser vos transactions et à optimiser nos chaînes logistiques pour garantir que "Fasil" (Facile) ne soit pas seulement un nom, mais une promesse tenue à chaque commande.
-              </p>
-            </div>
+    <!-- Key Metrics Grid -->
+    <section class="py-12 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
+      <div class="container mx-auto px-4 max-w-6xl">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          <div class="p-6 rounded-2xl bg-gray-50 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-800">
+            <div class="text-3xl md:text-4xl font-black text-indigo-600 dark:text-indigo-400 mb-1">10+</div>
+            <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Départements Couverts</div>
           </div>
-          <div class="order-1 lg:order-2">
-            <div class="relative group">
-              <div class="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-slate-900 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
-              <img
-                src="https://images.unsplash.com/photo-1557821552-17105176677c?auto=format&fit=crop&q=80&w=1000"
-                alt="L'univers Panyem"
-                class="relative rounded-2xl shadow-2xl w-full object-cover aspect-[4/3]"
-              />
-            </div>
+          <div class="p-6 rounded-2xl bg-gray-50 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-800">
+            <div class="text-3xl md:text-4xl font-black text-blue-600 dark:text-blue-400 mb-1">100%</div>
+            <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Escrow Sécurisé</div>
+          </div>
+          <div class="p-6 rounded-2xl bg-gray-50 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-800">
+            <div class="text-3xl md:text-4xl font-black text-green-600 dark:text-green-400 mb-1">24/48h</div>
+            <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Livraison Express</div>
+          </div>
+          <div class="p-6 rounded-2xl bg-gray-50 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-800">
+            <div class="text-3xl md:text-4xl font-black text-purple-600 dark:text-purple-400 mb-1">MonCash</div>
+            <div class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">& Natcash Intégrés</div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Mission & Vision -->
-    <section class="py-24 bg-slate-50">
-      <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-          <div class="bg-white p-10 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-shadow duration-500">
-            <div class="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center mb-6">
-              <i class="fas fa-bullseye text-indigo-600 text-3xl"></i>
-            </div>
-            <h3 class="text-2xl font-bold text-slate-900 mb-4">Notre Mission</h3>
-            <p class="text-lg text-slate-600">
-              Démocratiser l'excellence commerciale. Nous offrons une plateforme robuste et 
-              sécurisée où chaque achat devient une expérience de plaisir, de fiabilité et 
-              de rapidité exemplaire.
+    <!-- Story & Mission -->
+    <section class="py-16 md:py-24">
+      <div class="container mx-auto px-4 max-w-6xl">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          
+          <div class="space-y-6">
+            <span class="text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">Notre Histoire</span>
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white leading-tight">
+              Bâtir un écosystème commercial moderne et de confiance en Haïti
+            </h2>
+            <p class="text-sm md:text-base text-gray-600 dark:text-gray-300 leading-relaxed">
+              Créée avec la vision de digitaliser et de structurer le commerce haïtien, <strong>Panyem</strong> est devenue bien plus qu'une simple boutique en ligne. Nous sommes une infrastructure technologique reliant des milliers d'acheteurs avec les meilleurs commerçants et importateurs du pays.
+            </p>
+            <p class="text-sm md:text-base text-gray-600 dark:text-gray-300 leading-relaxed">
+              En intégrant des solutions de paiement locales comme <strong>MonCash</strong> et <strong>Natcash</strong> aux côtés des cartes internationales (Stripe), et en garantissant un contrôle rigoureux des vendeurs, nous offrons une expérience d'achat moderne, fiable et rapide, de Port-au-Prince aux villes de province.
             </p>
           </div>
 
-          <div class="bg-white p-10 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl transition-shadow duration-500">
-            <div class="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center mb-6">
-              <i class="fas fa-eye text-indigo-600 text-3xl"></i>
-            </div>
-            <h3 class="text-2xl font-bold text-slate-900 mb-4">Notre Vision</h3>
-            <p class="text-lg text-slate-600">
-              Bâtir le futur du commerce en Haïti. Nous aspirons à être le lien vital entre 
-              le talent local et chaque foyer, en redéfinissant les standards de service 
-              et de choix à chaque clic.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Values -->
-    <section class="py-20 bg-white">
-      <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold text-center text-slate-900 mb-16 underline decoration-indigo-200 decoration-8 underline-offset-8">Ce qui nous définit</h2>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
-          <div class="text-center group">
-            <div class="w-24 h-24 bg-slate-900 text-white rounded-full flex items-center justify-center mx-auto mb-6 transform group-hover:rotate-12 transition-transform duration-300">
-              <i class="fas fa-shield-alt text-3xl"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-3 text-slate-900">Sûreté Totale</h3>
-            <p class="text-slate-600">Transactions blindées et protection absolue de vos données.</p>
-          </div>
-
-          <div class="text-center group">
-            <div class="w-24 h-24 bg-slate-900 text-white rounded-full flex items-center justify-center mx-auto mb-6 transform group-hover:-rotate-12 transition-transform duration-300">
-              <i class="fas fa-award text-3xl"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-3 text-slate-900">Qualité Premium</h3>
-            <p class="text-slate-600">Une sélection rigoureuse pour une satisfaction garantie.</p>
-          </div>
-
-          <div class="text-center group">
-            <div class="w-24 h-24 bg-slate-900 text-white rounded-full flex items-center justify-center mx-auto mb-6 transform group-hover:rotate-12 transition-transform duration-300">
-              <i class="fas fa-headset text-3xl"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-3 text-slate-900">Support Dédié</h3>
-            <p class="text-slate-600">Humains et compréhensifs, nous sommes toujours à vos côtés.</p>
-          </div>
-
-          <div class="text-center group">
-            <div class="w-24 h-24 bg-slate-900 text-white rounded-full flex items-center justify-center mx-auto mb-6 transform group-hover:-rotate-12 transition-transform duration-300">
-              <i class="fas fa-shipping-fast text-3xl"></i>
-            </div>
-            <h3 class="text-xl font-bold mb-3 text-slate-900">Livraison Rapide</h3>
-            <p class="text-slate-600">Du Cap à Ouanaminthe, nous livrons vos désirs sans attendre.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Experience Section (with Second Image) -->
-    <section class="py-24 bg-slate-950 text-white overflow-hidden">
-      <div class="container mx-auto px-4">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div class="relative">
-            <img
-               src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&q=80&w=1000"
-               alt="L'expérience client"
-               class="rounded-3xl shadow-2xl w-full object-cover"
-            />
-          </div>
-          <div class="space-y-8">
-            <h2 class="text-3xl md:text-5xl font-bold tracking-tight">Plus qu'un simple achat, une <span class="text-indigo-400">expérience</span></h2>
-            <p class="text-xl text-slate-300 leading-relaxed">
-              Nous croyons que chaque interaction avec Panyem doit être mémorable. De la navigation fluide sur notre site à l'ouverture de votre colis, nous peaufinons chaque détail pour vous offrir le luxe de la simplicité.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-6">
-              <router-link to="/products" class="px-8 py-4 bg-indigo-600 text-white rounded-full font-bold hover:bg-indigo-700 transition-all text-center">
-                Explorer le catalogue
-              </router-link>
-              <router-link to="/contact" class="px-8 py-4 border-2 border-slate-700 text-white rounded-full font-bold hover:bg-slate-800 transition-all text-center">
-                Besoin d'aide ?
-              </router-link>
+            <div class="absolute -inset-2 bg-gradient-to-r from-indigo-500 to-blue-600 rounded-3xl blur-lg opacity-30"></div>
+            <div class="relative bg-white dark:bg-gray-900 rounded-3xl p-8 shadow-xl border border-gray-100 dark:border-gray-800 space-y-6">
+              <div class="flex items-center gap-4 border-b border-gray-100 dark:border-gray-800 pb-4">
+                <div class="w-12 h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-xl font-bold">
+                  <i class="fas fa-eye"></i>
+                </div>
+                <div>
+                  <h3 class="font-bold text-gray-900 dark:text-white text-lg">Notre Vision</h3>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">L'avenir du commerce haïtien</p>
+                </div>
+              </div>
+              <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                Devenir la plateforme référence des Caraïbes permettant à n'importe quel citoyen ou entrepreneur de vendre, acheter et se faire livrer en toute sécurité.
+              </p>
             </div>
           </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Core Values -->
+    <section class="py-16 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800">
+      <div class="container mx-auto px-4 max-w-6xl">
+        <div class="text-center max-w-2xl mx-auto mb-12 space-y-3">
+          <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white">Nos Valeurs Fondamentales</h2>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Ce qui guide chacune de nos décisions au quotidien.</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="bg-gray-50 dark:bg-gray-800/80 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/80 space-y-3">
+            <div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center text-lg">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3 class="font-bold text-gray-900 dark:text-white text-base">Sécurité Escrow</h3>
+            <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">Vos fonds restent protégés en séquestre tant que votre commande n'est pas reçue et vérifiée.</p>
+          </div>
+
+          <div class="bg-gray-50 dark:bg-gray-800/80 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/80 space-y-3">
+            <div class="w-10 h-10 rounded-xl bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400 flex items-center justify-center text-lg">
+              <i class="fas fa-truck-fast"></i>
+            </div>
+            <h3 class="font-bold text-gray-900 dark:text-white text-base">Livraison Nationale</h3>
+            <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">Un réseau logistique réactif couvrant l'ensemble du territoire haïtien.</p>
+          </div>
+
+          <div class="bg-gray-50 dark:bg-gray-800/80 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/80 space-y-3">
+            <div class="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center text-lg">
+              <i class="fas fa-handshake"></i>
+            </div>
+            <h3 class="font-bold text-gray-900 dark:text-white text-base">Soutien Vendeurs</h3>
+            <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">Des outils de gestion puissants pour aider les commerçants locaux à digitaliser leurs ventes.</p>
+          </div>
+
+          <div class="bg-gray-50 dark:bg-gray-800/80 p-6 rounded-2xl border border-gray-100 dark:border-gray-700/80 space-y-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center text-lg">
+              <i class="fas fa-headset"></i>
+            </div>
+            <h3 class="font-bold text-gray-900 dark:text-white text-base">Support Proche</h3>
+            <p class="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">Une équipe d'assistance réactive en Français et Créole haïtien disponible 7j/7.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom CTA Banner -->
+    <section class="py-16 bg-gradient-to-r from-blue-900 to-indigo-950 text-white">
+      <div class="container mx-auto px-4 max-w-4xl text-center space-y-6">
+        <h2 class="text-3xl font-extrabold">Prêt à vivre l'expérience Panyem ?</h2>
+        <p class="text-blue-200 text-sm max-w-xl mx-auto">
+          Découvrez notre vaste sélection de produits High-Tech, vêtements, mode et accessoires au meilleur prix avec livraison sécurisée.
+        </p>
+        <div class="flex flex-col sm:flex-row justify-center gap-4 pt-2">
+          <router-link to="/products" class="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition-all text-sm">
+            <i class="fas fa-shopping-bag mr-2"></i> Explorer le Catalogue
+          </router-link>
+          <router-link to="/become-seller" class="px-8 py-3.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl border border-white/20 transition-all text-sm">
+            <i class="fas fa-store mr-2"></i> Devenir Vendeur
+          </router-link>
         </div>
       </div>
     </section>
@@ -149,5 +149,4 @@
 </template>
 
 <script setup lang="ts">
-// About page component
 </script>
