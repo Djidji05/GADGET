@@ -874,19 +874,27 @@ router.get('/customer-demographics', cacheMiddleware(5), async (req, res) => {
       // 3. Clients actifs
       sequelize.query("SELECT COUNT(DISTINCT user_id) as total FROM orders", { type: sequelize.QueryTypes.SELECT }),
       
-      // 4. Clients par rôle
+      // 4. Répartition des utilisateurs par rôle
       sequelize.query(`
         SELECT 
           CASE 
             WHEN role = 'admin' THEN 'Administrateurs'
             WHEN role = 'gestionnaire' THEN 'Gestionnaires'
+            WHEN role = 'seller' THEN 'Vendeurs'
+            WHEN is_ambassador = 1 OR role = 'ambassador' THEN 'Ambassadeurs'
             ELSE 'Clients'
           END as category,
           COUNT(*) as count
         FROM users
-        GROUP BY role
+        GROUP BY 
+          CASE 
+            WHEN role = 'admin' THEN 'Administrateurs'
+            WHEN role = 'gestionnaire' THEN 'Gestionnaires'
+            WHEN role = 'seller' THEN 'Vendeurs'
+            WHEN is_ambassador = 1 OR role = 'ambassador' THEN 'Ambassadeurs'
+            ELSE 'Clients'
+          END
         ORDER BY count DESC
-        LIMIT 5
       `, { type: sequelize.QueryTypes.SELECT })
     ]);
 
@@ -896,6 +904,8 @@ router.get('/customer-demographics', cacheMiddleware(5), async (req, res) => {
     const newCustomers = parseInt(newThisMonth.total || 0);
     const active = parseInt(activeCustomers.total || 0);
 
+    const sumCategoryUsers = topRoles.reduce((acc, curr) => acc + parseInt(curr.count || 0), 0);
+
     const response = {
       totalCustomers: total,
       newThisMonth: newCustomers,
@@ -904,7 +914,7 @@ router.get('/customer-demographics', cacheMiddleware(5), async (req, res) => {
       topCities: topRoles.map(role => ({
         name: role.category,
         count: parseInt(role.count),
-        percentage: total > 0 ? parseFloat(((role.count / total) * 100).toFixed(1)) : 0
+        percentage: sumCategoryUsers > 0 ? parseFloat(((parseInt(role.count) / sumCategoryUsers) * 100).toFixed(1)) : 0
       }))
     };
 

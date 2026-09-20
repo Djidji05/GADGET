@@ -24,6 +24,7 @@ export const useSettingsStore = defineStore('settings', () => {
             }
         } catch (error) {
             console.error('Error fetching general settings:', error)
+            general.value.isLoaded = true
         }
     }
 

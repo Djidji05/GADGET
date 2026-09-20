@@ -20,6 +20,7 @@ import { useSSEStore } from '@/stores/sse'
 import { useLoyaltyStore } from '@/stores/loyalty'
 import { useNotificationsStore } from '@/stores/notifications'
 import { useThemeStore } from '@/stores/theme'
+import { useSettingsStore } from '@/stores/settings'
 
 const authStore = useAuthStore()
 const personalizationStore = usePersonalizationStore()
@@ -28,6 +29,7 @@ const route = useRoute()
 const uiStore = useUiStore()
 const sseStore = useSSEStore()
 const loyaltyStore = useLoyaltyStore()
+const settingsStore = useSettingsStore()
 const notificationsStore = useNotificationsStore()
 const themeStore = useThemeStore()
 const isScrolled = ref(false)
@@ -225,7 +227,12 @@ const setupInactivityTracking = () => {
 </script>
 
 <template>
-<div class="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-300 overflow-x-hidden">
+  <div v-if="!settingsStore.general.isLoaded" class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+    <div class="flex flex-col items-center gap-3">
+      <div class="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  </div>
+  <div v-else class="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-300 overflow-x-hidden">
     <!-- PWA Install Banner -->
     <div v-if="showInstallPrompt && route.name === 'home' && !isMaintenancePage" class="bg-blue-600 text-white px-4 py-3 flex items-center justify-between shadow-md relative z-50">
       <div class="flex items-center gap-3">

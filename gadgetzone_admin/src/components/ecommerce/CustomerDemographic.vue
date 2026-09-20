@@ -33,18 +33,17 @@
       <div v-if="demographics.topCities.length === 0" class="py-8 text-center text-gray-500">
         Aucune donnée disponible
       </div>
-      <div v-else v-for="city in demographics.topCities" :key="city.name" class="flex items-center justify-between">
+      <div v-else v-for="role in demographics.topCities" :key="role.name" class="flex items-center justify-between">
         <div class="flex items-center gap-3">
           <div class="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30">
             <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
           </div>
           <div>
-            <p class="font-semibold text-gray-800 text-theme-sm dark:text-white/90">{{ city.name }}</p>
+            <p class="font-semibold text-gray-800 text-theme-sm dark:text-white/90">{{ role.name }}</p>
             <span class="block text-gray-500 text-theme-xs dark:text-gray-400">
-              {{ city.count }} Client{{ city.count > 1 ? 's' : '' }}
+              {{ role.count }} {{ role.count > 1 ? 'utilisateurs' : 'utilisateur' }}
             </span>
           </div>
         </div>
@@ -52,11 +51,11 @@
         <div class="flex w-full max-w-[140px] items-center gap-3">
           <div class="relative block h-2 w-full max-w-[100px] rounded-sm bg-gray-200 dark:bg-gray-800">
             <div
-              class="absolute left-0 top-0 flex h-full items-center justify-center rounded-sm bg-brand-500 text-xs font-medium text-white"
-              :style="{ width: city.percentage + '%' }"
+              class="absolute left-0 top-0 flex h-full items-center justify-center rounded-sm bg-blue-600 text-xs font-medium text-white"
+              :style="{ width: role.percentage + '%' }"
             ></div>
           </div>
-          <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ city.percentage }}%</p>
+          <p class="font-medium text-gray-800 text-theme-sm dark:text-white/90">{{ role.percentage }}%</p>
         </div>
       </div>
     </div>
