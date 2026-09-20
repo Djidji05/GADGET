@@ -36,7 +36,7 @@ export const useSettingsStore = defineStore('settings', () => {
         if (general.value.site_logo) {
             return getImageUrl(general.value.site_logo)
         }
-        return '/images/logo.png' // Default fallback
+        return '/images/logo.webp' // Default fallback
     })
 
     return {

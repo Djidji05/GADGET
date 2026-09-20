@@ -217,7 +217,7 @@
         <!-- Top bar mobile -->
         <div class="mobile-top-bar">
           <router-link to="/" class="flex items-center gap-2">
-            <img src="/images/logo.png" alt="Panyem" width="120" height="32" class="h-8 w-auto" />
+            <img src="/images/logo.webp" alt="Panyem" width="120" height="32" class="h-8 w-auto" />
           </router-link>
           
           <div class="flex items-center gap-2">
@@ -332,7 +332,7 @@
         <!-- Logo -->
         <div class="flex items-center mr-6">
           <router-link to="/" class="flex items-center" aria-label="Panyem - Page d'accueil">
-            <img src="/images/logo.png" alt="Panyem Logo" width="120" height="24" class="h-6 w-auto" />
+            <img src="/images/logo.webp" alt="Panyem Logo" width="120" height="24" class="h-6 w-auto" />
           </router-link>
         </div>
 
@@ -876,7 +876,7 @@
              </div>
              
              <div v-else class="flex items-center gap-3">
-               <img src="/images/logo.png" class="h-10 w-auto" width="150" height="40" alt="Panyem">
+               <img src="/images/logo.webp" class="h-10 w-auto" width="150" height="40" alt="Panyem">
              </div>
           </div>
           
