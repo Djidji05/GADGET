@@ -24,7 +24,7 @@
               height="600"
               :loading="index === 0 ? 'eager' : 'lazy'"
               :fetchpriority="index === 0 ? 'high' : 'auto'"
-              :decoding="index === 0 ? 'sync' : 'async'"
+              decoding="async"
               class="absolute inset-0 w-full h-full object-cover"
               @error="handleImageError"
             />

@@ -24,11 +24,14 @@
 
 
   <!-- Preconnect & DNS prefetch for critical origins (max 3 origins to avoid Lighthouse warning) -->
-  <link rel="preconnect" href="https://manage.panyem.com">
+  <link rel="preconnect" href="https://manage.panyem.com" crossorigin>
   <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="dns-prefetch" href="https://manage.panyem.com">
   <link rel="dns-prefetch" href="https://images.unsplash.com">
+
+  <!-- Preload Critical LCP Hero Banner Image -->
+  <link rel="preload" as="image" href="/images/Flyer_Gadget_Zone_High_Tech.webp" fetchpriority="high">
 
   <!-- Google Fonts -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'">
