@@ -119,8 +119,9 @@
            <h2 class="font-bold text-gray-900 dark:text-white">{{ $t('account.payment_methods') }}</h2>
         </div>
         <div class="p-2">
-           <button @click="openPaymentAdd" class="w-full py-2 text-blue-600 dark:text-blue-400 font-medium hover:bg-blue-50 dark:hover:bg-blue-950/20 rounded-lg transition-colors flex items-center justify-center gap-2">
-              <i class="fas fa-plus"></i> {{ $t('account.add_payment') }}
+           <button @click="openPaymentAdd" class="w-full flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-colors text-left text-gray-700 dark:text-gray-300">
+              <span>{{ $t('account.available_payment_methods') || 'Moyens de paiement disponibles' }}</span>
+              <i class="fas fa-chevron-right text-gray-300 dark:text-gray-600 text-xs"></i>
            </button>
         </div>
       </div>
