@@ -355,15 +355,100 @@
 
           <!-- State: Disable (Verify Password) -->
           <div v-else class="space-y-4">
-             <p class="text-sm text-gray-600 dark:text-gray-400">{{ $t('account.two_fa_disable_desc') }}</p>
-             <Input v-model="faPassword" type="password" :placeholder="$t('account.two_fa_password_ph')" />
-             <button @click="confirmDisable2FA" :disabled="!faPassword || authStore.isLoading" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 w-full">
-               {{ authStore.isLoading ? $t('account.two_fa_disabling') : $t('account.two_fa_disable_btn') }}
+             <div class="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 rounded-xl flex items-start gap-2.5">
+                <i class="fas fa-info-circle text-amber-600 dark:text-amber-400 mt-0.5 text-sm"></i>
+                <p class="text-xs text-amber-800 dark:text-amber-300">
+                   Pour désactiver la double authentification (2FA), veuillez entrer le <strong>mot de passe de votre compte Panyem</strong> (le mot de passe que vous utilisez pour vous connecter).
+                </p>
+             </div>
+             <div>
+                <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Mot de passe de votre compte</label>
+                <Input v-model="faPassword" type="password" placeholder="Mot de passe de votre compte" />
+             </div>
+             <button @click="confirmDisable2FA" :disabled="!faPassword || authStore.isLoading" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 w-full font-bold text-sm shadow-sm flex items-center justify-center gap-2">
+                <i v-if="authStore.isLoading" class="fas fa-spinner fa-spin text-xs"></i>
+                {{ authStore.isLoading ? $t('account.two_fa_disabling') : $t('account.two_fa_disable_btn') }}
              </button>
           </div>
        </div>
     </Modal>
-    <Modal v-model:isOpen="showConnectionsModal" title="Connexions"></Modal>
+
+    <!-- Change Password Modal -->
+    <Modal v-model:isOpen="showPasswordModal" :title="$t('account.change_password') || 'Changer le mot de passe'">
+       <form @submit.prevent="savePasswordChange" class="space-y-4">
+          <p class="text-xs text-gray-500 dark:text-gray-400">
+             Pour des raisons de sécurité, veuillez entrer votre mot de passe actuel ainsi que votre nouveau mot de passe.
+          </p>
+          <div>
+             <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Mot de passe actuel</label>
+             <Input v-model="passwordForm.currentPassword" type="password" placeholder="••••••••" required />
+          </div>
+          <div>
+             <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Nouveau mot de passe</label>
+             <Input v-model="passwordForm.newPassword" type="password" placeholder="••••••••" required minlength="6" />
+          </div>
+          <div>
+             <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Confirmer le nouveau mot de passe</label>
+             <Input v-model="passwordForm.confirmPassword" type="password" placeholder="••••••••" required minlength="6" />
+          </div>
+          <div class="flex justify-end gap-3 pt-2">
+             <button type="button" @click="showPasswordModal = false" class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-sm font-medium">
+                {{ $t('common.cancel') }}
+             </button>
+             <button type="submit" :disabled="isSavingPassword" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 text-sm font-bold shadow-sm flex items-center gap-2">
+                <i v-if="isSavingPassword" class="fas fa-spinner fa-spin text-xs"></i>
+                {{ isSavingPassword ? $t('common.loading') : 'Modifier le mot de passe' }}
+             </button>
+          </div>
+       </form>
+    </Modal>
+
+    <!-- Connection Methods Modal -->
+    <Modal v-model:isOpen="showConnectionsModal" :title="$t('account.connection_methods') || 'Méthodes de connexion'">
+       <div class="space-y-4">
+          <p class="text-xs text-gray-500 dark:text-gray-400">
+             Voici les méthodes d'accès associées à votre compte Panyem.
+          </p>
+          
+          <!-- Email / Password method -->
+          <div class="flex items-center justify-between p-3.5 bg-gray-50 dark:bg-gray-800/80 rounded-xl border border-gray-100 dark:border-gray-800">
+             <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                   <i class="far fa-envelope text-lg"></i>
+                </div>
+                <div>
+                   <div class="font-bold text-gray-900 dark:text-white text-sm">Adresse Email & Mot de passe</div>
+                   <div class="text-xs text-gray-500 dark:text-gray-400">{{ authStore.customer?.email }}</div>
+                </div>
+             </div>
+             <span class="text-[10px] bg-green-100 text-green-700 dark:bg-green-950/40 dark:text-green-400 font-bold px-2.5 py-1 rounded-full uppercase">
+                Principale
+             </span>
+          </div>
+
+          <!-- Google OAuth method -->
+          <div class="flex items-center justify-between p-3.5 bg-gray-50 dark:bg-gray-800/80 rounded-xl border border-gray-100 dark:border-gray-800">
+             <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 flex items-center justify-center shadow-sm border border-gray-200 dark:border-gray-700">
+                   <i class="fab fa-google text-lg text-red-500"></i>
+                </div>
+                <div>
+                   <div class="font-bold text-gray-900 dark:text-white text-sm">Connexion Google</div>
+                   <div class="text-xs text-gray-500 dark:text-gray-400">Accès rapide avec un compte Google</div>
+                </div>
+             </div>
+             <span class="text-[10px] bg-blue-50 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 font-bold px-2.5 py-1 rounded-full uppercase">
+                Disponible
+             </span>
+          </div>
+
+          <div class="pt-2 flex justify-end">
+             <button @click="showConnectionsModal = false" class="px-5 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg text-sm font-medium">
+                {{ $t('common.close') || 'Fermer' }}
+             </button>
+          </div>
+       </div>
+    </Modal>
     <!-- Payment Methods Modal -->
     <Modal v-model:isOpen="showPaymentModal" :title="$t('account.payment_methods')">
        <div class="space-y-6">
@@ -603,9 +688,49 @@ const confirmDisable2FA = async () => {
   } catch (err) {
     uiStore.showToast(t('account.two_fa_pass_error'), 'error')
   }
+const passwordForm = ref({
+  currentPassword: '',
+  newPassword: '',
+  confirmPassword: ''
+})
+const isSavingPassword = ref(false)
+
+const openPasswordChange = () => {
+  passwordForm.value = { currentPassword: '', newPassword: '', confirmPassword: '' }
+  showPasswordModal.value = true
 }
 
-const openPasswordChange = () => showPasswordModal.value = true
+const savePasswordChange = async () => {
+  if (!passwordForm.value.currentPassword) {
+    uiStore.showToast("Veuillez saisir votre mot de passe actuel", 'warning')
+    return
+  }
+  if (!passwordForm.value.newPassword || passwordForm.value.newPassword.length < 6) {
+    uiStore.showToast("Le nouveau mot de passe doit contenir au moins 6 caractères", 'warning')
+    return
+  }
+  if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
+    uiStore.showToast("Les deux nouveaux mots de passe ne correspondent pas", 'warning')
+    return
+  }
+
+  try {
+    isSavingPassword.value = true
+    await authStore.updateProfile({
+      currentPassword: passwordForm.value.currentPassword,
+      password: passwordForm.value.newPassword
+    } as any)
+    showPasswordModal.value = false
+    passwordForm.value = { currentPassword: '', newPassword: '', confirmPassword: '' }
+    uiStore.showToast("Votre mot de passe a été modifié avec succès !", 'success')
+  } catch (err: any) {
+    const errorMsg = err.response?.data?.message || err.response?.data?.error || "Erreur lors de la modification du mot de passe"
+    uiStore.showToast(errorMsg, 'error')
+  } finally {
+    isSavingPassword.value = false
+  }
+}
+
 const open2FA = () => {
   faSetupPending.value = false
   faCode.value = ''
