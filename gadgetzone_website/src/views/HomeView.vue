@@ -712,7 +712,7 @@ const itemsYouMayLikeCards = computed(() => {
     type: 'banner',
     title: t('home.tech_news'),
     subtitle: t('home.tech_subtitle'),
-    image: 'https://images.unsplash.com/photo-1522204523234-8729aa6e3d5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=350&q=70&fm=webp',
+    image: 'https://images.unsplash.com/photo-1522204523234-8729aa6e3d5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=280&q=60&fm=webp',
     link: '/products'
   })
   
