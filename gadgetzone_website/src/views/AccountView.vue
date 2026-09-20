@@ -306,50 +306,51 @@
           <p class="text-sm text-gray-600 dark:text-gray-400">{{ $t('account.notif_settings_desc') }}</p>
           
           <div class="space-y-4">
-             <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-xl">
+             <div @click="notifForm.notif_email = !notifForm.notif_email" class="flex items-center justify-between p-3.5 bg-gray-50 dark:bg-gray-800 rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-750 transition-colors">
                 <div class="flex items-center gap-3">
                    <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                      <i class="far fa-envelope"></i>
+                      <i class="far fa-envelope text-lg"></i>
                    </div>
                    <div>
-                      <div class="font-bold text-gray-900 dark:text-white">{{ $t('account.notif_email_title') }}</div>
+                      <div class="font-bold text-gray-900 dark:text-white text-sm">{{ $t('account.notif_email_title') }}</div>
                       <div class="text-xs text-gray-500 dark:text-gray-400">{{ $t('account.notif_email_desc') }}</div>
                    </div>
                 </div>
-                <input type="checkbox" v-model="notifForm.notif_email" class="w-6 h-6 rounded border-gray-300 dark:border-gray-700 bg-transparent text-blue-600 focus:ring-blue-500" />
+                <input type="checkbox" v-model="notifForm.notif_email" @click.stop class="w-5 h-5 rounded border-gray-300 dark:border-gray-700 bg-transparent text-blue-600 focus:ring-blue-500 cursor-pointer" />
              </div>
 
-             <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-xl">
+             <div @click="notifForm.notif_push = !notifForm.notif_push" class="flex items-center justify-between p-3.5 bg-gray-50 dark:bg-gray-800 rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-750 transition-colors">
                 <div class="flex items-center gap-3">
                    <div class="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
-                      <i class="far fa-bell"></i>
+                      <i class="far fa-bell text-lg"></i>
                    </div>
                    <div>
-                      <div class="font-bold text-gray-900 dark:text-white">{{ $t('account.notif_push_title') }}</div>
+                      <div class="font-bold text-gray-900 dark:text-white text-sm">{{ $t('account.notif_push_title') }}</div>
                       <div class="text-xs text-gray-500 dark:text-gray-400">{{ $t('account.notif_push_desc') }}</div>
                    </div>
                 </div>
-                <input type="checkbox" v-model="notifForm.notif_push" class="w-6 h-6 rounded border-gray-300 dark:border-gray-700 bg-transparent text-blue-600 focus:ring-blue-500" />
+                <input type="checkbox" v-model="notifForm.notif_push" @click.stop class="w-5 h-5 rounded border-gray-300 dark:border-gray-700 bg-transparent text-blue-600 focus:ring-blue-500 cursor-pointer" />
              </div>
 
-             <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-xl">
+             <div @click="notifForm.notif_sms = !notifForm.notif_sms" class="flex items-center justify-between p-3.5 bg-gray-50 dark:bg-gray-800 rounded-xl cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-750 transition-colors">
                 <div class="flex items-center gap-3">
                    <div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center">
-                      <i class="fas fa-sms"></i>
+                      <i class="fas fa-sms text-lg"></i>
                    </div>
                    <div>
-                      <div class="font-bold text-gray-900 dark:text-white">{{ $t('account.notif_sms_title') }}</div>
+                      <div class="font-bold text-gray-900 dark:text-white text-sm">{{ $t('account.notif_sms_title') }}</div>
                       <div class="text-xs text-gray-500 dark:text-gray-400">{{ $t('account.notif_sms_desc') }}</div>
                    </div>
                 </div>
-                <input type="checkbox" v-model="notifForm.notif_sms" class="w-6 h-6 rounded border-gray-300 dark:border-gray-700 bg-transparent text-blue-600 focus:ring-blue-500" />
+                <input type="checkbox" v-model="notifForm.notif_sms" @click.stop class="w-5 h-5 rounded border-gray-300 dark:border-gray-700 bg-transparent text-blue-600 focus:ring-blue-500 cursor-pointer" />
              </div>
           </div>
        </div>
        <template #footer>
           <div class="flex justify-end gap-3">
-             <button @click="showNotificationsModal = false" class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg">{{ $t('common.cancel') }}</button>
-             <button @click="saveNotifSettings" :disabled="isSavingNotifs" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50">
+             <button @click="showNotificationsModal = false" class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg text-sm font-medium">{{ $t('common.cancel') }}</button>
+             <button @click="saveNotifSettings" :disabled="isSavingNotifs" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 text-sm font-bold shadow-sm flex items-center gap-2">
+                <i v-if="isSavingNotifs" class="fas fa-spinner fa-spin text-xs"></i>
                 {{ isSavingNotifs ? $t('common.loading') : $t('common.save') }}
              </button>
           </div>
@@ -567,6 +568,7 @@ const profileForm = ref({
 
 onMounted(async () => {
   try {
+    authStore.fetchUserProfile().catch(() => {})
     const orders = await ordersService.getCustomerOrders()
     ordersCount.value = orders.length
   } catch (error) {

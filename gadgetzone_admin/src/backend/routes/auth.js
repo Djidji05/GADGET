@@ -498,7 +498,7 @@ router.get('/profile', authenticateToken, async (req, res) => {
  */
 router.put('/profile', authenticateToken, validateProfileUpdate, async (req, res) => {
   try {
-    const { name, firstName, lastName, email, phone, currentPassword, password } = req.body;
+    const { name, firstName, lastName, email, phone, currentPassword, password, notif_email, notif_push, notif_sms } = req.body;
     const userId = req.user.id;
 
     let fullName = name;
@@ -524,6 +524,9 @@ router.put('/profile', authenticateToken, validateProfileUpdate, async (req, res
     if (fullName) updates.name = fullName;
     if (email) updates.email = email;
     if (phone !== undefined) updates.phone = phone;
+    if (notif_email !== undefined) updates.notif_email = Boolean(notif_email);
+    if (notif_push !== undefined) updates.notif_push = Boolean(notif_push);
+    if (notif_sms !== undefined) updates.notif_sms = Boolean(notif_sms);
 
     // Check if user wants to update password
     if (password) {
