@@ -83,27 +83,27 @@
         
         <form @submit.prevent="saveAddress" class="space-y-4">
           
-          <div class="grid grid-cols-1 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('checkout.city') }}</label>
+              <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('checkout.city') || 'Ville' }}</label>
               <input v-model="form.city" type="text" required class="w-full border rounded-lg px-3 py-2 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ex: Port-au-Prince">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Quartier / Zone</label>
+              <input v-model="form.quartier" type="text" required class="w-full border rounded-lg px-3 py-2 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ex: Pétion-Ville, Delmas...">
             </div>
           </div>
 
           <!-- Rue / Adresse -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('checkout.address') }}</label>
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('checkout.address') || 'Rue & Numéro' }}</label>
             <input v-model="form.street" type="text" required class="w-full border rounded-lg px-3 py-2 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none" placeholder="Ex: 12 Rue Louverture">
           </div>
 
-          <!-- Pays (Default Haiti) -->
+          <!-- Pays (Fixe à Haïti) -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('checkout.country') }}</label>
-            <select v-model="form.country" class="w-full border rounded-lg px-3 py-2 bg-gray-50 outline-none">
-              <option value="Haïti">Haïti</option>
-              <option value="République Dominicaine">République Dominicaine</option>
-              <option value="États-Unis">États-Unis</option>
-            </select>
+            <label class="block text-sm font-medium text-gray-700 mb-1">{{ $t('checkout.country') || 'Pays' }}</label>
+            <input type="text" value="Haïti" disabled readonly class="w-full border border-gray-200 rounded-lg px-3 py-2 bg-gray-100 text-gray-500 font-semibold cursor-not-allowed outline-none" />
           </div>
 
           <!-- WhatsApp -->
@@ -154,6 +154,7 @@ const uiStore = useUiStore()
 const form = reactive({
   street: '',
   city: '',
+  quartier: '',
   country: 'Haïti',
   whatsapp: '',
   note: '',
@@ -178,7 +179,8 @@ const openModal = (address?: Address) => {
     editingId.value = address.id
     form.street = address.street
     form.city = address.city
-    form.country = address.country
+    form.quartier = address.quartier || ''
+    form.country = address.country || 'Haïti'
     form.whatsapp = address.whatsapp || ''
     form.note = address.note || ''
     form.is_default = address.is_default
@@ -198,6 +200,7 @@ const closeModal = () => {
 const resetForm = () => {
   form.street = ''
   form.city = ''
+  form.quartier = ''
   form.country = 'Haïti'
   form.whatsapp = ''
   form.note = ''

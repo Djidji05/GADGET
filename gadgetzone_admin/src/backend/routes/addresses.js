@@ -32,8 +32,10 @@ router.post('/', async (req, res) => {
     try {
         const { street, city, quartier, country, whatsapp, note, is_default, coordinates, reference_point } = req.body;
 
-        if (!street || !city || !quartier) {
-            return res.status(400).json({ error: 'Rue, Ville et Quartier sont requis' });
+        const quartierValue = quartier || city || 'Centre';
+
+        if (!street || !city) {
+            return res.status(400).json({ error: 'La rue et la ville sont requises' });
         }
 
         // Set default country if missing
@@ -47,7 +49,7 @@ router.post('/', async (req, res) => {
         const newAddress = await Address.create({
             user_id: req.user.id,
             street,
-            quartier, // Added field
+            quartier: quartierValue, // Added field
             city,
             country: countryValue,
             whatsapp, // Added field
