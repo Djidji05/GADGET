@@ -89,16 +89,23 @@ export default defineConfig({
     }
   },
   build: {
+    cssCodeSplit: true,
     chunkSizeWarningLimit: 800,
     rollupOptions: {
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            if (id.includes('vue') || id.includes('pinia') || id.includes('vue-router')) {
+            if (id.includes('vue') || id.includes('pinia') || id.includes('vue-router') || id.includes('@vueuse') || id.includes('@unhead')) {
               return 'vue-core';
             }
             if (id.includes('axios') || id.includes('vue-i18n')) {
               return 'vendor-utils';
+            }
+            if (id.includes('chart.js') || id.includes('vue-chartjs')) {
+              return 'charts';
+            }
+            if (id.includes('@fortawesome')) {
+              return 'icons';
             }
             return 'vendor';
           }

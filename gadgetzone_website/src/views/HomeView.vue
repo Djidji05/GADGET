@@ -24,6 +24,7 @@
               height="600"
               :loading="index === 0 ? 'eager' : 'lazy'"
               :fetchpriority="index === 0 ? 'high' : 'auto'"
+              :decoding="index === 0 ? 'sync' : 'async'"
               class="absolute inset-0 w-full h-full object-cover"
               @error="handleImageError"
             />
@@ -105,7 +106,7 @@
 
     <!-- Top Discovery Sections (PC Desktop Overlapping Style ONLY) -->
     <div class="relative z-20 mt-4 md:mt-6 lg:-mt-48 xl:-mt-52 max-w-7xl mx-auto px-4">
-      <DiscoverySlider :cards="mainDiscoveryCards as any" :cards-per-view="4" :is-loading="personalizationStore.isLoading" :is-eager="true" />
+      <DiscoverySlider :cards="mainDiscoveryCards as any" :cards-per-view="4" :is-loading="personalizationStore.isLoading" />
     </div>
 
     <!-- Commercial Trust & Services Bar (PC Desktop ONLY) -->
@@ -528,10 +529,10 @@ const mainDiscoveryCards = computed(() => {
       title: 'Smartphones & High-Tech',
       cols: 2,
       items: [
-        { name: 'Smartphones', image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=300', link: '/products?search=phone' },
-        { name: 'Écouteurs', image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300', link: '/products?search=audio' },
-        { name: 'Smartwatches', image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300', link: '/products?search=watch' },
-        { name: 'Accessoires', image: 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=300', link: '/products?search=accessories' }
+        { name: 'Smartphones', image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=200&auto=format&fit=crop&q=80', link: '/products?search=phone' },
+        { name: 'Écouteurs', image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&auto=format&fit=crop&q=80', link: '/products?search=audio' },
+        { name: 'Smartwatches', image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&auto=format&fit=crop&q=80', link: '/products?search=watch' },
+        { name: 'Accessoires', image: 'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=200&auto=format&fit=crop&q=80', link: '/products?search=accessories' }
       ],
       link: '/products',
       linkText: 'Découvrir la catégorie'
@@ -555,7 +556,7 @@ const mainDiscoveryCards = computed(() => {
       cols: 2,
       items: (productsStore.activeVendors || []).slice(0, 4).map((v: any) => ({
         name: v.name,
-        image: v.logoUrl || 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=300',
+        image: v.logoUrl || 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?w=200&auto=format&fit=crop&q=80',
         link: `/store/${v.slug || v.id}`
       })),
       link: '/products',

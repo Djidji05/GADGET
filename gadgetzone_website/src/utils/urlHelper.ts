@@ -8,6 +8,11 @@ export const normalizeImageUrl = (input: string | any | null | undefined): strin
 
     let normalized = url.trim();
 
+    // Optimize Unsplash images for WebP/AVIF compression & auto format
+    if (normalized.includes('images.unsplash.com') && !normalized.includes('auto=format')) {
+        normalized += (normalized.includes('?') ? '&' : '?') + 'auto=format&fit=crop&q=80';
+    }
+
     // Si l'URL contient localhost, extraire le chemin relatif
     if (normalized.includes('localhost')) {
         try {
