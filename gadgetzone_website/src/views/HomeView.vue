@@ -463,7 +463,7 @@ const browsingHistoryCards = computed(() => {
   // We want to show a 3-column grid within one card
   const items = historyStore.browsingHistory.slice(0, 6).map(p => ({
     name: p.name,
-    image: p.image || p.image_url || 'https://placehold.co/400x400?text=Product',
+    image: p.image || p.image_url || '/placeholder-product.svg',
     link: `/products/${p.id}`,
     subtext: `${p.viewCount} ${p.viewCount > 1 ? t('home.views', { count: p.viewCount }) : t('home.views', { count: p.viewCount })}`
   }))
@@ -506,7 +506,7 @@ const keepShoppingCards = computed(() => {
       title: t('home.inspired_by', { category: lastViewedCategoryName.value }),
       items: relatedInStore.map(p => ({
         name: p.name,
-        image: p.image || p.image_url || 'https://placehold.co/400x400?text=Product',
+        image: p.image || p.image_url || '/placeholder-product.svg',
         link: `/products/${p.id}`
       })),
       seeMoreLink: `/products?category=${categoryId}`
@@ -607,7 +607,7 @@ const itemsYouMayLikeCards = computed(() => {
     title,
     items: products.map(p => ({
       name: p.name,
-      image: p.image || p.image_url || 'https://placehold.co/400x400?text=Product',
+      image: p.image || p.image_url || '/placeholder-product.svg',
       link: `/products/${p.id}`
     })),
     seeMoreLink: link,
@@ -712,7 +712,7 @@ const itemsYouMayLikeCards = computed(() => {
     type: 'banner',
     title: t('home.tech_news'),
     subtitle: t('home.tech_subtitle'),
-    image: 'https://images.unsplash.com/photo-1522204523234-8729aa6e3d5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=75',
+    image: 'https://images.unsplash.com/photo-1522204523234-8729aa6e3d5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&q=70',
     link: '/products'
   })
   
@@ -892,7 +892,7 @@ onUnmounted(() => {
 const handleImageError = (e: Event) => {
   const img = e.target as HTMLImageElement
   // Use a reliable fallback service
-  img.src = 'https://placehold.co/1200x500/e2e8f0/1e293b?text=Panyem'
+  img.src = '/placeholder-product.svg'
 }
 </script>
 

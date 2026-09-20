@@ -79,7 +79,7 @@
           <div class="space-y-3 max-h-48 overflow-y-auto">
             <div v-for="item in items" :key="item.id" class="flex gap-3 text-xs items-center">
               <img
-                :src="item.product.image || 'https://placehold.co/100?text=Product'"
+                :src="item.product.image || '/placeholder-product.svg'"
                 :alt="item.product.name"
                 class="w-10 h-10 object-cover border border-gray-100 dark:border-gray-800 shrink-0 rounded-lg"
               />
@@ -480,7 +480,7 @@
             <div class="space-y-4 max-h-[320px] overflow-y-auto pr-1">
               <div v-for="item in items" :key="item.id" class="flex gap-3 border-b border-gray-50 dark:border-gray-850 pb-3 last:border-b-0 last:pb-0 items-center">
                 <img
-                  :src="item.product.image || 'https://placehold.co/100?text=Product'"
+                  :src="item.product.image || '/placeholder-product.svg'"
                   :alt="item.product.name"
                   class="w-12 h-12 object-cover border border-gray-100 dark:border-gray-800 shrink-0 rounded-xl"
                 />

@@ -74,7 +74,7 @@
             <div class="shrink-0 relative overflow-hidden rounded-xl w-24 h-24 bg-gray-50 dark:bg-gray-800 border border-gray-100/50 dark:border-gray-800/50 flex items-center justify-center select-none">
               <router-link :to="'/products/' + (item.product.slug || item.product.id)" class="block w-full h-full">
                 <img
-                  :src="item.product.image || 'https://placehold.co/100?text=No+Image'"
+                  :src="item.product.image || '/placeholder-product.svg'"
                   :alt="item.product.name"
                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   @error="handleImageError"
@@ -404,7 +404,7 @@ const clearCart = async () => {
 
 const handleImageError = (event: Event) => {
   const target = event.target as HTMLImageElement
-  target.src = 'https://placehold.co/100?text=Error'
+  target.src = '/placeholder-product.svg'
 }
 
 // Load cart on mount

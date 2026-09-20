@@ -399,14 +399,14 @@
     </Modal>
 
     <!-- Change Password Modal -->
-    <Modal v-model:isOpen="showPasswordModal" :title="authStore.customer?.hasPassword === false ? 'Créer un mot de passe' : ($t('account.change_password') || 'Changer le mot de passe')">
+    <Modal v-model:isOpen="showPasswordModal" :title="!authStore.customer?.hasPassword ? 'Créer un mot de passe' : ($t('account.change_password') || 'Changer le mot de passe')">
        <form @submit.prevent="savePasswordChange" class="space-y-4">
           <p class="text-xs text-gray-500 dark:text-gray-400">
-             {{ authStore.customer?.hasPassword === false ? 'Définissez un mot de passe pour pouvoir vous connecter directement par email sans passer par Google.' : 'Pour des raisons de sécurité, veuillez entrer votre mot de passe actuel ainsi que votre nouveau mot de passe.' }}
+             {{ !authStore.customer?.hasPassword ? 'Définissez un mot de passe pour pouvoir vous connecter directement par email sans passer par Google.' : 'Pour des raisons de sécurité, veuillez entrer votre mot de passe actuel ainsi que votre nouveau mot de passe.' }}
           </p>
-          <div v-if="authStore.customer?.hasPassword !== false">
+          <div v-if="!!authStore.customer?.hasPassword">
              <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Mot de passe actuel</label>
-             <Input v-model="passwordForm.currentPassword" type="password" placeholder="••••••••" :required="authStore.customer?.hasPassword !== false" />
+             <Input v-model="passwordForm.currentPassword" type="password" placeholder="••••••••" :required="!!authStore.customer?.hasPassword" />
           </div>
           <div>
              <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Nouveau mot de passe</label>

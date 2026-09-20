@@ -47,6 +47,15 @@ const props = withDefaults(defineProps<Props>(), {
   showCloseButton: true,
 })
 
+const emit = defineEmits<{
+  (e: 'close'): void
+}>()
+
+const isVisible = ref(true)
+const progress = ref(100)
+let timer: ReturnType<typeof setTimeout> | null = null
+let progressTimer: ReturnType<typeof setInterval> | null = null
+
 const typeClasses: Record<string, string> = {
   success: 'bg-slate-900/95 dark:bg-slate-900/95 text-white border-emerald-500/50 shadow-emerald-950/30',
   error: 'bg-slate-900/95 dark:bg-slate-900/95 text-white border-rose-500/50 shadow-rose-950/30',

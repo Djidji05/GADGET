@@ -56,7 +56,7 @@ export const fallbackPromotions: Promotion[] = [
     startDate: '2024-01-01',
     endDate: '2025-12-31',
     isActive: true,
-    image: 'https://placehold.co/400x300/F59E0B/FFFFFF?text=Été+2024',
+    image: '/placeholder-product.svg',
     applicableProducts: [1, 2, 3, 4, 5],
   },
   {
@@ -69,7 +69,7 @@ export const fallbackPromotions: Promotion[] = [
     startDate: '2024-01-01',
     endDate: '2025-12-31',
     isActive: true,
-    image: 'https://placehold.co/400x300/EF4444/FFFFFF?text=Black+Friday',
+    image: '/placeholder-product.svg',
     applicableProducts: [1, 3, 5, 7, 8],
   },
 ]
