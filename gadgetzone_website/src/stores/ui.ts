@@ -32,6 +32,59 @@ export const useUiStore = defineStore('ui', () => {
     const globalSearchQuery = ref('')
     const isLightboxOpen = ref(false)
 
+    // Page Loading Indicator State
+    const isPageLoading = ref(false)
+    const isPageSlowLoading = ref(false)
+    const isPageVerySlow = ref(false)
+    const pageLoadingProgress = ref(0)
+    let progressInterval: number | undefined
+    let slowTimer: number | undefined
+    let verySlowTimer: number | undefined
+
+    const startPageLoading = () => {
+        isPageLoading.value = true
+        isPageSlowLoading.value = false
+        isPageVerySlow.value = false
+        pageLoadingProgress.value = 15
+
+        if (progressInterval) clearInterval(progressInterval)
+        if (slowTimer) clearTimeout(slowTimer)
+        if (verySlowTimer) clearTimeout(verySlowTimer)
+
+        progressInterval = window.setInterval(() => {
+            if (pageLoadingProgress.value < 85) {
+                pageLoadingProgress.value += Math.random() * 8 + 4
+            }
+        }, 180)
+
+        // Show floating page loading pill if navigation takes > 280ms
+        slowTimer = window.setTimeout(() => {
+            if (isPageLoading.value) {
+                isPageSlowLoading.value = true
+            }
+        }, 280)
+
+        // Mark as very slow if > 2500ms
+        verySlowTimer = window.setTimeout(() => {
+            if (isPageLoading.value) {
+                isPageVerySlow.value = true
+            }
+        }, 2500)
+    }
+
+    const finishPageLoading = () => {
+        pageLoadingProgress.value = 100
+        if (progressInterval) clearInterval(progressInterval)
+        if (slowTimer) clearTimeout(slowTimer)
+        if (verySlowTimer) clearTimeout(verySlowTimer)
+
+        setTimeout(() => {
+            isPageLoading.value = false
+            isPageSlowLoading.value = false
+            isPageVerySlow.value = false
+            pageLoadingProgress.value = 0
+        }, 220)
+    }
 
     const triggerCartAnimation = () => {
         isCartAnimating.value = true
@@ -71,7 +124,13 @@ export const useUiStore = defineStore('ui', () => {
         isMobileMenuOpen,
         isMobileSearchOpen,
         globalSearchQuery,
-        isLightboxOpen
+        isLightboxOpen,
+        isPageLoading,
+        isPageSlowLoading,
+        isPageVerySlow,
+        pageLoadingProgress,
+        startPageLoading,
+        finishPageLoading
     }
 
 })
