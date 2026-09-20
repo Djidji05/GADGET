@@ -1114,11 +1114,14 @@ router.post('/reset-password', passwordResetLimiter, async (req, res) => {
     const saltRounds = 12;
     const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
 
-    // Mettre à jour et nettoyer les tokens
+    // Mettre à jour et nettoyer les tokens et réinitialiser la 2FA pour la connexion directe
     await user.update({
       password: hashedPassword,
       resetPasswordToken: null,
-      resetPasswordExpires: null
+      resetPasswordExpires: null,
+      two_factor_code: null,
+      two_factor_expires: null,
+      two_factor_enabled: false
     });
 
     res.json({
