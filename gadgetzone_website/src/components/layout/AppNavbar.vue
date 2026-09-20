@@ -23,15 +23,14 @@
     />
 
     <!-- MOBILE HEADER -->
+    <!-- MOBILE HEADER -->
     <div 
       v-if="isMobileOrTablet && route.name !== 'store-view' && !route.meta.hideMobileNav" 
       key="mobile-header"
-      class="mobile-header transition-all duration-300"
-      :class="{
-        'w-full z-[90] bg-white dark:bg-gray-950 shadow-sm dark:shadow-gray-900/50': isProductPage,
-        'bg-white dark:bg-gray-950 shadow-sm dark:shadow-gray-900/50': !isProductPage && !props.transparent,
-        'bg-transparent': !isProductPage && props.transparent
-      }"
+      class="mobile-header sticky top-0 z-[100] w-full bg-white/95 dark:bg-gray-950/95 backdrop-blur-md shadow-sm dark:shadow-gray-900/50 transition-all duration-300 ease-in-out transform"
+      :class="[
+        isScrollingUp || currentScrollY <= 50 ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0 pointer-events-none'
+      ]"
     >
       <!-- Unauth Banner Removed -->
 
@@ -72,8 +71,6 @@
             </button>
           </div>
         </div>
-
-
 
         <div v-if="!route.meta.hideNavSearch" class="pt-[56px]">
           <!-- Spacer to maintain layout when categories and filters are fixed -->
@@ -178,14 +175,8 @@
           </div>
         </div>
 
-        <!-- Sticky Search & Categories Container -->
-        <div 
-          v-if="!isProductPage && !route.meta.hideNavSearch" 
-          :class="{
-            'fixed top-0 left-0 w-full z-[100] bg-white dark:bg-gray-950 shadow-md dark:shadow-gray-900/50 pt-2': isHeaderFixed,
-            'relative bg-white dark:bg-gray-950 shadow-sm dark:shadow-gray-900/50 pb-1': !isHeaderFixed
-          }"
-        >
+        <!-- Search & Categories Container -->
+        <div v-if="!isProductPage && !route.meta.hideNavSearch" class="relative bg-white dark:bg-gray-950 pb-1">
           <!-- Line 2: Search + Settings -->
           <div class="mobile-search-bar">
             <div class="relative flex-1">
@@ -219,9 +210,6 @@
           <!-- Categories inside sticky -->
           <MobileCategories v-if="shouldShowMobileCategories" />
         </div>
-
-        <!-- Placeholder to prevent jump when header becomes fixed -->
-        <div v-if="!isProductPage && !route.meta.hideNavSearch && isHeaderFixed" style="height: 110px;"></div>
       </template>
 
       <!-- Guest View -->
@@ -257,14 +245,8 @@
           </div>
         </div>
 
-        <!-- Sticky Search & Categories Container (Guest) -->
-        <div 
-          v-if="!isProductPage && !route.meta.hideNavSearch" 
-          :class="{
-            'fixed top-0 left-0 w-full z-[100] bg-white dark:bg-gray-950 shadow-md dark:shadow-gray-900/50 pt-2': isHeaderFixed,
-            'relative bg-white dark:bg-gray-950 shadow-sm dark:shadow-gray-900/50 pb-1': !isHeaderFixed
-          }"
-        >
+        <!-- Search & Categories Container (Guest) -->
+        <div v-if="!isProductPage && !route.meta.hideNavSearch" class="relative bg-white dark:bg-gray-950 pb-1">
           <!-- Search bar mobile -->
           <div class="mobile-search-bar border-b border-gray-150 dark:border-gray-800">
             <div class="relative flex-1">
@@ -298,9 +280,6 @@
           <!-- Categories inside sticky -->
           <MobileCategories v-if="shouldShowMobileCategories" />
         </div>
-        
-        <!-- Placeholder to prevent jump when header becomes fixed -->
-        <div v-if="!isProductPage && !route.meta.hideNavSearch && isHeaderFixed" style="height: 110px;"></div>
       </template>
     </div>
 
@@ -1092,29 +1071,26 @@ const languages = [
 ]
 
 const currentLanguage = computed(() => (languages.find(l => l.code === currentLocale.value) || languages[0])!)
-const isHeaderFixed = ref(false)
+const currentScrollY = ref(0)
 const isScrollingUp = ref(true)
 const lastScrollY = ref(0)
 
 const handleHeaderScroll = () => {
-    const currentScrollY = window.scrollY
-    const scrollDiff = Math.abs(currentScrollY - lastScrollY.value)
+    const scrollY = window.scrollY
+    currentScrollY.value = scrollY
+    const scrollDiff = Math.abs(scrollY - lastScrollY.value)
     
-    // Only trigger if scroll difference is significant (tolerance)
-    if (scrollDiff > 10) {
-        // Determine scroll direction
-        if (currentScrollY > lastScrollY.value && currentScrollY > 100) {
+    // Near top of page, always show header
+    if (scrollY <= 50) {
+        isScrollingUp.value = true
+    } else if (scrollDiff > 8) {
+        // Determine scroll direction when scroll movement is clear
+        if (scrollY > lastScrollY.value) {
             isScrollingUp.value = false // Scrolling down
-        } else if (currentScrollY < lastScrollY.value) {
+        } else {
             isScrollingUp.value = true // Scrolling up
         }
-        lastScrollY.value = currentScrollY
-    }
-
-    if (isMobileOrTablet.value && !isProductPage.value) {
-        isHeaderFixed.value = currentScrollY > 56
-    } else {
-        isHeaderFixed.value = false
+        lastScrollY.value = scrollY
     }
 }
 
