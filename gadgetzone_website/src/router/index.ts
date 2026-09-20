@@ -516,9 +516,6 @@ router.beforeEach(async (to, from, next) => {
   const uiStore = useUiStore()
   const settingsStore = useSettingsStore()
 
-  // Start top loading progress indicator & slow load timer
-  uiStore.startPageLoading()
-
   // Ensure settings are loaded on first navigation to protect the whole site
   if (!settingsStore.general.isLoaded) {
     await settingsStore.fetchGeneralSettings()
@@ -557,16 +554,6 @@ router.beforeEach(async (to, from, next) => {
   } else {
     next()
   }
-})
-
-router.afterEach(() => {
-  const uiStore = useUiStore()
-  uiStore.finishPageLoading()
-})
-
-router.onError(() => {
-  const uiStore = useUiStore()
-  uiStore.finishPageLoading()
 })
 
 export default router

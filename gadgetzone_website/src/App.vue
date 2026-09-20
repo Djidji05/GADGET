@@ -16,7 +16,6 @@ import { useUiStore } from '@/stores/ui'
 import GlobalToastContainer from '@/components/ui/GlobalToastContainer.vue'
 import GlobalModal from '@/components/ui/GlobalModal.vue'
 import CookieConsent from '@/components/ui/CookieConsent.vue'
-import PageLoader from '@/components/ui/PageLoader.vue'
 import { useSSEStore } from '@/stores/sse'
 import { useLoyaltyStore } from '@/stores/loyalty'
 import { useNotificationsStore } from '@/stores/notifications'
@@ -227,9 +226,6 @@ const setupInactivityTracking = () => {
 
 <template>
 <div class="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950 dark:text-gray-100 transition-colors duration-300 overflow-x-hidden">
-    <!-- Page Loader (Global progress bar & slow load indicator) -->
-    <PageLoader />
-
     <!-- PWA Install Banner -->
     <div v-if="showInstallPrompt && route.name === 'home' && !isMaintenancePage" class="bg-blue-600 text-white px-4 py-3 flex items-center justify-between shadow-md relative z-50">
       <div class="flex items-center gap-3">
