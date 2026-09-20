@@ -5,9 +5,13 @@ import sequelize from '../config/database.js';
 
 const createAdmin = async () => {
     try {
-        const email = 'admin@panyem.com';
-        const password = 'Admin123!';
-        const name = 'Admin System';
+        const email = process.env.ADMIN_INITIAL_EMAIL || 'admin@panyem.com';
+        const password = process.env.ADMIN_INITIAL_PASSWORD || process.env.ADMIN_PASSWORD;
+
+        if (!password) {
+            console.error('❌ Veuillez définir ADMIN_INITIAL_PASSWORD dans les variables d\'environnement.');
+            process.exit(1);
+        }
 
         // Vérifier si l'utilisateur existe déjà
         const existingUser = await User.findOne({ where: { email } });

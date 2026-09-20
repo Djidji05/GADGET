@@ -24,8 +24,13 @@ const cleanResetDatabase = async () => {
 
     // 3. Création du compte Administrateur par défaut
     console.log('👤 Création du compte Administrateur principal...');
-    const adminEmail = 'admin@panyem.com';
-    const adminPassword = 'Admin123!';
+    const adminEmail = process.env.ADMIN_INITIAL_EMAIL || 'admin@panyem.com';
+    const adminPassword = process.env.ADMIN_INITIAL_PASSWORD || process.env.ADMIN_PASSWORD;
+
+    if (!adminPassword) {
+      throw new Error('Veuillez définir la variable d\'environnement ADMIN_INITIAL_PASSWORD avant d\'exécuter ce script.');
+    }
+
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(adminPassword, salt);
 
@@ -41,7 +46,6 @@ const cleanResetDatabase = async () => {
 
     console.log(`✅ Compte Administrateur créé avec succès !`);
     console.log(`   - Email : ${adminEmail}`);
-    console.log(`   - Mot de passe : ${adminPassword}`);
     console.log(`   - Rôle : ${adminUser.role}`);
 
     // 4. Initialisation des paramètres généraux du site
