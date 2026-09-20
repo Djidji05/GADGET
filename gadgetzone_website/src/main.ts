@@ -18,16 +18,20 @@ app.use(head)
 
 app.mount('#app')
 
-// 🎨 Non-blocking FontAwesome loader (loaded from local bundle after initial render)
+// 🎨 Non-blocking FontAwesome loader (loaded lazily on user interaction or after 5s)
 if (typeof window !== 'undefined') {
+  let fontAwesomeLoaded = false
   const loadFontAwesome = () => {
+    if (fontAwesomeLoaded) return
+    fontAwesomeLoaded = true
     import('@fortawesome/fontawesome-free/css/all.min.css')
   }
-  if ('requestIdleCallback' in window) {
-    requestIdleCallback(loadFontAwesome, { timeout: 3000 })
-  } else {
-    setTimeout(loadFontAwesome, 2000)
-  }
+
+  ['touchstart', 'scroll', 'mousemove', 'keydown'].forEach(event => {
+    window.addEventListener(event, loadFontAwesome, { once: true, passive: true })
+  })
+
+  setTimeout(loadFontAwesome, 5000)
 }
 
 // 📱 PWA — Enregistrement/Désenregistrement du Service Worker

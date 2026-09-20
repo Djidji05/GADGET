@@ -44,7 +44,7 @@
                 'items-center text-center'
               ]"
             >
-              <div class="max-w-4xl w-full mx-auto px-4 md:px-12 flex flex-col"
+              <div class="max-w-4xl w-full mx-auto px-4 md:px-12 flex flex-col min-h-[140px] md:min-h-[220px] justify-center"
                 :class="[
                     banner.textAlign === 'text-left' ? 'items-start' : 
                     banner.textAlign === 'text-right' ? 'items-end' : 

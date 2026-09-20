@@ -68,7 +68,21 @@
 </head>
 
 <body>
-  <div id="app"></div>
+  <div id="app">
+    <!-- Static Initial Hero Shell for Instant FCP/LCP (replaced on Vue mount) -->
+    <section class="relative px-4 md:px-0">
+      <div class="relative w-full aspect-[16/9] md:aspect-[21/9] min-h-[220px] md:min-h-[420px] lg:min-h-[580px] xl:min-h-[620px] bg-gray-900 text-white flex flex-col justify-center items-center px-4 text-center rounded-2xl md:rounded-none overflow-hidden">
+        <div class="max-w-4xl w-full mx-auto px-4 md:px-12 flex flex-col items-center min-h-[140px] md:min-h-[220px] justify-center">
+          <h1 class="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white mb-2 md:mb-4 leading-tight drop-shadow-lg" style="font-family: 'Inter', system-ui, sans-serif;">
+            RENAISSANCE
+          </h1>
+          <p class="text-sm sm:text-base md:text-xl lg:text-2xl mb-4 md:mb-8 text-white/95 font-medium max-w-2xl drop-shadow-md">
+            Découvrez nos derniers produits technologiques
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
 
   <script type="module" src="/src/main.ts"></script>
 </body>
