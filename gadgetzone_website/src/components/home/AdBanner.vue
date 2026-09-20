@@ -129,7 +129,7 @@
             @click="currentIndex = Number(index)"
             class="h-1.5 rounded-full transition-all duration-300 bg-white/40 overflow-hidden"
             :class="currentIndex === index ? 'w-6 sm:w-8 bg-white' : 'w-2.5 sm:w-4 hover:bg-white/60'"
-            :aria-label="`Bannière ${index + 1}`"
+            :aria-label="`Bannière ${Number(index) + 1}`"
           >
             <div 
               v-if="currentIndex === index"
