@@ -75,28 +75,46 @@
         </div>
       </div>
 
-      <!-- INSCRIPTION FORM -->
-      <div v-else class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-8 md:p-12 mb-12 border border-gray-100">
+      <!-- PENDING APPLICATION STATE -->
+      <div v-if="existingApplication && existingApplication.status === 'pending'" class="max-w-2xl mx-auto bg-white dark:bg-gray-900 rounded-3xl shadow-xl p-8 md:p-12 text-center border border-amber-200 dark:border-amber-900/50 my-12">
+        <div class="w-20 h-20 bg-amber-100 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 rounded-full flex items-center justify-center text-3xl mx-auto mb-6">
+          <i class="fas fa-clock"></i>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">Candidature en cours d'examen</h2>
+        <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-6">
+          Vous avez déjà soumis une candidature pour la boutique <strong>{{ existingApplication.name }}</strong>. Elle est actuellement en attente de validation par notre équipe d'administration.
+        </p>
+        <div class="p-4 bg-amber-50 dark:bg-amber-950/30 rounded-2xl border border-amber-200 dark:border-amber-900/40 text-xs text-amber-800 dark:text-amber-300 text-left mb-8 space-y-1">
+          <div class="font-bold flex items-center gap-1.5"><i class="fas fa-lock text-amber-600"></i> Soumission verrouillée :</div>
+          <div>Conformément aux règles de Panyem, vous ne pouvez pas déposer de nouvelle candidature tant que la précédente n'a pas été annulée ou traitée.</div>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <button @click="cancelApplication" :disabled="isCancelling" class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-sm shadow transition-colors flex items-center justify-center gap-2">
+            <i v-if="isCancelling" class="fas fa-spinner fa-spin text-xs"></i>
+            <i v-else class="fas fa-times-circle"></i>
+            Annuler ma candidature
+          </button>
+          <router-link to="/" class="px-6 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold rounded-xl text-sm transition-colors">
+            Retour à l'accueil
+          </router-link>
+        </div>
+      </div>
+
+      <!-- INSCRIPTION FORM (Hidden if pending) -->
+      <div v-else-if="!submitted" class="max-w-3xl mx-auto bg-white rounded-2xl shadow-xl p-8 md:p-12 mb-12 border border-gray-100">
         <div class="text-center mb-10">
-          <h2 class="text-3xl font-bold text-gray-900 mb-3">Formulaire d'Inscription</h2>
+          <h2 class="text-3xl font-bold text-gray-900 mb-3">Formulaire d'Inscription Vendeur</h2>
           <p class="text-gray-600">
             Complétez ces informations pour soumettre votre candidature à notre équipe de validation.
           </p>
         </div>
 
-      <div v-if="existingApplication" class="mb-8 p-4 bg-yellow-50 border-l-4 border-yellow-400 p-4">
-        <div class="flex">
-          <div class="flex-shrink-0">
-            <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-            </svg>
-          </div>
-          <div class="ml-3">
-            <p class="text-sm text-yellow-700">
-              Vous avez déjà une candidature en cours (Statut : <strong>{{ existingApplication.status }}</strong>).
-              Vous pouvez modifier les informations ci-dessous et renvoyer votre demande.
-            </p>
-          </div>
+      <div v-if="existingApplication && (existingApplication.status === 'cancelled' || existingApplication.status === 'rejected')" class="mb-8 p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-xl">
+        <div class="flex items-start gap-3">
+          <i class="fas fa-info-circle text-blue-600 text-lg mt-0.5"></i>
+          <p class="text-sm text-blue-900">
+            Votre précédente candidature a été <strong>{{ existingApplication.status === 'cancelled' ? 'annulée' : 'refusée' }}</strong>. Vous pouvez soumettre une nouvelle candidature ci-dessous.
+          </p>
         </div>
       </div>
 
@@ -226,7 +244,7 @@
           :disabled="loading"
           class="flex w-full justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 transition-colors"
         >
-          {{ loading ? 'Envoi en cours...' : (existingApplication ? 'Mettre à jour ma candidature' : 'Envoyer ma candidature') }}
+          {{ loading ? 'Envoi en cours...' : 'Envoyer ma candidature' }}
         </button>
       </form>
     </div>
@@ -243,6 +261,7 @@ import { useUiStore } from '@/stores/ui';
 const router = useRouter();
 const uiStore = useUiStore();
 const loading = ref(false);
+const isCancelling = ref(false);
 const error = ref('');
 const submitted = ref(false);
 
@@ -299,7 +318,8 @@ const checkApplicationStatus = async () => {
       }
 
       existingApplication.value = store;
-      // Pre-fill form
+      
+      // Pre-fill form if cancelled or rejected
       form.storeName = response.data.name;
       form.storeDescription = response.data.description;
       
@@ -310,11 +330,14 @@ const checkApplicationStatus = async () => {
         form.whatsapp = response.data.settings.whatsapp || '';
         form.productStyle = response.data.settings.productStyle || '';
       }
+    } else {
+      existingApplication.value = null;
     }
   } catch (e: any) {
     if (e.response?.status !== 404) {
       console.error("Error checking status", e);
     }
+    existingApplication.value = null;
   }
 };
 
@@ -322,42 +345,38 @@ onMounted(() => {
   checkApplicationStatus();
 });
 
+const cancelApplication = () => {
+  uiStore.confirm({
+    title: 'Annuler la candidature',
+    message: 'Êtes-vous sûr de vouloir annuler votre candidature vendeur ? Vous pourrez en soumettre une nouvelle à tout moment.',
+    onConfirm: async () => {
+      try {
+        isCancelling.value = true;
+        const response = await api.post('/vendors/cancel-application');
+        uiStore.showToast(response.data.message || 'Candidature annulée avec succès.', 'info');
+        existingApplication.value = null;
+        submitted.value = false;
+        await checkApplicationStatus();
+      } catch (err: any) {
+        console.error('Error cancelling application:', err);
+        uiStore.showToast(err.response?.data?.message || 'Erreur lors de l\'annulation.', 'error');
+      } finally {
+        isCancelling.value = false;
+      }
+    }
+  });
+};
+
 const submitApplication = async () => {
   loading.value = true;
   error.value = '';
 
   try {
-    if (!form.identityData && !existingApplication.value) {
+    if (!form.identityData && !existingApplication.value?.settings?.identityData) {
       throw new Error("Veuillez téléverser une pièce d'identité.");
     }
     
-    let response;
-    if (existingApplication.value) {
-      uiStore.confirm({
-        title: 'Mettre à jour la candidature',
-        message: 'Vous avez déjà une candidature en cours. Voulez-vous vraiment mettre à jour les informations et renvoyer votre demande ?',
-        onConfirm: async () => {
-          try {
-            loading.value = true;
-            const response = await api.put('/vendors/apply', form);
-            const msg = response.data.message || 'Candidature mise à jour avec succès !';
-            uiStore.showToast(msg, 'success');
-            submitted.value = true;
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            checkApplicationStatus();
-          } catch (err: any) {
-            console.error(err);
-            error.value = err.response?.data?.message || err.message || 'Une erreur est survenue.';
-          } finally {
-            loading.value = false;
-          }
-        }
-      });
-      return;
-    } else {
-      response = await api.post('/vendors/apply', form);
-    }
-    
+    const response = await api.post('/vendors/apply', form);
     const msg = response.data.message || 'Candidature envoyée avec succès! En attente de validation.';
     uiStore.showToast(msg, 'success');
     submitted.value = true;
@@ -365,8 +384,8 @@ const submitApplication = async () => {
     checkApplicationStatus();
   } catch (err: any) {
     console.error(err);
-    if (err.response?.data?.error === 'Application exists') {
-      uiStore.showToast("Une candidature existe déjà. Veuillez recharger la page pour la voir.", "info");
+    if (err.response?.data?.error === 'Application pending') {
+      uiStore.showToast("Vous avez déjà une candidature en cours d'examen.", "warning");
       checkApplicationStatus();
     } else {
       error.value = err.response?.data?.message || err.message || 'Une erreur est survenue.';

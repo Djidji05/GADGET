@@ -54,9 +54,48 @@ router.post('/apply', authenticateToken, async (req, res) => {
 
         const existingStore = await Store.findOne({ where: { userId } });
         if (existingStore) {
-            return res.status(400).json({
-                error: 'Application exists',
-                message: 'Vous avez déjà une boutique ou une demande en cours.'
+            if (existingStore.status === 'pending') {
+                return res.status(400).json({
+                    error: 'Application pending',
+                    message: 'Vous avez déjà une candidature en cours d\'examen. Vous ne pouvez pas soumettre une nouvelle candidature tant qu\'elle n\'a pas été annulée.'
+                });
+            }
+            if (existingStore.status === 'active') {
+                return res.status(400).json({
+                    error: 'Store active',
+                    message: 'Votre compte vendeur est déjà actif.'
+                });
+            }
+
+            // Si la précédente candidature était annulée ou refusée, on la met à jour et relance en statut pending
+            let slug = slugify(storeName);
+            let uniqueSlug = slug;
+            let counter = 1;
+            while (await Store.findOne({ where: { slug: uniqueSlug, id: { [Op.ne]: existingStore.id } } })) {
+                uniqueSlug = `${slug}-${counter}`;
+                counter++;
+            }
+
+            await existingStore.update({
+                name: storeName,
+                slug: uniqueSlug,
+                description: storeDescription,
+                status: 'pending',
+                settings: {
+                    businessType,
+                    taxId,
+                    address,
+                    whatsapp,
+                    productStyle,
+                    identityData: identityData || existingStore.settings?.identityData
+                }
+            });
+
+            await notifyNewVendorApplication(existingStore, req.user);
+
+            return res.status(200).json({
+                message: 'Nouvelle candidature envoyée avec succès ! En attente de validation.',
+                store: existingStore
             });
         }
 
@@ -102,6 +141,37 @@ router.post('/apply', authenticateToken, async (req, res) => {
     } catch (error) {
         console.error('Vendor application error:', error);
         res.status(500).json({ error: 'Server error', message: 'Erreur lors de la création de la boutique.' });
+    }
+});
+
+/**
+ * POST /api/vendors/cancel-application
+ * Cancel a pending vendor application
+ */
+router.post('/cancel-application', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const store = await Store.findOne({ where: { userId } });
+
+        if (!store) {
+            return res.status(404).json({ message: 'Aucune candidature trouvée.' });
+        }
+
+        if (store.status !== 'pending') {
+            return res.status(400).json({ message: 'Seules les candidatures en attente de validation peuvent être annulées.' });
+        }
+
+        store.status = 'cancelled';
+        await store.save();
+
+        res.json({
+            message: 'Votre candidature a été annulée avec succès. Vous pouvez maintenant soumettre une nouvelle candidature.',
+            store
+        });
+
+    } catch (error) {
+        console.error('Cancel application error:', error);
+        res.status(500).json({ error: 'Server error', message: 'Erreur lors de l\'annulation de la candidature.' });
     }
 });
 
