@@ -163,19 +163,13 @@ const isSellerRoute = computed(() => route.path.startsWith('/seller'));
 const isAuthRoute = computed(() => ['/login', '/register', '/forgot-password', '/reset-password', '/auth/callback'].includes(route.path));
 const { isMobile } = useDevice();
 
-// Page-specific visibility logic
+// Page-specific visibility logic: Only show AI assistant on shopping & product discovery pages
 const allowedRoutes = [
   'home',
   'products',
   'product-detail',
-  'cart',
-  'orders',
-  'order-detail',
-  'account',
-  'addresses',
-  'wishlist',
-  'notifications',
-  'browsing-history'
+  'promotions',
+  'store-view'
 ];
 
 const shouldShowAssistant = computed(() => {
